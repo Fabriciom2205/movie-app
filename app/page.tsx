@@ -1,7 +1,7 @@
 import Form from "next/form";
 import Image from "next/image";
 import Link from "next/link";
-import { posterUrl, releaseYear, searchMovies } from "@/lib/tmdb";
+import { releaseYear, searchMovies, tmdbImageUrl } from "@/lib/tmdb";
 
 export default async function Home(props: PageProps<"/">) {
   const { q } = await props.searchParams;
@@ -46,7 +46,7 @@ export default async function Home(props: PageProps<"/">) {
               >
                 {movie.poster_path ? (
                   <Image
-                    src={posterUrl(movie.poster_path)}
+                    src={tmdbImageUrl(movie.poster_path)}
                     alt=""
                     width={62}
                     height={93}
