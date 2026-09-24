@@ -1,17 +1,31 @@
 import Form from "next/form";
 import Image from "next/image";
 import Link from "next/link";
+import { signOut } from "@/app/login/actions";
+import { createClient } from "@/lib/supabase/server";
 import { releaseYear, searchMovies, tmdbImageUrl } from "@/lib/tmdb";
 
 export default async function Home(props: PageProps<"/">) {
   const { q } = await props.searchParams;
   const query = typeof q === "string" ? q.trim() : "";
 
-  const results = query ? await searchMovies(query) : [];
+  const supabase = await createClient();
+  const [{ data: auth }, results] = await Promise.all([
+    supabase.auth.getClaims(),
+    query ? searchMovies(query) : Promise.resolve([]),
+  ]);
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-10">
-      <h1 className="mb-6 text-3xl font-semibold tracking-tight">Movie Night</h1>
+      <div className="mb-6 flex items-baseline justify-between gap-4">
+        <h1 className="text-3xl font-semibold tracking-tight">Movie Night</h1>
+        <form action={signOut} className="flex items-baseline gap-3 text-sm text-zinc-500">
+          <span className="truncate">{auth?.claims.email}</span>
+          <button type="submit" className="hover:underline">
+            Sign out
+          </button>
+        </form>
+      </div>
 
       {/* action="" submits to this same page as /?q=... */}
       <Form action="" className="mb-8 flex gap-2">
