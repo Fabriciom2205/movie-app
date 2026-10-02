@@ -1,5 +1,6 @@
-# CI: on every push to main and every pull request, check that the app
-# lints, type-checks and builds from a clean checkout.
+# CI: on every push to main and every pull request,
+#  - app:      the app lints, type-checks and builds from a clean checkout
+#  - database: all migrations build a fresh database, and every RLS test passes
 name: CI
 
 on:
@@ -45,3 +46,34 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  database:
+    name: Migrations + RLS tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies (includes the Supabase CLI)
+        run: npm ci
+
+      # A throwaway Supabase in Docker, built from nothing but our migrations.
+      # Keep Postgres + auth (our tables reference auth.users); skip the rest.
+      - name: Start local Supabase and apply all migrations
+        run: >-
+          npx supabase start
+          -x realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
+
+      - name: Lint database functions
+        run: npx supabase db lint --local --schema public,private --level warning --fail-on error
+
+      - name: Run RLS tests
+        run: npm run test:db -- --local

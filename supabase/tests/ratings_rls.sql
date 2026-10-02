@@ -12,11 +12,13 @@ declare
   log    text := '';
 begin
   -- Setup as the database owner (bypasses RLS)
-  select id into me     from auth.users order by created_at limit 1;
-  -- Temporary stand-in for the friend's account (rolled back with everything else)
+  -- Stand-in accounts (rolled back with everything else), so the test works
+  -- the same on a fresh CI database and on the real one.
+  me     := gen_random_uuid();
   friend := gen_random_uuid();
-  insert into auth.users (id, aud, role, email)
-    values (friend, 'authenticated', 'authenticated', 'rls-test-friend@example.invalid');
+  insert into auth.users (id, aud, role, email) values
+    (me,     'authenticated', 'authenticated', 'rls-test-me@example.invalid'),
+    (friend, 'authenticated', 'authenticated', 'rls-test-friend@example.invalid');
   insert into public.movies (id, title) values (949, 'Heat'), (603, 'The Matrix');
   insert into public.ratings (user_id, movie_id, verdict) values (friend, 949, 'up');
 

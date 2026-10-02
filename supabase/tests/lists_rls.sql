@@ -13,11 +13,14 @@ declare
   n        int;
   log      text := '';
 begin
-  -- Setup as the database owner: the real user + two stand-ins
-  select id into me from auth.users order by created_at limit 1;
+  -- Setup as the database owner: three stand-in accounts
+  -- Stand-in accounts (rolled back with everything else), so the test works
+  -- the same on a fresh CI database and on the real one.
+  me       := gen_random_uuid();
   friend   := gen_random_uuid();
   stranger := gen_random_uuid();
   insert into auth.users (id, aud, role, email) values
+    (me,       'authenticated', 'authenticated', 'rls-test-me@example.invalid'),
     (friend,   'authenticated', 'authenticated', 'rls-test-friend@example.invalid'),
     (stranger, 'authenticated', 'authenticated', 'rls-test-stranger@example.invalid');
 

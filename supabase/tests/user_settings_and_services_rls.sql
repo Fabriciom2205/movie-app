@@ -14,15 +14,18 @@ declare
   log      text := '';
 begin
   -- Setup as the database owner. Inserting users fires the settings trigger.
-  select id into me from auth.users order by created_at limit 1;
+  -- Stand-in accounts (rolled back with everything else), so the test works
+  -- the same on a fresh CI database and on the real one.
+  me       := gen_random_uuid();
   friend   := gen_random_uuid();
   stranger := gen_random_uuid();
   insert into auth.users (id, aud, role, email) values
+    (me,       'authenticated', 'authenticated', 'rls-test-me@example.invalid'),
     (friend,   'authenticated', 'authenticated', 'rls-test-friend@example.invalid'),
     (stranger, 'authenticated', 'authenticated', 'rls-test-stranger@example.invalid');
 
-  select count(*) into n from public.user_settings where user_id in (friend, stranger);
-  log := log || E'\n01 new accounts got a settings row automatically (expect 2): ' || n;
+  select count(*) into n from public.user_settings where user_id in (me, friend, stranger);
+  log := log || E'\n01 new accounts got a settings row automatically (expect 3): ' || n;
 
   insert into public.user_services (user_id, provider_id) values (friend, 15);   -- she has Hulu
 
@@ -32,7 +35,7 @@ begin
   perform set_config('request.jwt.claims', json_build_object('sub', me, 'role', 'authenticated')::text, true);
 
   select region into r from public.user_settings where user_id = me;
-  log := log || E'\n02 me: my settings row exists from the backfill, region (expect US): ' || coalesce(r, 'MISSING');
+  log := log || E'\n02 me: my settings row exists (made by the trigger), region (expect US): ' || coalesce(r, 'MISSING');
 
   update public.user_settings set region = 'GB' where user_id = me;
   get diagnostics n = row_count;
