@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import {
   formatRuntime,
   getMovie,
@@ -9,16 +10,19 @@ import {
   tmdbImageUrl,
   type WatchProvider,
 } from "@/lib/tmdb";
+import type { Verdict } from "./actions";
+import { RatingButtons } from "./rating-buttons";
 
 export default async function MoviePage(props: PageProps<"/movie/[id]">) {
   const { id } = await props.params;
   if (!/^\d+$/.test(id)) notFound();
   const movieId = Number(id);
 
-  // Start both requests at once rather than one after the other.
-  const [movie, providers] = await Promise.all([
+  // Start all requests at once rather than one after the other.
+  const [movie, providers, myVerdict] = await Promise.all([
     getMovie(movieId),
     getWatchProviders(movieId, "US"),
+    getMyVerdict(movieId),
   ]);
   if (!movie) notFound();
 
@@ -63,6 +67,8 @@ export default async function MoviePage(props: PageProps<"/movie/[id]">) {
           </p>
 
           {movie.overview && <p className="mt-4 leading-7">{movie.overview}</p>}
+
+          <RatingButtons movieId={movie.id} verdict={myVerdict} />
         </div>
       </div>
 
@@ -119,6 +125,23 @@ function ProviderRow({ label, providers }: { label: string; providers?: WatchPro
       </ul>
     </div>
   );
+}
+
+// The signed-in user's own rating. Filter by user_id: list-mates' ratings are
+// readable too, so "any rating for this movie" could be someone else's.
+async function getMyVerdict(movieId: number): Promise<Verdict | null> {
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getClaims();
+  const userId = auth?.claims.sub;
+  if (!userId) return null;
+
+  const { data } = await supabase
+    .from("ratings")
+    .select("verdict")
+    .eq("user_id", userId)
+    .eq("movie_id", movieId)
+    .maybeSingle();
+  return (data?.verdict as Verdict | undefined) ?? null;
 }
 
 // "free" and "ads" can list the same service; keep the first of each.
