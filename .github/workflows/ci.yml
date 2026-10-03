@@ -113,14 +113,18 @@ jobs:
       - name: Install dependencies (includes the Supabase CLI)
         run: npm ci
 
-      # --project-ref instead of `supabase link`: link also saves API keys and
-      # service settings for local development, which needs extra token
-      # permissions this job has no use for.
+      # GitHub runners have no IPv6, and the database's direct address is
+      # IPv6-only on Supabase's free tier. `link` looks up the IPv4 connection
+      # pooler, which `db push` then uses. Token permissions this needs:
+      # Project Settings, API Keys, Connection Pooling, Storage Config (read).
+      - name: Link the production project (IPv4 pooler)
+        run: npx supabase link --project-ref "$SUPABASE_PROJECT_REF"
+
       - name: Show pending migrations
-        run: npx supabase db push --project-ref "$SUPABASE_PROJECT_REF" --dry-run
+        run: npx supabase db push --dry-run
 
       - name: Apply migrations
-        run: npx supabase db push --project-ref "$SUPABASE_PROJECT_REF" --yes
+        run: npx supabase db push --yes
 
   deploy:
     name: Deploy app to production
