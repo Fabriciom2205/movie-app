@@ -11,6 +11,7 @@ export type ProviderOption = {
 };
 
 type Props = {
+  displayName: string;
   region: string;
   regions: { code: string; name: string }[];
   providers: ProviderOption[]; // shortlist first
@@ -20,7 +21,7 @@ type Props = {
 
 const initialState: SaveState = { status: "idle", message: null };
 
-export function SettingsForm({ region, regions, providers, shortlist, saved }: Props) {
+export function SettingsForm({ displayName, region, regions, providers, shortlist, saved }: Props) {
   const [state, formAction, pending] = useActionState(saveSettings, initialState);
   const [selectedRegion, setSelectedRegion] = useState(region);
   const [checked, setChecked] = useState(() => new Set(saved));
@@ -60,6 +61,23 @@ export function SettingsForm({ region, regions, providers, shortlist, saved }: P
 
   return (
     <form action={formAction} onSubmit={handleSubmit} className="mt-8 flex flex-col gap-10">
+      <section>
+        <h2 className="text-xl font-semibold">Your name</h2>
+        <p className="mt-1 text-sm text-zinc-500">
+          Shown to the people you share a list with.
+        </p>
+        <input
+          name="display_name"
+          defaultValue={displayName}
+          onChange={() => setDirty(true)}
+          aria-label="Your name"
+          maxLength={50}
+          required
+          autoComplete="nickname"
+          className="mt-3 w-full max-w-xs rounded-md border border-zinc-300 bg-transparent px-3 py-2 dark:border-zinc-700"
+        />
+      </section>
+
       <section>
         <h2 className="text-xl font-semibold">Country</h2>
         <p className="mt-1 text-sm text-zinc-500">

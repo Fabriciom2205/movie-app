@@ -8,10 +8,16 @@ export type SaveState = { status: "idle" | "saved" | "error"; message: string | 
 // Far more than anyone subscribes to; stops a hand-made request from sending thousands.
 const MAX_SERVICES = 100;
 
-// Saves the settings form: the region plus the full set of ticked services.
+// Saves the settings form: display name, region, and the full set of ticked services.
 // Server Actions are public endpoints, so validate everything here instead of
 // trusting the form.
 export async function saveSettings(_prev: SaveState, formData: FormData): Promise<SaveState> {
+  // Same rule as the database's check: 1-50 characters after trimming.
+  const displayName = String(formData.get("display_name") ?? "").trim();
+  if (displayName.length < 1 || displayName.length > 50) {
+    return { status: "error", message: "Your name needs 1 to 50 characters." };
+  }
+
   const region = String(formData.get("region") ?? "");
   if (!/^[A-Z]{2}$/.test(region)) {
     return { status: "error", message: "That country doesn't look right." };
@@ -32,11 +38,12 @@ export async function saveSettings(_prev: SaveState, formData: FormData): Promis
     return { status: "error", message: "Your session ended. Sign in again to save." };
   }
 
-  const [settings, services] = await Promise.all([
+  const [profile, settings, services] = await Promise.all([
+    supabase.from("profiles").select("display_name").eq("user_id", userId).maybeSingle(),
     supabase.from("user_settings").select("region").eq("user_id", userId).maybeSingle(),
     supabase.from("user_services").select("provider_id").eq("user_id", userId),
   ]);
-  if (settings.error || services.error) {
+  if (profile.error || settings.error || services.error) {
     return { status: "error", message: "Couldn't load your settings. Try again." };
   }
 
@@ -46,7 +53,7 @@ export async function saveSettings(_prev: SaveState, formData: FormData): Promis
   const toAdd = ids.filter((id) => !current.has(id));
   const toRemove = [...current].filter((id) => !wanted.has(id));
 
-  // Three independent writes, all with the user's session so RLS checks each.
+  // Independent writes, all with the user's session so RLS checks each.
   // Not one transaction: if one fails, saving again finishes the job.
   const results = await Promise.all([
     toAdd.length
@@ -66,6 +73,9 @@ export async function saveSettings(_prev: SaveState, formData: FormData): Promis
       : null,
     settings.data?.region !== region
       ? supabase.from("user_settings").update({ region }).eq("user_id", userId)
+      : null,
+    profile.data?.display_name !== displayName
+      ? supabase.from("profiles").update({ display_name: displayName }).eq("user_id", userId)
       : null,
   ]);
   if (results.some((r) => r?.error)) {

@@ -20,7 +20,11 @@ export default async function Home(props: PageProps<"/">) {
       <div className="mb-6 flex items-baseline justify-between gap-4">
         <h1 className="shrink-0 text-3xl font-semibold tracking-tight">Movie Night</h1>
         <div className="flex min-w-0 items-baseline gap-3 text-sm text-zinc-500">
-          <span className="truncate">{auth?.claims.email}</span>
+          {/* No room on phones; the email is just a reminder of who is signed in. */}
+          <span className="hidden truncate sm:block">{auth?.claims.email}</span>
+          <Link href="/lists" className="shrink-0 hover:underline">
+            Lists
+          </Link>
           <Link href="/settings" className="shrink-0 hover:underline">
             Settings
           </Link>
