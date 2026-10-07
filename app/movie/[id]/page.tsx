@@ -11,6 +11,7 @@ import {
   type WatchProvider,
 } from "@/lib/tmdb";
 import type { Verdict } from "./actions";
+import { ListToggles, type ListOption } from "./list-toggles";
 import { RatingButtons } from "./rating-buttons";
 
 export default async function MoviePage(props: PageProps<"/movie/[id]">) {
@@ -19,10 +20,11 @@ export default async function MoviePage(props: PageProps<"/movie/[id]">) {
   const movieId = Number(id);
 
   // Start all requests at once rather than one after the other.
-  const [movie, providers, myVerdict] = await Promise.all([
+  const [movie, providers, myVerdict, myLists] = await Promise.all([
     getMovie(movieId),
     getWatchProviders(movieId, "US"),
     getMyVerdict(movieId),
+    getMyLists(movieId),
   ]);
   if (!movie) notFound();
 
@@ -69,6 +71,7 @@ export default async function MoviePage(props: PageProps<"/movie/[id]">) {
           {movie.overview && <p className="mt-4 leading-7">{movie.overview}</p>}
 
           <RatingButtons movieId={movie.id} verdict={myVerdict} />
+          <ListToggles movieId={movie.id} lists={myLists} />
         </div>
       </div>
 
@@ -142,6 +145,21 @@ async function getMyVerdict(movieId: number): Promise<Verdict | null> {
     .eq("movie_id", movieId)
     .maybeSingle();
   return (data?.verdict as Verdict | undefined) ?? null;
+}
+
+// The user's lists (RLS returns only lists they're in), each marked with
+// whether this movie is already on it.
+async function getMyLists(movieId: number): Promise<ListOption[]> {
+  const supabase = await createClient();
+  const [lists, items] = await Promise.all([
+    supabase.from("lists").select("id, name").order("created_at"),
+    supabase.from("list_items").select("list_id").eq("movie_id", movieId),
+  ]);
+  if (lists.error) throw lists.error;
+  if (items.error) throw items.error;
+
+  const withMovie = new Set(items.data.map((i) => i.list_id));
+  return lists.data.map((l) => ({ id: l.id, name: l.name, hasMovie: withMovie.has(l.id) }));
 }
 
 // "free" and "ads" can list the same service; keep the first of each.

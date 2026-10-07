@@ -51,3 +51,50 @@ export async function setRating(movieId: number, verdict: Verdict | null): Promi
   refresh(); // re-render the page with the saved rating
   return { error: null };
 }
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Put this movie on one of the user's lists (on = true) or take it off.
+export async function setMovieOnList(
+  listId: string,
+  movieId: number,
+  on: boolean,
+): Promise<RatingResult> {
+  if (!UUID.test(listId)) return { error: "That list doesn't look right." };
+  if (!Number.isSafeInteger(movieId) || movieId <= 0) {
+    return { error: "That movie doesn't look right." };
+  }
+  if (typeof on !== "boolean") return { error: "That request doesn't look right." };
+
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getClaims();
+  const userId = auth?.claims.sub;
+  if (!userId) {
+    return { error: "Your session ended. Sign in again to change your lists." };
+  }
+
+  if (on) {
+    // list_items.movie_id must point at a cached movie.
+    if (!(await ensureMovieCached(movieId))) {
+      return { error: "That movie couldn't be found." };
+    }
+    // RLS: only members can add, and only as themselves.
+    const { error } = await supabase
+      .from("list_items")
+      .upsert(
+        { list_id: listId, movie_id: movieId, added_by: userId },
+        { onConflict: "list_id,movie_id", ignoreDuplicates: true }, // already on it: fine
+      );
+    if (error) return { error: "Couldn't add it to that list. Try again." };
+  } else {
+    const { error } = await supabase
+      .from("list_items")
+      .delete()
+      .eq("list_id", listId)
+      .eq("movie_id", movieId);
+    if (error) return { error: "Couldn't take it off that list. Try again." };
+  }
+
+  refresh(); // re-render with the lists' new contents
+  return { error: null };
+}
