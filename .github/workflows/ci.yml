@@ -3,7 +3,7 @@
 #   pull request:  app + database checks (no deploy)
 #   push to main:  app + database checks -> migrate production DB -> deploy app
 #
-#  - app:      the app lints, type-checks and builds from a clean checkout
+#  - app:      the app lints, type-checks, passes its unit tests and builds from a clean checkout
 #  - database: all migrations build a fresh database, and every RLS test passes
 #  - migrate:  apply new migrations to production (only if both checks passed)
 #  - deploy:   deploy the app to Vercel production (only after migrate succeeded)
@@ -54,6 +54,9 @@ jobs:
 
       - name: Type-check
         run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
 
       - name: Build
         run: npm run build
