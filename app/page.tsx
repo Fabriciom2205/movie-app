@@ -2,18 +2,30 @@ import Form from "next/form";
 import Image from "next/image";
 import Link from "next/link";
 import { signOut } from "@/app/login/actions";
+import { getDisplayNames } from "@/lib/profiles";
 import { createClient } from "@/lib/supabase/server";
 import { releaseYear, searchMovies, tmdbImageUrl } from "@/lib/tmdb";
+import { PickerForm, type PickerList } from "./picker-form";
+
+type ListRow = { id: string; name: string; list_members: { user_id: string }[] };
 
 export default async function Home(props: PageProps<"/">) {
   const { q } = await props.searchParams;
   const query = typeof q === "string" ? q.trim() : "";
 
   const supabase = await createClient();
-  const [{ data: auth }, results] = await Promise.all([
+  const [{ data: auth }, results, lists] = await Promise.all([
     supabase.auth.getClaims(),
     query ? searchMovies(query) : Promise.resolve([]),
+    // Newest first, so the picker defaults to the list you made last.
+    supabase
+      .from("lists")
+      .select("id, name, list_members(user_id)")
+      .order("created_at", { ascending: false })
+      .overrideTypes<ListRow[], { merge: false }>(),
   ]);
+  if (lists.error) throw lists.error;
+  const pickerLists = await toPickerLists(lists.data, auth?.claims.sub);
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-10">
@@ -36,6 +48,12 @@ export default async function Home(props: PageProps<"/">) {
         </div>
       </div>
 
+      <section className="mb-10 rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
+        <h2 className="mb-4 text-xl font-semibold">What are we watching tonight?</h2>
+        <PickerForm lists={pickerLists} />
+      </section>
+
+      <h2 className="mb-2 text-sm font-medium text-zinc-500">Or look up a movie</h2>
       {/* action="" submits to this same page as /?q=... */}
       <Form action="" className="mb-8 flex gap-2">
         <input
@@ -43,7 +61,7 @@ export default async function Home(props: PageProps<"/">) {
           name="q"
           defaultValue={query}
           placeholder="Search for a movie…"
-          autoFocus
+          aria-label="Search for a movie"
           className="flex-1 rounded-md border border-zinc-300 bg-transparent px-3 py-2 dark:border-zinc-700"
         />
         <button
@@ -94,4 +112,16 @@ export default async function Home(props: PageProps<"/">) {
       </ul>
     </main>
   );
+}
+
+// Lists with their members' names, you first, for the picker form.
+async function toPickerLists(lists: ListRow[], userId: string | undefined): Promise<PickerList[]> {
+  const names = await getDisplayNames([...new Set(lists.flatMap((l) => l.list_members.map((m) => m.user_id)))]);
+  return lists.map((l) => ({
+    id: l.id,
+    name: l.name,
+    members: l.list_members
+      .map((m) => ({ id: m.user_id, name: names.get(m.user_id) ?? "Someone", isMe: m.user_id === userId }))
+      .sort((a, b) => Number(b.isMe) - Number(a.isMe)),
+  }));
 }
