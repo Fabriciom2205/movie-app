@@ -50,7 +50,14 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
 
   const { name, created_by: creatorId } = list.data;
   const isCreator = creatorId === userId;
-  const names = await getDisplayNames(members.data.map((m) => m.user_id));
+  const memberIds = members.data.map((m) => m.user_id);
+  const [names, seenBy] = await Promise.all([
+    getDisplayNames(memberIds),
+    getSeenBy(
+      items.data.map((i) => i.movie_id),
+      memberIds,
+    ),
+  ]);
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-10">
@@ -102,6 +109,9 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
                     <div className="min-w-0">
                       <p className="truncate font-medium">{movie.title}</p>
                       {details && <p className="text-sm text-zinc-500">{details}</p>}
+                      <p className="text-sm text-zinc-500">
+                        {describeSeenBy(seenBy.get(item.movie_id) ?? [], names, userId)}
+                      </p>
                     </div>
                   </Link>
                   <form action={removeFromList.bind(null, id, item.movie_id)}>
@@ -184,4 +194,48 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
       </section>
     </main>
   );
+}
+
+type Verdict = "up" | "down";
+
+// Which list members have rated (= seen) each movie. RLS already limits
+// ratings to yours and your list-mates'; filtering by this list's members also
+// leaves out people you only share a different list with.
+async function getSeenBy(
+  movieIds: number[],
+  memberIds: string[],
+): Promise<Map<number, { userId: string; verdict: Verdict }[]>> {
+  const seenBy = new Map<number, { userId: string; verdict: Verdict }[]>();
+  if (movieIds.length === 0) return seenBy;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("ratings")
+    .select("user_id, movie_id, verdict")
+    .in("movie_id", movieIds)
+    .in("user_id", memberIds);
+  if (error) throw error;
+
+  for (const r of data) {
+    const list = seenBy.get(r.movie_id) ?? [];
+    list.push({ userId: r.user_id, verdict: r.verdict as Verdict });
+    seenBy.set(r.movie_id, list);
+  }
+  return seenBy;
+}
+
+// "Seen by you (liked it), Alex (not for me)", or "Not seen yet". You first.
+function describeSeenBy(
+  ratings: { userId: string; verdict: Verdict }[],
+  names: Map<string, string>,
+  userId: string,
+): string {
+  if (ratings.length === 0) return "Not seen yet";
+  const parts = [...ratings]
+    .sort((a, b) => Number(b.userId === userId) - Number(a.userId === userId))
+    .map((r) => {
+      const who = r.userId === userId ? "you" : (names.get(r.userId) ?? "someone");
+      return `${who} (${r.verdict === "up" ? "liked it" : "not for me"})`;
+    });
+  return `Seen by ${parts.join(", ")}`;
 }

@@ -38,7 +38,8 @@ export default async function SettingsPage() {
   if (!userId) redirect("/login");
 
   // Filter by user_id: list-mates' services are readable too.
-  const [settings, services, regions] = await Promise.all([
+  const [profile, settings, services, regions] = await Promise.all([
+    supabase.from("profiles").select("display_name").eq("user_id", userId).maybeSingle(),
     supabase.from("user_settings").select("region").eq("user_id", userId).maybeSingle(),
     supabase.from("user_services").select("provider_id").eq("user_id", userId),
     getRegions(),
@@ -46,6 +47,7 @@ export default async function SettingsPage() {
   // Fail loudly: showing "no services" by mistake and then saving would wipe them.
   if (settings.error) throw settings.error;
   if (services.error) throw services.error;
+  if (profile.error) throw profile.error;
 
   const region = settings.data?.region ?? "US";
   const providers = await getProviderList(region); // needs the region, so it waits
@@ -64,6 +66,7 @@ export default async function SettingsPage() {
       <h1 className="mt-6 text-3xl font-semibold tracking-tight">Settings</h1>
 
       <SettingsForm
+        displayName={profile.data?.display_name ?? ""}
         region={region}
         regions={regions.map((r) => ({ code: r.iso_3166_1, name: r.english_name }))}
         providers={shortlistFirst(providers, shortlist).map(toOption)}
