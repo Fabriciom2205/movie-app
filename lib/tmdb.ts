@@ -47,6 +47,20 @@ type WatchProvidersResponse = {
   results: Record<string, WatchProviders>; // keyed by country code, e.g. "US"
 };
 
+// From the provider list endpoint: every service TMDB knows in a region.
+type ProviderListResponse = {
+  results: WatchProvider[];
+};
+
+export type Region = {
+  iso_3166_1: string; // "US"
+  english_name: string; // "United States of America"
+};
+
+type RegionsResponse = {
+  results: Region[];
+};
+
 export class TmdbError extends Error {
   constructor(
     public status: number,
@@ -119,6 +133,24 @@ export async function getWatchProviders(
     if (err instanceof TmdbError && err.status === 404) return null;
     throw err;
   }
+}
+
+// All streaming services in a region (~300 in the US), sorted by TMDB's
+// display_priority. That ranking is noisy, so callers pick their own shortlist.
+export async function getProviderList(region: string): Promise<WatchProvider[]> {
+  const data = await tmdbFetch<ProviderListResponse>("/watch/providers/movie", {
+    watch_region: region,
+    language: "en-US",
+  });
+  return data.results.sort((a, b) => a.display_priority - b.display_priority);
+}
+
+// Countries TMDB has availability data for, sorted by name.
+export async function getRegions(): Promise<Region[]> {
+  const data = await tmdbFetch<RegionsResponse>("/watch/providers/regions", {
+    language: "en-US",
+  });
+  return data.results.sort((a, b) => a.english_name.localeCompare(b.english_name));
 }
 
 // TMDB serves pre-sized images. w92 suits logos, w185 thumbnails, w342+ detail posters.

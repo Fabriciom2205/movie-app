@@ -18,13 +18,18 @@ export default async function Home(props: PageProps<"/">) {
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-10">
       <div className="mb-6 flex items-baseline justify-between gap-4">
-        <h1 className="text-3xl font-semibold tracking-tight">Movie Night</h1>
-        <form action={signOut} className="flex items-baseline gap-3 text-sm text-zinc-500">
+        <h1 className="shrink-0 text-3xl font-semibold tracking-tight">Movie Night</h1>
+        <div className="flex min-w-0 items-baseline gap-3 text-sm text-zinc-500">
           <span className="truncate">{auth?.claims.email}</span>
-          <button type="submit" className="hover:underline">
-            Sign out
-          </button>
-        </form>
+          <Link href="/settings" className="shrink-0 hover:underline">
+            Settings
+          </Link>
+          <form action={signOut} className="shrink-0">
+            <button type="submit" className="whitespace-nowrap hover:underline">
+              Sign out
+            </button>
+          </form>
+        </div>
       </div>
 
       {/* action="" submits to this same page as /?q=... */}
