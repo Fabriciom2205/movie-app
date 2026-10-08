@@ -5,7 +5,7 @@ import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { sectionLabel, toggleButtonBase } from "@/app/ui";
 import { setRating, type Verdict } from "./actions";
 
-// Selected colors carry the meaning, as on /pick: liked = mint, not for me =
+// Selected colors carry the meaning, as on /pick: liked = sage, not for me =
 // peach, each with its dark partner as the outline. The thumb also fills in,
 // so the choice shows by shape too, not only by color.
 const OPTIONS = [
@@ -13,7 +13,7 @@ const OPTIONS = [
     value: "up",
     label: "Liked it",
     Icon: ThumbsUp,
-    selected: "aria-pressed:border-on-mint aria-pressed:bg-mint aria-pressed:text-on-mint",
+    selected: "aria-pressed:border-on-sage aria-pressed:bg-sage aria-pressed:text-on-sage",
   },
   {
     value: "down",

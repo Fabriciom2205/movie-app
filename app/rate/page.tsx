@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft, Sparkles } from "lucide-react";
-import { quietButton, tag } from "@/app/ui";
+import { pagePanel, quietButton, tag } from "@/app/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getWellKnownMovies, releaseYear, tmdbImageUrl } from "@/lib/tmdb";
 import { RateGrid, type RateMovie } from "./rate-grid";
@@ -45,7 +45,7 @@ export default async function RatePage(props: PageProps<"/rate">) {
   const moreUrl = page + 2 <= MAX_PAGE ? `/rate?page=${page + 2}` : null;
 
   return (
-    <main id="content" className="mx-auto w-full max-w-4xl px-4 py-8 sm:py-10">
+    <main id="content" className={`${pagePanel} max-w-4xl`}>
       <Link href="/" className={`${quietButton} -ml-3`}>
         <ArrowLeft aria-hidden="true" className="size-4" />
         Done
@@ -58,7 +58,7 @@ export default async function RatePage(props: PageProps<"/rate">) {
         recommended to you.
       </p>
       {/* Lilac + sparkles = your taste, as on the home page. */}
-      <p className={`mt-4 ${tag} bg-lilac text-on-lilac`}>
+      <p className={`mt-4 ${tag} bg-pink text-on-pink`}>
         <Sparkles aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
         {ratedCount === 0
           ? "No ratings yet"

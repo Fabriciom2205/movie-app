@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Fredoka, Nunito } from "next/font/google";
+import Image from "next/image";
 import { secondaryButton } from "@/app/ui";
+import moonlitRoom from "./moonlit-room.webp";
 import "./globals.css";
 
 // The design system's two fonts: Fredoka for headings, Nunito for the rest.
@@ -22,11 +24,11 @@ export const metadata: Metadata = {
   description: "Pick one movie to watch tonight.",
 };
 
-// Always light: form controls and scrollbars stay light, and phones tint
-// their browser bar to match the page (the same color as --color-page).
+// The content panels are light, so form controls stay light. Phones tint their
+// browser bar to match the night room behind them (the same as --color-night).
 export const viewport: Viewport = {
   colorScheme: "light",
-  themeColor: "#EEF5FF",
+  themeColor: "#241F42",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -45,9 +47,30 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
-        <div className="flex-1">{children}</div>
-        <footer className="px-4 py-6 text-center text-xs text-ink-muted">
-          This product uses the TMDB API but is not endorsed or certified by TMDB.
+        {/* The room art, fixed behind every page (decoration only). Its source
+            is design-system/movie-night/moonlit-room.svg; MASTER.md says how
+            it's laid out. Phones: a band across the top showing the window
+            and moon, fading into the night color. Wider: the whole room. */}
+        <div aria-hidden="true" className="fixed inset-x-0 top-0 -z-10 h-[45svh] sm:inset-0 sm:h-auto">
+          <Image
+            src={moonlitRoom}
+            alt=""
+            fill
+            loading="eager"
+            placeholder="blur"
+            sizes="(max-width: 639px) 200vw, 100vw"
+            className="object-cover object-[8%_50%] lg:object-center"
+          />
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-linear-to-b from-transparent to-night sm:hidden" />
+        </div>
+        {/* On phones the content starts lower, so the moon peeks out above it. */}
+        <div className="flex-1 px-2 pt-36 sm:px-6 sm:pt-10">{children}</div>
+        <footer className="px-4 py-6 text-center text-xs">
+          <p className="inline-block rounded-field bg-night/85 px-3 py-1.5 text-on-night">
+            This product uses the TMDB API but is not endorsed or certified by TMDB.
+            <br />
+            Room illustration inspired by Lofi Night by redtreacle.
+          </p>
         </footer>
       </body>
     </html>

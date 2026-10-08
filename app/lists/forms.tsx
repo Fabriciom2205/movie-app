@@ -129,7 +129,7 @@ export function ConfirmButton({
   );
 }
 
-// Under each form: the error in red, or what worked as a mint tag. Always in
+// Under each form: the error in red, or what worked as a sage tag. Always in
 // the page so screen readers hear the message when it appears.
 function Status({ state }: { state: FormState }) {
   return (
@@ -138,7 +138,7 @@ function Status({ state }: { state: FormState }) {
         <p className="mt-2 text-sm text-danger">{state.error}</p>
       ) : (
         state.message && (
-          <p className={`mt-2 ${tag} bg-mint text-on-mint`}>
+          <p className={`mt-2 ${tag} bg-sage text-on-sage`}>
             <CircleCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
             {state.message}
           </p>

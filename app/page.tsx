@@ -1,9 +1,9 @@
 import Form from "next/form";
 import Image from "next/image";
 import Link from "next/link";
-import { Film, ListVideo, LogOut, Popcorn, Search, Settings, Sparkles } from "lucide-react";
+import { Film, ListVideo, LogOut, MoonStar, Search, Settings, Sparkles } from "lucide-react";
 import { signOut } from "@/app/login/actions";
-import { fieldSecondaryButton } from "@/app/ui";
+import { fieldSecondaryButton, pagePanel } from "@/app/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getMovieGenres, releaseYear, searchMovies, tmdbImageUrl } from "@/lib/tmdb";
 import { RecommendForm, type FormPerson } from "./recommend-form";
@@ -40,11 +40,11 @@ export default async function Home(props: PageProps<"/">) {
   const askedGenres = ([] as string[]).concat(params.genre ?? []).map(Number);
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-4 py-8 sm:py-10">
+    <main className={`${pagePanel} max-w-2xl`}>
       <header className="mb-6 flex items-center justify-between gap-3">
         <h1 className="flex shrink-0 items-center gap-2.5 text-3xl font-semibold tracking-tight">
           <span className="grid size-10 place-items-center rounded-full bg-primary text-on-primary">
-            <Popcorn aria-hidden="true" className="size-5" />
+            <MoonStar aria-hidden="true" className="size-5" />
           </span>
           Movie Night
         </h1>
@@ -85,7 +85,7 @@ export default async function Home(props: PageProps<"/">) {
             screen. Lilac + sparkles = your taste (the same as "Because you
             liked..." on /pick). */}
         {ratingCount < FEW_RATINGS ? (
-          <p className="mt-5 flex items-start gap-2.5 rounded-field bg-lilac px-4 py-3 text-sm text-on-lilac">
+          <p className="mt-5 flex items-start gap-2.5 rounded-field bg-pink px-4 py-3 text-sm text-on-pink">
             <Sparkles aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
             <span>
               <Link href="/rate" className="font-bold underline underline-offset-2">

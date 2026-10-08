@@ -5,25 +5,28 @@
    Tailwind turns each one into utilities: --color-page -> bg-page, text-page,
    border-page...; --radius-card -> rounded-card; --shadow-soft -> shadow-soft. */
 @theme {
-  /* Surfaces and text */
-  --color-page: #EEF5FF;
-  --color-card: #FFFFFF;
-  --color-line: #C7DBFF;
-  --color-ink: #1E293B;
-  --color-ink-muted: #5B6B85;
+  /* Surfaces and text. The room art (app/moonlit-room.webp) is the backdrop;
+     page is the panel each page's content sits on, cards sit on that. */
+  --color-night: #241F42;
+  --color-on-night: #EDE6FA;
+  --color-page: #F5EDF5;
+  --color-card: #FFF8F6;
+  --color-line: #E5D5EA;
+  --color-ink: #2E2433;
+  --color-ink-muted: #6A5C72;
 
-  /* Blue: the one main action per screen, focus rings, selected pills */
-  --color-primary: #2563EB;
-  --color-primary-hover: #1D4ED8;
+  /* Lavender: the one main action per screen, focus rings, selected pills */
+  --color-primary: #7A58A8;
+  --color-primary-hover: #6A4896;
   --color-on-primary: #FFFFFF;
-  --color-soft: #DBEAFE;
-  --color-on-soft: #1E40AF;
+  --color-soft: #EBDDF3;
+  --color-on-soft: #573A80;
 
   /* Pastel chips, each with the text color that goes on it */
-  --color-mint: #D1FAE5;
-  --color-on-mint: #065F46;
-  --color-lilac: #EDE9FE;
-  --color-on-lilac: #5B21B6;
+  --color-sage: #E2EEDF;
+  --color-on-sage: #35573A;
+  --color-pink: #FCE4EC;
+  --color-on-pink: #8A2F55;
   --color-peach: #FFE4D6;
   --color-on-peach: #9A3412;
 
@@ -37,7 +40,7 @@
   --radius-field: 16px;
   --radius-thumb: 12px;
 
-  --shadow-soft: 0 6px 20px rgb(37 99 235 / 0.10);
+  --shadow-soft: 0 6px 20px rgb(122 88 168 / 0.14);
 }
 
 /* app/layout.tsx loads the fonts with next/font, which defines
@@ -54,7 +57,7 @@
   }
 
   body {
-    background-color: var(--color-page);
+    background-color: var(--color-night);
     color: var(--color-ink);
     font-family: var(--font-body);
     line-height: 1.6;

@@ -32,7 +32,7 @@ export function PickRating({ movieId, title }: { movieId: number; title: string 
       {/* Always in the page so screen readers hear the message when it appears. */}
       <div aria-live="polite">
         {saved && !isPending && (
-          <p className={`mb-4 ${tag} bg-mint text-on-mint`}>
+          <p className={`mb-4 ${tag} bg-sage text-on-sage`}>
             <CircleCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
             {saved.verdict === "up"
               ? `Saved: you liked ${saved.title}.`
