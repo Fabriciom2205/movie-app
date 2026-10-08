@@ -10,6 +10,7 @@ import {
 } from "@/lib/tmdb";
 import {
   findFirstAvailable,
+  luckFor,
   rankRecommendations,
   type CandidateMovie,
   type Reason,
@@ -24,6 +25,7 @@ export type RecommendRequest = {
   watcherIds: string[]; // you and/or people you share a list with; empty = just you
   genreIds: number[]; // tonight's mood chips; empty = any genre
   skip: number[]; // movies already shown or ruled out ("Pick another")
+  seed: number; // from the URL: same seed, same luck, same pick
 };
 
 export type Person = { id: string; name: string; isMe: boolean };
@@ -146,7 +148,7 @@ export async function recommendMovie(userId: string, req: RecommendRequest): Pro
     ),
     genreFilter,
     skip: new Set(req.skip),
-    random: Math.random,
+    luck: (movieId) => luckFor(req.seed, movieId),
   });
 
   const found = await findFirstAvailable(ranked, {

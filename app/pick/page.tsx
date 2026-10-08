@@ -17,7 +17,8 @@ const REASON_ICONS: Record<ReasonLine["kind"], LucideIcon> = {
   wellRated: Star,
 };
 
-// /pick?watch=<user id>&watch=<user id>&genre=35&genre=53&skip=603,550
+// /pick?watch=<user id>&watch=<user id>&genre=35&genre=53&skip=603,550&seed=48213
+// (proxy.ts adds a seed when there isn't one)
 export default async function PickPage(props: PageProps<"/pick">) {
   const req = parseRequest(await props.searchParams);
 
@@ -31,8 +32,9 @@ export default async function PickPage(props: PageProps<"/pick">) {
   const forWhom =
     result.watchers.length > 1 ? `for ${joinNames(result.watchers.map((w) => (w.isMe ? "you" : w.name)))}` : "";
   const anotherUrl = pickUrl({ ...req, skip: result.nextSkip });
-  const startOverUrl = req.skip.length > 0 ? pickUrl({ ...req, skip: [] }) : null;
-  const changeUrl = pickUrl({ ...req, skip: [] }).replace("/pick", "/"); // same choices, on the home form
+  // No seed: proxy.ts gives "Start over" a fresh one, so it's a new shuffle.
+  const startOverUrl = req.skip.length > 0 ? pickUrl({ ...req, skip: [], seed: null }) : null;
+  const changeUrl = pickUrl({ ...req, skip: [], seed: null }).replace("/pick", "/"); // same choices, on the home form
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10">
@@ -227,14 +229,16 @@ function parseRequest(params: SearchParams): RecommendRequest {
     watcherIds: all("watch").filter((id) => UUID.test(id)),
     genreIds: [...new Set(positiveInts(all("genre")))].slice(0, MAX_GENRES),
     skip: positiveInts(typeof params.skip === "string" ? params.skip.split(",") : []).slice(-MAX_SKIP),
+    seed: positiveInts(all("seed"))[0] ?? 1, // proxy.ts makes sure there is one
   };
 }
 
-function pickUrl(req: RecommendRequest): string {
+function pickUrl(req: Omit<RecommendRequest, "seed"> & { seed: number | null }): string {
   const params = new URLSearchParams();
   for (const id of req.watcherIds) params.append("watch", id);
   for (const id of req.genreIds) params.append("genre", String(id));
   if (req.skip.length) params.set("skip", req.skip.join(","));
+  if (req.seed !== null) params.set("seed", String(req.seed));
   const query = params.toString();
   return query ? `/pick?${query}` : "/pick";
 }
