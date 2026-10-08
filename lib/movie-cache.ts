@@ -18,6 +18,7 @@ export async function ensureMovieCached(movieId: number): Promise<boolean> {
     poster_path: movie.poster_path,
     overview: movie.overview || null,
     runtime: movie.runtime || null, // TMDB uses 0 for unknown; our check needs > 0
+    genre_ids: movie.genres.map((g) => g.id), // lets the recommender learn your genres
     cached_at: new Date().toISOString(),
   });
   if (error) throw new Error(`Couldn't cache movie ${movieId}: ${error.message}`);
