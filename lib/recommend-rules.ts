@@ -47,10 +47,12 @@ export type RankedMovie = {
   dislikedBy: string[]; // non-watchers who said "not for me"
 };
 
-// How much each signal counts. Personal signals outweigh general quality, and
-// the random part can reorder close calls but never beat a friend's like.
+// How much each signal counts. Personal signals outweigh general quality. The
+// random part is big enough that the first pick varies from night to night
+// (it can lift a movie past one with an extra "because you liked"), but a
+// friend's like still always wins over luck plus the best rating.
 export const WEIGHTS = {
-  friendLiked: 6, // per non-watcher who liked it
+  friendLiked: 8, // per non-watcher who liked it
   friendDisliked: -4, // per non-watcher who said "not for me"
   seed: 3, // per liked movie that TMDB says it's like...
   maxSeeds: 3, // ...counting at most this many
@@ -58,7 +60,7 @@ export const WEIGHTS = {
   genreAffinity: 3, // at most this much, up or down, from genres you rate well or badly
   quality: 1.5, // per TMDB point above (or below) 6.5...
   maxQuality: 3, // ...capped at this much either way
-  noise: 2, // random extra between 0 and this
+  noise: 4, // random extra between 0 and this
 };
 const NEUTRAL_RATING = 6.5;
 
