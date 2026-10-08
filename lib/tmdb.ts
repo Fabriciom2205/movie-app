@@ -184,7 +184,7 @@ export async function getRegions(): Promise<Region[]> {
 }
 
 // Movies streaming on any of these services in a region (subscription, free
-// or free with ads, the same rule the picker uses), optionally in any of these
+// or free with ads, the same rule findFirstAvailable uses), optionally in any of these
 // genres. Most popular first; very obscure titles are left out.
 export async function discoverMovies(options: {
   region: string;
