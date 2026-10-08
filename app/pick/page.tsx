@@ -43,11 +43,11 @@ export default async function PickPage(props: PageProps<"/pick">) {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10">
-      <Link href={changeUrl} className="text-sm text-zinc-500 hover:underline">
+      <Link href={changeUrl} className="text-sm text-ink-muted hover:underline">
         ← Change what you&rsquo;re in the mood for
       </Link>
 
-      <p className="mt-6 text-sm font-medium text-zinc-500">Tonight&rsquo;s pick {forWhom}</p>
+      <p className="mt-6 text-sm font-medium text-ink-muted">Tonight&rsquo;s pick {forWhom}</p>
 
       {pick ? (
         <div className="mt-3 flex flex-col gap-6 sm:flex-row">
@@ -73,7 +73,7 @@ export default async function PickPage(props: PageProps<"/pick">) {
                 {pick.movie.title}
               </Link>
               {pick.movie.release_date && (
-                <span className="ml-2 font-normal text-zinc-500">({releaseYear(pick.movie.release_date)})</span>
+                <span className="ml-2 font-normal text-ink-muted">({releaseYear(pick.movie.release_date)})</span>
               )}
             </h1>
             <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
@@ -88,13 +88,13 @@ export default async function PickPage(props: PageProps<"/pick">) {
                   const Icon = REASON_ICONS[reason.kind];
                   return (
                     <li key={reason.kind} className="flex items-start gap-2 font-medium">
-                      <Icon aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-zinc-500" />
+                      <Icon aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-ink-muted" />
                       {reason.text}
                     </li>
                   );
                 })}
                 {pick.dislikedBy.map((name) => (
-                  <li key={name} className="flex items-start gap-2 text-zinc-500">
+                  <li key={name} className="flex items-start gap-2 text-ink-muted">
                     <ThumbsDown aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0" />
                     {name} wasn&rsquo;t into it
                   </li>
@@ -107,7 +107,7 @@ export default async function PickPage(props: PageProps<"/pick">) {
             )}
 
             <div className="mt-5">
-              <p className="text-sm font-medium text-zinc-500">Stream it on</p>
+              <p className="text-sm font-medium text-ink-muted">Stream it on</p>
               <ul className="mt-2 flex flex-wrap gap-3">
                 {pick.services.map((s) => (
                   <li key={s.provider_id} className="flex items-center gap-2">
@@ -145,7 +145,7 @@ export default async function PickPage(props: PageProps<"/pick">) {
               )}
             </div>
             {!result.moreLeft && (
-              <p className="mt-3 text-sm text-zinc-500">That&rsquo;s the last one we found for tonight.</p>
+              <p className="mt-3 text-sm text-ink-muted">That&rsquo;s the last one we found for tonight.</p>
             )}
           </div>
         </div>
@@ -160,7 +160,7 @@ export default async function PickPage(props: PageProps<"/pick">) {
       )}
 
       {/* Required attribution: TMDB's availability data comes from JustWatch. */}
-      <p className="mt-12 text-xs text-zinc-500">Availability data provided by JustWatch.</p>
+      <p className="mt-12 text-xs text-ink-muted">Availability data provided by JustWatch.</p>
     </main>
   );
 }
@@ -177,7 +177,7 @@ function ServicesHint({ missing, watchers }: { missing: Person[]; watchers: Pers
   const includesMe = missing.some((p) => p.isMe);
 
   return (
-    <p className="mt-4 text-sm text-zinc-500">
+    <p className="mt-4 text-sm text-ink-muted">
       {subject.charAt(0).toUpperCase() + subject.slice(1)} {verb} picked streaming services yet, so this pick
       only uses {basis} services.
       {includesMe && (

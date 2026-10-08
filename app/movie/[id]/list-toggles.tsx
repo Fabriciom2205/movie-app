@@ -37,7 +37,7 @@ export function ListToggles({ movieId, lists }: { movieId: number; lists: ListOp
       </p>
 
       {lists.length === 0 ? (
-        <p className="mt-2 text-sm text-zinc-500">
+        <p className="mt-2 text-sm text-ink-muted">
           No lists yet.{" "}
           <Link href="/lists" className="underline">
             Make one
@@ -74,7 +74,7 @@ export function ListToggles({ movieId, lists }: { movieId: number; lists: ListOp
       )}
 
       {error && (
-        <p role="alert" className="mt-2 text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="mt-2 text-sm text-danger dark:text-red-400">
           {error}
         </p>
       )}

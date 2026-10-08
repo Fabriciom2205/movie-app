@@ -44,7 +44,7 @@ export default async function RatePage(props: PageProps<"/rate">) {
 
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-10">
-      <Link href="/" className="text-sm text-zinc-500 hover:underline">
+      <Link href="/" className="text-sm text-ink-muted hover:underline">
         ← Done
       </Link>
 
@@ -53,7 +53,7 @@ export default async function RatePage(props: PageProps<"/rate">) {
         Every rating teaches the recommender what you like, and movies you&rsquo;ve rated won&rsquo;t be
         recommended to you. Skip anything you haven&rsquo;t seen.
       </p>
-      <p className="mt-2 text-sm text-zinc-500">
+      <p className="mt-2 text-sm text-ink-muted">
         {ratedCount === 0
           ? "No ratings yet."
           : `You've rated ${ratedCount} ${ratedCount === 1 ? "movie" : "movies"} so far.`}

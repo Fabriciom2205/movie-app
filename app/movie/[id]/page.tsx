@@ -36,7 +36,7 @@ export default async function MoviePage(props: PageProps<"/movie/[id]">) {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10">
-      <Link href="/" className="text-sm text-zinc-500 hover:underline">
+      <Link href="/" className="text-sm text-ink-muted hover:underline">
         ← Search
       </Link>
 
@@ -57,9 +57,9 @@ export default async function MoviePage(props: PageProps<"/movie/[id]">) {
         <div className="min-w-0">
           <h1 className="text-3xl font-semibold tracking-tight">
             {movie.title}
-            {year && <span className="ml-2 font-normal text-zinc-500">({year})</span>}
+            {year && <span className="ml-2 font-normal text-ink-muted">({year})</span>}
           </h1>
-          {movie.tagline && <p className="mt-1 italic text-zinc-500">{movie.tagline}</p>}
+          {movie.tagline && <p className="mt-1 italic text-ink-muted">{movie.tagline}</p>}
 
           <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
             {[runtime, movie.genres.map((g) => g.name).join(", ")]
@@ -85,13 +85,13 @@ export default async function MoviePage(props: PageProps<"/movie/[id]">) {
             <ProviderRow label="Buy" providers={providers?.buy} />
           </div>
         ) : (
-          <p className="text-zinc-500">
+          <p className="text-ink-muted">
             Not available to stream, rent, or buy in the US right now.
           </p>
         )}
 
         {/* Required attribution: TMDB's availability data comes from JustWatch. */}
-        <p className="mt-6 text-xs text-zinc-500">
+        <p className="mt-6 text-xs text-ink-muted">
           Availability data provided by JustWatch.
           {providers?.link && (
             <>
@@ -111,7 +111,7 @@ function ProviderRow({ label, providers }: { label: string; providers?: WatchPro
   if (!providers?.length) return null;
   return (
     <div>
-      <h3 className="mb-2 text-sm font-medium text-zinc-500">{label}</h3>
+      <h3 className="mb-2 text-sm font-medium text-ink-muted">{label}</h3>
       <ul className="flex flex-wrap gap-3">
         {providers.map((p) => (
           <li key={p.provider_id} title={p.provider_name}>

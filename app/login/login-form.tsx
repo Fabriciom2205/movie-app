@@ -31,7 +31,7 @@ export function LoginForm() {
         />
       </label>
 
-      <p aria-live="polite" className="min-h-5 text-sm text-red-600 dark:text-red-400">
+      <p aria-live="polite" className="min-h-5 text-sm text-danger dark:text-red-400">
         {state.error}
       </p>
 

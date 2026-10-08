@@ -8,7 +8,7 @@ export default function ListsError({ retry }: { error: Error & { digest?: string
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-10">
       <h1 className="text-2xl font-semibold">Something went wrong</h1>
-      <p className="mt-2 text-zinc-500">That didn&rsquo;t work. It may be a hiccup on our side.</p>
+      <p className="mt-2 text-ink-muted">That didn&rsquo;t work. It may be a hiccup on our side.</p>
       <div className="mt-6 flex gap-4">
         <button
           type="button"
@@ -17,7 +17,7 @@ export default function ListsError({ retry }: { error: Error & { digest?: string
         >
           Try again
         </button>
-        <Link href="/lists" className="self-center text-sm text-zinc-500 hover:underline">
+        <Link href="/lists" className="self-center text-sm text-ink-muted hover:underline">
           Back to your lists
         </Link>
       </div>

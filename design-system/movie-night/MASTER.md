@@ -57,7 +57,9 @@ Rules:
 | `--font-body` | **Nunito** (variable, 400 / 600 / 700) | Everything else |
 
 Loaded with `next/font/google` in `app/layout.tsx` (self-hosted at build time: no
-request to Google from visitors' browsers). Sizes (Tailwind): page title
+request to Google from visitors' browsers). `globals.css` gives `h1`-`h3` Fredoka
+and the body Nunito, so headings need no font class; anything else that should
+look like a heading (a main button's label) uses `font-heading`. Sizes (Tailwind): page title
 `text-3xl`, movie title `text-3xl` on /pick and the movie page, section heading
 `text-xl`, body `text-base`, metadata `text-sm`. Line height 1.6 for body
 text; titles tight (`tracking-tight`). Sentence case everywhere.
@@ -123,10 +125,19 @@ states are an invitation with one clear action.
 - Tailwind v4: tokens live in `@theme { --color-page: #EEF5FF; ... }` in
   `app/globals.css`, which makes utilities like `bg-page`, `text-ink`,
   `border-line`, `rounded-card`, `font-heading`.
-- Always light: set `color-scheme: light`, remove the `prefers-color-scheme: dark`
-  block and every `dark:` class during the design pass.
-- Known leftover to fix: `globals.css` sets `body { font-family: Arial }`, which
-  overrides the fonts loaded in `layout.tsx`.
+- Always light: `color-scheme: light` in `globals.css` and in the `viewport`
+  export of `app/layout.tsx` (with `themeColor` = `page`, so phones tint their
+  browser bar to match).
+- Temporary, until every page is redesigned (2026-10-08, design pass step 1):
+  - `globals.css` ties `dark:` to a `.dark` class nothing has, which switches
+    off the old `dark:` classes still in pages (otherwise a phone in dark mode
+    would get light text on the light page). Each page's PR deletes its
+    `dark:` classes; the last one deletes that line.
+  - `foreground` / `background` are kept as aliases of `ink` / `card` for the
+    old `bg-foreground text-background` buttons. Removed with the last one.
+  - The old `text-zinc-500` and `text-red-600` were swapped for `ink-muted` and
+    `danger` everywhere at once, since both fail text contrast on the sky page
+    (4.40:1). Other `zinc-*` classes pass and wait for their page's PR.
 - Credit lines (TMDB footer, "Availability data provided by JustWatch") stay
   visible on every page that shows that data.
 

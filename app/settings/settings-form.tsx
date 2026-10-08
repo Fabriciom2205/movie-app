@@ -63,7 +63,7 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
     <form action={formAction} onSubmit={handleSubmit} className="mt-8 flex flex-col gap-10">
       <section>
         <h2 className="text-xl font-semibold">Your name</h2>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm text-ink-muted">
           Shown to the people you share a list with.
         </p>
         <input
@@ -80,7 +80,7 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
 
       <section>
         <h2 className="text-xl font-semibold">Country</h2>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm text-ink-muted">
           Streaming catalogs differ by country. Saving a new country updates the list of services
           below.
         </p>
@@ -104,7 +104,7 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
 
       <section>
         <h2 className="text-xl font-semibold">Your streaming services</h2>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm text-ink-muted">
           {checked.size === 0
             ? "None selected yet."
             : `${checked.size} selected.`}{" "}
@@ -148,7 +148,7 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
         </ul>
 
         {query && visibleCount === 0 && (
-          <p className="mt-4 text-sm text-zinc-500">No services match &ldquo;{filter}&rdquo;.</p>
+          <p className="mt-4 text-sm text-ink-muted">No services match &ldquo;{filter}&rdquo;.</p>
         )}
       </section>
 
@@ -163,7 +163,7 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
         <p
           aria-live="polite"
           className={`text-sm ${
-            state.status === "error" ? "text-red-600 dark:text-red-400" : "text-zinc-500"
+            state.status === "error" ? "text-danger dark:text-red-400" : "text-ink-muted"
           }`}
         >
           {!dirty && !pending && state.message}

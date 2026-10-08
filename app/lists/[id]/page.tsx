@@ -21,7 +21,7 @@ type ItemRow = {
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const smallButton =
-  "rounded-md px-2 py-1 text-sm text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-60 dark:hover:bg-zinc-900 dark:hover:text-zinc-100";
+  "rounded-md px-2 py-1 text-sm text-ink-muted hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-60 dark:hover:bg-zinc-900 dark:hover:text-zinc-100";
 
 export default async function ListPage(props: PageProps<"/lists/[id]">) {
   const { id } = await props.params;
@@ -61,7 +61,7 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-10">
-      <Link href="/lists" className="text-sm text-zinc-500 hover:underline">
+      <Link href="/lists" className="text-sm text-ink-muted hover:underline">
         ← Lists
       </Link>
 
@@ -70,11 +70,11 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
       {/* ---------------- Movies ---------------- */}
       <section className="mt-8">
         <h2 className="mb-3 text-xl font-semibold">
-          Movies <span className="font-normal text-zinc-500">({items.data.length})</span>
+          Movies <span className="font-normal text-ink-muted">({items.data.length})</span>
         </h2>
 
         {items.data.length === 0 ? (
-          <p className="text-zinc-500">
+          <p className="text-ink-muted">
             No movies yet.{" "}
             <Link href="/" className="underline">
               Search for one
@@ -108,8 +108,8 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
                     )}
                     <div className="min-w-0">
                       <p className="truncate font-medium">{movie.title}</p>
-                      {details && <p className="text-sm text-zinc-500">{details}</p>}
-                      <p className="text-sm text-zinc-500">
+                      {details && <p className="text-sm text-ink-muted">{details}</p>}
+                      <p className="text-sm text-ink-muted">
                         {describeSeenBy(seenBy.get(item.movie_id) ?? [], names, userId)}
                       </p>
                     </div>
@@ -141,8 +141,8 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
               <li key={m.user_id} className="flex items-center justify-between gap-3">
                 <span>
                   {names.get(m.user_id) ?? "Someone"}
-                  {isMe && <span className="text-zinc-500"> (you)</span>}
-                  {isListCreator && <span className="text-sm text-zinc-500"> · created the list</span>}
+                  {isMe && <span className="text-ink-muted"> (you)</span>}
+                  {isListCreator && <span className="text-sm text-ink-muted"> · created the list</span>}
                 </span>
                 {isCreator && !isMe && (
                   <ConfirmButton
@@ -160,7 +160,7 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
 
         {isCreator && (
           <div className="mt-4">
-            <h3 className="mb-2 text-sm font-medium text-zinc-500">
+            <h3 className="mb-2 text-sm font-medium text-ink-muted">
               Add someone by the email they sign in with
             </h3>
             <InviteForm listId={id} />

@@ -79,12 +79,12 @@ export function RatingButtons({ movieId, verdict }: { movieId: number; verdict: 
       </div>
 
       {error ? (
-        <p role="alert" className="mt-2 text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="mt-2 text-sm text-danger dark:text-red-400">
           {error}
         </p>
       ) : (
         optimisticVerdict && (
-          <p className="mt-2 text-xs text-zinc-500">Select it again to remove your rating.</p>
+          <p className="mt-2 text-xs text-ink-muted">Select it again to remove your rating.</p>
         )
       )}
     </div>
