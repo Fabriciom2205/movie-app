@@ -166,6 +166,23 @@ get their initial in a `soft` circle (decorative, `aria-hidden`). Settings
 end with Delete (`dangerButton`, `Trash2`) or Leave (`secondaryButton`,
 `LogOut`) plus one line saying what it does; both confirm first.
 
+**Settings:** two cards, "About you" (name + country side by side from `sm`)
+and "Your streaming services". Each field's visible label is a `<label
+htmlFor>` and its help text is linked with `aria-describedby`. The country
+`<select>` stays native (best on phones) with `appearance-none` and a
+`ChevronDown` laid over it. Services are option cards: a visually hidden
+checkbox inside a `radius-field` card (logo, name, then a round check that
+fills `primary` with a white check when ticked; unticked it's a 2px
+`ink-muted` ring, so the box is visible at 5.4:1). Ticked = `soft` fill +
+`primary` outline, like toggle pills.
+
+**Sticky save bar:** on a long form (settings), Save sits in a bar stuck to
+the bottom of the screen (`sticky bottom-0`, `bg-page/95`, 2px `line` top
+border) with "Unsaved changes" / the mint "Saved." / the error beside it.
+Anything focusable that could end up behind it gets `scroll-mb-28` on the
+element that actually receives focus (the checkbox, not its card), so the
+browser scrolls it clear of the bar.
+
 **Rating grid** (/rate): each movie is a card (poster, title, then buttons
 pinned to the bottom with `mt-auto`, so they line up across a row). Liked /
 not for me are round icon buttons side by side, the one place the app uses

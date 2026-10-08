@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+import { quietButton } from "@/app/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getProviderList, getRegions, tmdbImageUrl, type WatchProvider } from "@/lib/tmdb";
 import { SettingsForm, type ProviderOption } from "./settings-form";
@@ -58,12 +60,13 @@ export default async function SettingsPage() {
       : providers.slice(0, FALLBACK_SHORTLIST_SIZE).map((p) => p.provider_id);
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10">
-      <Link href="/" className="text-sm text-ink-muted hover:underline">
-        ← Search
+    <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-10">
+      <Link href="/" className={`${quietButton} -ml-3`}>
+        <ArrowLeft aria-hidden="true" className="size-4" />
+        Home
       </Link>
 
-      <h1 className="mt-6 text-3xl font-semibold tracking-tight">Settings</h1>
+      <h1 className="mt-4 text-3xl font-semibold tracking-tight">Settings</h1>
 
       <SettingsForm
         displayName={profile.data?.display_name ?? ""}
@@ -75,7 +78,7 @@ export default async function SettingsPage() {
       />
 
       {/* Required attribution: TMDB's provider data comes from JustWatch. */}
-      <p className="mt-10 text-xs text-ink-muted">Streaming service data provided by JustWatch.</p>
+      <p className="mt-8 text-xs text-ink-muted">Streaming service data provided by JustWatch.</p>
     </main>
   );
 }
