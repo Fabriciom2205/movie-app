@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { Bookmark, Sparkles, Star, ThumbsDown, ThumbsUp, type LucideIcon } from "lucide-react";
 import { ListToggles } from "@/app/movie/[id]/list-toggles";
 import { getMyLists } from "@/lib/my-movie";
-import { recommendMovie, type RecommendRequest, type ReasonLine } from "@/lib/recommender";
+import { recommendMovie, type Person, type RecommendRequest, type ReasonLine } from "@/lib/recommender";
 import { createClient } from "@/lib/supabase/server";
 import { formatRuntime, releaseYear, tmdbImageUrl } from "@/lib/tmdb";
 import { PickRating } from "./pick-rating";
@@ -124,6 +124,10 @@ export default async function PickPage(props: PageProps<"/pick">) {
               </ul>
             </div>
 
+            {result.watchersWithoutServices.length > 0 && (
+              <ServicesHint missing={result.watchersWithoutServices} watchers={result.watchers} />
+            )}
+
             <PickRating movieId={pick.movie.id} title={pick.movie.title} />
             <ListToggles movieId={pick.movie.id} lists={myLists} />
 
@@ -161,6 +165,34 @@ export default async function PickPage(props: PageProps<"/pick">) {
   );
 }
 
+// When someone watching hasn't picked services, the pick only uses the
+// others' services. Say so, so a "why can't I watch this?" doesn't surprise.
+function ServicesHint({ missing, watchers }: { missing: Person[]; watchers: Person[] }) {
+  const missingIds = new Set(missing.map((p) => p.id));
+  const subject = joinNames(missing.map((p) => (p.isMe ? "you" : p.name)));
+  const verb = missing.length === 1 && !missing[0].isMe ? "hasn't" : "haven't";
+  const basis = joinNames(
+    watchers.filter((w) => !missingIds.has(w.id)).map((w) => (w.isMe ? "your" : `${w.name}'s`)),
+  );
+  const includesMe = missing.some((p) => p.isMe);
+
+  return (
+    <p className="mt-4 text-sm text-zinc-500">
+      {subject.charAt(0).toUpperCase() + subject.slice(1)} {verb} picked streaming services yet, so this pick
+      only uses {basis} services.
+      {includesMe && (
+        <>
+          {" "}
+          <Link href="/settings" className="underline">
+            Add yours in Settings
+          </Link>
+          .
+        </>
+      )}
+    </p>
+  );
+}
+
 function NothingFound({
   problem,
   watchersWithoutServices,
@@ -169,7 +201,7 @@ function NothingFound({
   changeUrl,
 }: {
   problem: "noServices" | "nothingFound" | null;
-  watchersWithoutServices: string[];
+  watchersWithoutServices: Person[];
   moreUrl: string | null;
   startOverUrl: string | null;
   changeUrl: string;
@@ -185,7 +217,7 @@ function NothingFound({
         <p className="mt-3 text-zinc-600 dark:text-zinc-400">
           Recommendations only include movies you can stream tonight, so they need to know what you pay for.
           {watchersWithoutServices.length > 1 &&
-            ` Nobody watching has picked any yet (${joinNames(watchersWithoutServices)}).`}
+            ` Nobody watching has picked any yet (${joinNames(watchersWithoutServices.map((p) => (p.isMe ? "you" : p.name)))}).`}
         </p>
         <div className="mt-6">
           <Link href="/settings" className={primary}>

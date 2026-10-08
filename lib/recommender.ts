@@ -43,7 +43,7 @@ export type RecommendResult = {
   nextSkip: number[]; // skip list for "Pick another"
   moreLeft: boolean;
   problem: "noServices" | "nothingFound" | null;
-  watchersWithoutServices: string[]; // names
+  watchersWithoutServices: Person[]; // their recommendations rest on the others' services
 };
 
 const MAX_SEEDS = 10; // most recent likes to base "because you liked" on
@@ -101,7 +101,7 @@ export async function recommendMovie(userId: string, req: RecommendRequest): Pro
   if (services.error) throw services.error;
   const watcherServices = new Set(services.data.map((s) => s.provider_id));
   const withServices = new Set(services.data.map((s) => s.user_id));
-  const watchersWithoutServices = watcherIds.filter((id) => !withServices.has(id)).map((id) => person(id).name);
+  const watchersWithoutServices = watcherIds.filter((id) => !withServices.has(id)).map(person);
 
   const empty = {
     watchers: watcherIds.map(person),

@@ -32,6 +32,7 @@ export default async function Home(props: PageProps<"/">) {
   const ratingCount = myRatings.count ?? 0;
 
   const people = toPeople(profiles.data, userId);
+  const myName = people.find((p) => p.isMe)?.name;
   // Coming back from /pick: keep what was chosen (/?watch=...&genre=...).
   const asked = ([] as string[]).concat(params.watch ?? []).filter((id) => people.some((p) => p.id === id));
   const askedGenres = ([] as string[]).concat(params.genre ?? []).map(Number);
@@ -41,8 +42,9 @@ export default async function Home(props: PageProps<"/">) {
       <div className="mb-6 flex items-baseline justify-between gap-4">
         <h1 className="shrink-0 text-3xl font-semibold tracking-tight">Movie Night</h1>
         <div className="flex min-w-0 items-baseline gap-3 text-sm text-zinc-500">
-          {/* No room on phones; the email is just a reminder of who is signed in. */}
-          <span className="hidden truncate sm:block">{auth?.claims.email}</span>
+          {/* Who's signed in: your display name (Settings), or the email until
+              there is one. No room for it on phones. */}
+          <span className="hidden truncate sm:block">{myName ?? auth?.claims.email}</span>
           <Link href="/lists" className="shrink-0 hover:underline">
             Lists
           </Link>
