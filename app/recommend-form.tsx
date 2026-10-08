@@ -58,7 +58,7 @@ export function RecommendForm({
 
       <fieldset>
         <legend className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
-          In the mood for <span className="font-normal text-zinc-500">(optional, pick any)</span>
+          In the mood for <span className="font-normal text-ink-muted">(optional, pick any)</span>
         </legend>
         <div className="mt-2 flex flex-wrap gap-2">
           {genres.map((g) => (
@@ -84,7 +84,7 @@ export function RecommendForm({
         >
           Recommend a movie
         </button>
-        {nobodyWatching && <p className="text-sm text-zinc-500">Tick at least one person.</p>}
+        {nobodyWatching && <p className="text-sm text-ink-muted">Tick at least one person.</p>}
       </div>
     </Form>
   );

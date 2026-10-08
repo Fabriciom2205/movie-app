@@ -1,26 +1,77 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* The Movie Night design tokens. design-system/movie-night/MASTER.md has the
+   reasons and contrast numbers; change a value there first, then here.
+   Tailwind turns each one into utilities: --color-page -> bg-page, text-page,
+   border-page...; --radius-card -> rounded-card; --shadow-soft -> shadow-soft. */
+@theme {
+  /* Surfaces and text */
+  --color-page: #EEF5FF;
+  --color-card: #FFFFFF;
+  --color-line: #C7DBFF;
+  --color-ink: #1E293B;
+  --color-ink-muted: #5B6B85;
+
+  /* Blue: the one main action per screen, focus rings, selected pills */
+  --color-primary: #2563EB;
+  --color-primary-hover: #1D4ED8;
+  --color-on-primary: #FFFFFF;
+  --color-soft: #DBEAFE;
+  --color-on-soft: #1E40AF;
+
+  /* Pastel chips, each with the text color that goes on it */
+  --color-mint: #D1FAE5;
+  --color-on-mint: #065F46;
+  --color-lilac: #EDE9FE;
+  --color-on-lilac: #5B21B6;
+  --color-peach: #FFE4D6;
+  --color-on-peach: #9A3412;
+
+  /* Errors and deleting */
+  --color-danger: #B91C1C;
+  --color-danger-soft: #FEE2E2;
+  --color-on-danger-soft: #991B1B;
+
+  /* Old names, still used by pages that haven't been redesigned yet
+     (bg-foreground text-background buttons). Remove once none are left. */
+  --color-foreground: var(--color-ink);
+  --color-background: var(--color-card);
+
+  --radius-card: 24px;
+  --radius-poster: 18px;
+  --radius-field: 16px;
+
+  --shadow-soft: 0 6px 20px rgb(37 99 235 / 0.10);
 }
 
+/* app/layout.tsx loads the fonts with next/font, which defines
+   --font-fredoka and --font-nunito. "inline" makes font-heading / font-body
+   use those variables directly. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-fredoka);
+  --font-body: var(--font-nunito);
 }
 
-@media (prefers-color-scheme: dark) {
+/* Always light. Pages still carry old dark: classes until their redesign;
+   tying dark: to a .dark class that nothing has switches them all off.
+   Delete this line once no dark: class is left in app/. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    color-scheme: light;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    background-color: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+  }
 }

@@ -33,7 +33,7 @@ export default async function ListsPage() {
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-10">
-      <Link href="/" className="text-sm text-zinc-500 hover:underline">
+      <Link href="/" className="text-sm text-ink-muted hover:underline">
         ← Search
       </Link>
 
@@ -42,7 +42,7 @@ export default async function ListsPage() {
       <CreateListForm />
 
       {data.length === 0 ? (
-        <p className="mt-8 text-zinc-500">No lists yet. Make one above.</p>
+        <p className="mt-8 text-ink-muted">No lists yet. Make one above.</p>
       ) : (
         <ul className="mt-8 flex flex-col gap-2">
           {data.map((list) => {
@@ -57,7 +57,7 @@ export default async function ListsPage() {
                   className="block rounded-lg border border-zinc-200 p-4 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-900"
                 >
                   <p className="font-medium">{list.name}</p>
-                  <p className="mt-1 text-sm text-zinc-500">
+                  <p className="mt-1 text-sm text-ink-muted">
                     {count === 1 ? "1 movie" : `${count} movies`}
                     {" · "}
                     {others.length ? `with ${others.join(", ")}` : "just you"}

@@ -41,7 +41,7 @@ export default async function Home(props: PageProps<"/">) {
     <main className="mx-auto w-full max-w-2xl px-4 py-10">
       <div className="mb-6 flex items-baseline justify-between gap-4">
         <h1 className="shrink-0 text-3xl font-semibold tracking-tight">Movie Night</h1>
-        <div className="flex min-w-0 items-baseline gap-3 text-sm text-zinc-500">
+        <div className="flex min-w-0 items-baseline gap-3 text-sm text-ink-muted">
           {/* Who's signed in: your display name (Settings), or the email until
               there is one. No room for it on phones. */}
           <span className="hidden truncate sm:block">{myName ?? auth?.claims.email}</span>
@@ -77,13 +77,13 @@ export default async function Home(props: PageProps<"/">) {
           initialGenres={askedGenres}
         />
         {ratingCount >= FEW_RATINGS && (
-          <Link href="/rate" className="mt-4 inline-block text-sm text-zinc-500 hover:underline">
+          <Link href="/rate" className="mt-4 inline-block text-sm text-ink-muted hover:underline">
             Rate more movies you&rsquo;ve seen
           </Link>
         )}
       </section>
 
-      <h2 className="mb-2 text-sm font-medium text-zinc-500">Or look up a movie</h2>
+      <h2 className="mb-2 text-sm font-medium text-ink-muted">Or look up a movie</h2>
       {/* action="" submits to this same page as /?q=... */}
       <Form action="" className="mb-8 flex gap-2">
         <input
@@ -103,7 +103,7 @@ export default async function Home(props: PageProps<"/">) {
       </Form>
 
       {query && results.length === 0 && (
-        <p className="text-zinc-500">No movies found for “{query}”.</p>
+        <p className="text-ink-muted">No movies found for “{query}”.</p>
       )}
 
       <ul className="flex flex-col gap-3">
@@ -129,7 +129,7 @@ export default async function Home(props: PageProps<"/">) {
                 <div className="min-w-0">
                   <p className="font-medium">
                     {movie.title}
-                    {year && <span className="ml-2 text-zinc-500">({year})</span>}
+                    {year && <span className="ml-2 text-ink-muted">({year})</span>}
                   </p>
                   <p className="line-clamp-2 text-sm text-zinc-600 dark:text-zinc-400">
                     {movie.overview}

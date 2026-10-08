@@ -59,7 +59,7 @@ export default async function SettingsPage() {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10">
-      <Link href="/" className="text-sm text-zinc-500 hover:underline">
+      <Link href="/" className="text-sm text-ink-muted hover:underline">
         ← Search
       </Link>
 
@@ -75,7 +75,7 @@ export default async function SettingsPage() {
       />
 
       {/* Required attribution: TMDB's provider data comes from JustWatch. */}
-      <p className="mt-10 text-xs text-zinc-500">Streaming service data provided by JustWatch.</p>
+      <p className="mt-10 text-xs text-ink-muted">Streaming service data provided by JustWatch.</p>
     </main>
   );
 }

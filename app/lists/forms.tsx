@@ -119,7 +119,7 @@ function Status({ state }: { state: FormState }) {
   return (
     <p
       aria-live="polite"
-      className={`mt-2 min-h-5 text-sm ${state.error ? "text-red-600 dark:text-red-400" : "text-zinc-500"}`}
+      className={`mt-2 min-h-5 text-sm ${state.error ? "text-danger dark:text-red-400" : "text-ink-muted"}`}
     >
       {state.error ?? state.message}
     </p>

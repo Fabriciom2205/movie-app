@@ -35,7 +35,7 @@ export function RateGrid({ movies, moreUrl }: { movies: RateMovie[]; moreUrl: st
   return (
     <>
       {error && (
-        <p role="alert" className="mt-4 text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="mt-4 text-sm text-danger dark:text-red-400">
           {error}
         </p>
       )}
@@ -59,7 +59,7 @@ export function RateGrid({ movies, moreUrl }: { movies: RateMovie[]; moreUrl: st
               )}
               <p className="mt-2 font-medium leading-tight">
                 {movie.title}
-                {movie.year && <span className="font-normal text-zinc-500"> ({movie.year})</span>}
+                {movie.year && <span className="font-normal text-ink-muted"> ({movie.year})</span>}
               </p>
               <div className="mt-2 flex flex-col gap-1.5" role="group" aria-label={`Rate ${movie.title}`}>
                 <button type="button" onClick={() => rate(movie, "up")} className={buttonClass}>
@@ -70,7 +70,7 @@ export function RateGrid({ movies, moreUrl }: { movies: RateMovie[]; moreUrl: st
                   <ThumbsDown aria-hidden="true" className="h-4 w-4" />
                   Not for me
                 </button>
-                <button type="button" onClick={() => skip(movie)} className={`${buttonClass} text-zinc-500`}>
+                <button type="button" onClick={() => skip(movie)} className={`${buttonClass} text-ink-muted`}>
                   <EyeOff aria-hidden="true" className="h-4 w-4" />
                   Haven&rsquo;t seen
                 </button>

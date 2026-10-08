@@ -2,7 +2,7 @@
 export default function PickLoading() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10">
-      <p aria-live="polite" className="text-zinc-500">
+      <p aria-live="polite" className="text-ink-muted">
         Finding something for tonight…
       </p>
     </main>

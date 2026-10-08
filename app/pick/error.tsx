@@ -7,7 +7,7 @@ export default function PickError({ retry }: { error: Error & { digest?: string 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10">
       <h1 className="text-2xl font-semibold">Couldn&rsquo;t find a movie</h1>
-      <p className="mt-2 text-zinc-500">
+      <p className="mt-2 text-ink-muted">
         Checking what&rsquo;s streaming didn&rsquo;t work this time. It&rsquo;s usually a hiccup.
       </p>
       <div className="mt-6 flex gap-4">
@@ -18,7 +18,7 @@ export default function PickError({ retry }: { error: Error & { digest?: string 
         >
           Try again
         </button>
-        <Link href="/" className="self-center text-sm text-zinc-500 hover:underline">
+        <Link href="/" className="self-center text-sm text-ink-muted hover:underline">
           Back home
         </Link>
       </div>
