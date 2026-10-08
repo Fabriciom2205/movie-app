@@ -1,7 +1,9 @@
 "use client";
 
-import { startTransition, useActionState, useState, type FormEvent } from "react";
+import { startTransition, useActionState, useId, useState, type FormEvent } from "react";
 import Image from "next/image";
+import { Check, ChevronDown, CircleCheck, Search } from "lucide-react";
+import { card, field, primaryButton, sectionLabel, tag } from "@/app/ui";
 import { saveSettings, type SaveState } from "./actions";
 
 export type ProviderOption = {
@@ -28,6 +30,7 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
   const [filter, setFilter] = useState("");
   // Hides "Saved." again as soon as something changes after a save.
   const [dirty, setDirty] = useState(false);
+  const id = useId(); // prefix for the label/description ids below
 
   // With no filter: the shortlist, plus anything saved or ticked (so a service
   // never vanishes while you're looking at it). With a filter: every match.
@@ -37,12 +40,12 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
     query ? normalize(p.name).includes(query) : alwaysShown.has(p.id) || checked.has(p.id);
   const visibleCount = providers.filter(isVisible).length;
 
-  function toggle(id: number) {
+  function toggle(providerId: number) {
     setDirty(true);
     setChecked((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(providerId)) next.delete(providerId);
+      else next.add(providerId);
       return next;
     });
   }
@@ -60,114 +63,150 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
   }
 
   return (
-    <form action={formAction} onSubmit={handleSubmit} className="mt-8 flex flex-col gap-10">
-      <section>
-        <h2 className="text-xl font-semibold">Your name</h2>
-        <p className="mt-1 text-sm text-ink-muted">
-          Shown to the people you share a list with.
-        </p>
-        <input
-          name="display_name"
-          defaultValue={displayName}
-          onChange={() => setDirty(true)}
-          aria-label="Your name"
-          maxLength={50}
-          required
-          autoComplete="nickname"
-          className="mt-3 w-full max-w-xs rounded-md border border-zinc-300 bg-transparent px-3 py-2 dark:border-zinc-700"
-        />
+    <form action={formAction} onSubmit={handleSubmit} className="mt-6 flex flex-col gap-6">
+      <section className={card}>
+        <h2 className="text-xl font-semibold tracking-tight">About you</h2>
+        <div className="mt-4 grid gap-5 sm:grid-cols-2">
+          <div>
+            <label htmlFor={`${id}-name`} className={sectionLabel}>
+              Your name
+            </label>
+            <input
+              id={`${id}-name`}
+              name="display_name"
+              defaultValue={displayName}
+              onChange={() => setDirty(true)}
+              aria-describedby={`${id}-name-help`}
+              maxLength={50}
+              required
+              autoComplete="nickname"
+              className={`mt-2 ${field}`}
+            />
+            <p id={`${id}-name-help`} className="mt-1.5 text-sm text-ink-muted">
+              Shown to the people you share a list with.
+            </p>
+          </div>
+
+          <div>
+            <label htmlFor={`${id}-region`} className={sectionLabel}>
+              Country
+            </label>
+            {/* A native select (best on phones), with its own arrow swapped
+                for one that matches the design. */}
+            <div className="relative mt-2">
+              <select
+                id={`${id}-region`}
+                name="region"
+                value={selectedRegion}
+                onChange={(e) => {
+                  setSelectedRegion(e.target.value);
+                  setDirty(true);
+                }}
+                aria-describedby={`${id}-region-help`}
+                className={`${field} appearance-none pr-10 text-ink`}
+              >
+                {regions.map((r) => (
+                  <option key={r.code} value={r.code}>
+                    {r.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                aria-hidden="true"
+                className="pointer-events-none absolute top-1/2 right-3.5 size-5 -translate-y-1/2 text-ink-muted"
+              />
+            </div>
+            <p id={`${id}-region-help`} className="mt-1.5 text-sm text-ink-muted">
+              Streaming catalogs differ by country. Saving a new one updates the services below.
+            </p>
+          </div>
+        </div>
       </section>
 
-      <section>
-        <h2 className="text-xl font-semibold">Country</h2>
+      <section className={card} aria-labelledby={`${id}-services`}>
+        <h2 id={`${id}-services`} className="text-xl font-semibold tracking-tight">
+          Your streaming services
+        </h2>
         <p className="mt-1 text-sm text-ink-muted">
-          Streaming catalogs differ by country. Saving a new country updates the list of services
-          below.
-        </p>
-        <select
-          name="region"
-          value={selectedRegion}
-          onChange={(e) => {
-            setSelectedRegion(e.target.value);
-            setDirty(true);
-          }}
-          aria-label="Country"
-          className="mt-3 w-full max-w-xs rounded-md border border-zinc-300 bg-background px-3 py-2 dark:border-zinc-700"
-        >
-          {regions.map((r) => (
-            <option key={r.code} value={r.code}>
-              {r.name}
-            </option>
-          ))}
-        </select>
-      </section>
-
-      <section>
-        <h2 className="text-xl font-semibold">Your streaming services</h2>
-        <p className="mt-1 text-sm text-ink-muted">
-          {checked.size === 0
-            ? "None selected yet."
-            : `${checked.size} selected.`}{" "}
-          Search to find services that aren&rsquo;t listed.
+          {checked.size === 0 ? "None selected yet." : `${checked.size} selected.`} Search to find services that
+          aren&rsquo;t listed.
         </p>
 
-        <input
-          type="search"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          placeholder="Search services…"
-          aria-label="Search services"
-          className="mt-3 w-full max-w-xs rounded-md border border-zinc-300 bg-transparent px-3 py-2 dark:border-zinc-700"
-        />
+        <div className="relative mt-4 sm:max-w-xs">
+          <Search
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 left-3.5 size-5 -translate-y-1/2 text-ink-muted"
+          />
+          <input
+            type="search"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            placeholder="Search services…"
+            aria-label="Search services"
+            autoComplete="off"
+            className={`${field} pl-11`}
+          />
+        </div>
 
         {/* Hidden services stay in the form (just not displayed), so ticked
             ones are still submitted while the filter hides them. */}
         <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
           {providers.map((p) => (
             <li key={p.id} hidden={!isVisible(p)}>
-              <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-zinc-200 p-2 has-checked:border-zinc-900 has-checked:bg-zinc-100 has-focus-visible:outline-2 has-focus-visible:outline-zinc-500 dark:border-zinc-800 dark:has-checked:border-zinc-300 dark:has-checked:bg-zinc-900">
+              {/* An option card around a visually hidden checkbox; the round
+                  check on the right fills in when it's ticked. */}
+              <label className="group flex min-h-12 cursor-pointer items-center gap-3 rounded-field border-2 border-line bg-card p-2 pr-3 transition-colors duration-150 ease-out select-none hover:bg-soft has-checked:border-primary has-checked:bg-soft has-checked:text-on-soft has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-primary">
                 <input
                   type="checkbox"
                   name="provider"
                   value={p.id}
                   checked={checked.has(p.id)}
                   onChange={() => toggle(p.id)}
-                  className="h-4 w-4 accent-zinc-900 dark:accent-zinc-200"
+                  // On the checkbox itself (it's what gets focus, so it's what
+                  // the browser scrolls into view): keeps a card tabbed to near
+                  // the bottom from hiding behind the sticky Save bar.
+                  className="sr-only scroll-mb-28"
                 />
-                <Image
-                  src={p.logoUrl}
-                  alt=""
-                  width={32}
-                  height={32}
-                  className="h-8 w-8 shrink-0 rounded-md"
-                />
-                <span className="min-w-0 truncate text-sm">{p.name}</span>
+                <Image src={p.logoUrl} alt="" width={32} height={32} className="size-8 shrink-0 rounded-full" />
+                <span className="min-w-0 flex-1 truncate text-sm font-semibold">{p.name}</span>
+                <span
+                  aria-hidden="true"
+                  className="grid size-6 shrink-0 place-items-center rounded-full border-2 border-ink-muted text-on-primary group-has-checked:border-primary group-has-checked:bg-primary"
+                >
+                  <Check className="hidden size-4 group-has-checked:block" strokeWidth={3} />
+                </span>
               </label>
             </li>
           ))}
         </ul>
 
         {query && visibleCount === 0 && (
-          <p className="mt-4 text-sm text-ink-muted">No services match &ldquo;{filter}&rdquo;.</p>
+          <p className="mt-4 text-sm text-ink-muted">
+            No services match &ldquo;{filter}&rdquo;. Try part of the name, like &ldquo;max&rdquo;.
+          </p>
         )}
       </section>
 
-      <div className="flex items-center gap-4">
-        <button
-          type="submit"
-          disabled={pending}
-          className="rounded-md bg-foreground px-4 py-2 font-medium text-background disabled:opacity-60"
-        >
+      {/* Stays at the bottom of the screen while the form is on it, so Save is
+          always in reach after ticking a service far down the list. */}
+      <div className="sticky bottom-0 z-10 -mx-4 flex items-center gap-4 border-t-2 border-line bg-page/95 px-4 py-3 backdrop-blur-sm">
+        <button type="submit" disabled={pending} className={primaryButton}>
           {pending ? "Saving…" : "Save"}
         </button>
-        <p
-          aria-live="polite"
-          className={`text-sm ${
-            state.status === "error" ? "text-danger dark:text-red-400" : "text-ink-muted"
-          }`}
-        >
-          {!dirty && !pending && state.message}
-        </p>
+        <div aria-live="polite" className="min-w-0 text-sm">
+          {pending ? null : dirty ? (
+            <p className="text-ink-muted">Unsaved changes</p>
+          ) : state.status === "error" ? (
+            <p className="text-danger">{state.message}</p>
+          ) : (
+            state.message && (
+              <p className={`${tag} bg-mint text-on-mint`}>
+                <CircleCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+                {state.message}
+              </p>
+            )
+          )}
+        </div>
       </div>
     </form>
   );
