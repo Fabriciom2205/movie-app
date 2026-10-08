@@ -59,7 +59,8 @@ Rules:
 Loaded with `next/font/google` in `app/layout.tsx` (self-hosted at build time: no
 request to Google from visitors' browsers). `globals.css` gives `h1`-`h3` Fredoka
 and the body Nunito, so headings need no font class; anything else that should
-look like a heading (a main button's label) uses `font-heading`. Sizes (Tailwind): page title
+look like a heading (a main button's label) uses `font-heading`. Headings also get
+`text-wrap: balance` there (no lone word on a heading's last line). Sizes (Tailwind): page title
 `text-3xl`, movie title `text-3xl` on /pick and the movie page, section heading
 `text-xl`, body `text-base`, metadata `text-sm`. Line height 1.6 for body
 text; titles tight (`tracking-tight`). Sentence case everywhere.
@@ -70,7 +71,8 @@ text; titles tight (`tracking-tight`). Sentence case everywhere.
 |---|---|---|
 | `--radius-card` | `24px` | Cards, panels, the home picker card |
 | `--radius-poster` | `18px` | Posters and their placeholders |
-| `--radius-field` | `16px` | Text inputs, selects |
+| `--radius-field` | `16px` | Text inputs, selects, message banners |
+| `--radius-thumb` | `12px` | Small posters (search results, list rows), where 18px would round off a third of a 62px-wide poster |
 | pills | `9999px` (`rounded-full`) | Buttons, chips, toggles |
 | outline | `2px solid line` (cards: `3px`) | Instead of hard dark borders |
 | `--shadow-soft` | `0 6px 20px rgb(37 99 235 / 0.10)` | Cards that float (home picker, pick card). Sparingly. |
@@ -90,6 +92,16 @@ text; titles tight (`tracking-tight`). Sentence case everywhere.
 **Card:** `bg-card`, 3px `line` outline, `radius-card`, padding 20-24px. The home
 picker and the pick result also get `shadow-soft`.
 
+**Focus:** `globals.css` gives every focusable element a 2px `primary` outline
+(offset 2px) on `:focus-visible`, so pages don't repeat it. The exception is
+a control whose real input is visually hidden (toggle pills): its label uses
+`has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-primary`.
+
+**Header (home):** the popcorn logo in a `primary` circle + "Movie Night", then
+quiet pills for Lists / Settings / Sign out. Below `sm` they show only their
+icon (the labels don't fit beside the title at 375px); the label stays as
+`sr-only` text so screen readers still say it.
+
 **Buttons** (all pills, at least 40px tall, visible focus ring in `primary`):
 - *Primary* (one per screen: "Recommend a movie", "Pick another", "Save", "Create"):
   `bg-primary text-on-primary` Fredoka, hover `primary-hover`.
@@ -100,7 +112,11 @@ picker and the pick result also get `shadow-soft`.
 
 **Toggle pills** (rating buttons, list pills, mood chips, who's watching):
 unselected = secondary button; selected = `bg-soft text-on-soft` with a check
-icon. Real checkboxes / `aria-pressed` buttons underneath, never divs.
+icon and a 2px `primary` outline (4.2:1 against the soft fill, 5.2:1 against
+the card), so the state isn't told by the fill color alone. Real checkboxes /
+`aria-pressed` buttons underneath, never divs. For checkboxes, style from the
+input itself (`has-checked:` on the label, `peer-checked:` on the icon) so
+it works before JavaScript loads.
 
 **Reason chips** on /pick: small pills with an icon and text in a pastel pair:
 friend liked = mint, because-you-liked = lilac, on your list = soft (blue),
@@ -109,11 +125,18 @@ rated N on TMDB = peach. "X wasn't into it" = peach.
 **Inputs and selects:** `bg-card`, 2px `line` outline, `radius-field`, 44px tall,
 focus = 2px `primary` ring. Labels above in `text-sm text-ink-muted font-semibold`.
 
-**Posters:** `radius-poster`, placeholders `bg-soft`. Always `next/image`.
+**Posters:** `radius-poster` (small ones `radius-thumb`), placeholders `bg-soft`
+with a `Film` icon in `on-soft`. Always `next/image`.
+
+**Search results / movie rows:** each row is a link drawn as a small card:
+`bg-card`, 2px `line` outline, `radius-card`, hover outline `primary`.
 
 **Messages:** success = mint chip style; inline errors = `text-danger`,
 banners = `bg-danger-soft text-on-danger-soft`, both `role="alert"`; empty
-states are an invitation with one clear action.
+states are an invitation with one clear action. Banners use `radius-field`.
+A taste nudge ("Rate a few movies you've seen") is a lilac banner with the
+`Sparkles` icon: lilac + sparkles = your taste, as on /pick. On the home page
+it sits under the main button, so that button stays on a phone's first screen.
 
 **Icons:** lucide-react only, `aria-hidden` when decorative, 16-20px inline.
 **No emojis anywhere in the UI.**
