@@ -10,6 +10,11 @@
 #
 # Vercel's own automatic deploys are off for main (vercel.json), so this
 # workflow is the only way code reaches production. PR previews stay automatic.
+#
+# Every job runs on a pinned image (ubuntu-24.04), not ubuntu-latest: "latest"
+# moves to Ubuntu 26 on 2026-10-19, and a new OS should be a change we make on
+# purpose in its own PR (change all four runs-on lines, watch one green run),
+# not a surprise in the middle of a deploy.
 name: CI/CD
 
 on:
@@ -31,7 +36,7 @@ concurrency:
 jobs:
   app:
     name: Lint, type-check, build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
       NEXT_TELEMETRY_DISABLED: 1
@@ -63,7 +68,7 @@ jobs:
 
   database:
     name: Migrations + RLS tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
 
     steps:
@@ -96,7 +101,7 @@ jobs:
     name: Migrate production database
     needs: [app, database]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     environment: production
     env:
@@ -129,7 +134,7 @@ jobs:
     name: Deploy app to production
     needs: migrate
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     environment:
       name: production
