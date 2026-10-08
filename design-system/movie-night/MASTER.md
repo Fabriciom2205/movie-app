@@ -87,9 +87,11 @@ text; titles tight (`tracking-tight`). Sentence case everywhere.
 ## 2. Components
 
 These are written once as class strings in `app/ui.ts` (`primaryButton`,
-`secondaryButton`, `quietButton`, `toggleChip`, `toggleButton`, `card`,
-`posterGrid`, `sectionLabel`, `tag`, `banner`). Pages import them instead of
-re-typing classes; changing a component = changing it there.
+`secondaryButton`, `quietButton`, `toggleChip`, `toggleButton`,
+`toggleButtonBase`, `card`, `posterGrid`, `sectionLabel`, `tag`, `providerTag`,
+`banner`). Pages import them instead of re-typing classes; changing a
+component = changing it there. `app/movie-card-skeleton.tsx` is the shared
+loading placeholder for a `posterGrid` card.
 
 **Page:** `bg-page text-ink font-body`, content `max-w-2xl`/`max-w-3xl` centered,
 `px-4 py-10`. Mobile-first: everything must work at 375px with no sideways scroll.
@@ -122,6 +124,10 @@ the card), so the state isn't told by the fill color alone. Real checkboxes /
 `aria-pressed` buttons underneath, never divs. For checkboxes, style from the
 input itself (`has-checked:` on the label, `peer-checked:` on the icon) so
 it works before JavaScript loads.
+Exception: the rating buttons ("Liked it" / "Not for me") mean something
+beyond "chosen", so selected uses the meaning colors, as on /pick: liked =
+`mint` with an `on-mint` outline, not for me = `peach` with an `on-peach`
+outline, and the thumb icon fills in (a shape cue on top of color).
 
 **Reason chips** on /pick: small pills with an icon and text in a pastel pair:
 friend liked = mint, because-you-liked = lilac, on your list = soft (blue),
@@ -142,13 +148,25 @@ another"); below a 2px `line` divider, the secondary actions (rate it, add to
 a list). Streaming providers are `bg-page` tags with a round logo, so on the
 white card they read as data, not buttons.
 
+**Movie page:** the `posterGrid` card (title + meta beside the poster; the
+tagline goes under it, since a tagline is too long for the narrow column on
+phones), your rating and lists under a divider, then a second card "Where to
+watch in the US" with Stream / Free / Rent / Buy rows of `providerTag`s
+(logo + name: on a phone you can't hover a bare logo to learn its name). The
+back link says "Home" because you can arrive from search, /pick or a list.
+
 **Empty and error states:** a card with a `soft` circle holding an icon
 (`Tv`, `SearchX`, `CloudOff`...), a heading that says what happened, a sentence
 with the way forward, then one primary button and any alternatives as secondary.
+`app/not-found.tsx` is this for missing movies, lists and URLs (Next's own 404
+follows the device's dark mode).
 
 **Loading:** the shape of what's coming in `soft` blocks (same grid, same
 card), pulsing only with `motion-safe:animate-pulse`, plus a short `aria-live`
-line ("Finding something for tonight…").
+line ("Finding something for tonight…"). Trade-off: a page with `loading.tsx`
+streams, so a `notFound()` there answers HTTP 200 (with a `noindex` tag)
+instead of 404. Fine for this sign-in-only app; see Next's loading.md
+"Status Codes".
 
 **Inputs and selects:** `bg-card`, 2px `line` outline, `radius-field`, 44px tall,
 focus = 2px `primary` ring. Labels above in `text-sm text-ink-muted font-semibold`.

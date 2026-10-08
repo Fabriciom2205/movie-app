@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft, ExternalLink, Film, Tv } from "lucide-react";
+import { card, posterGrid, providerTag, quietButton, sectionLabel } from "@/app/ui";
 import {
   formatRuntime,
   getMovie,
@@ -35,12 +37,14 @@ export default async function MoviePage(props: PageProps<"/movie/[id]">) {
     [providers.flatrate, free, providers.rent, providers.buy].some((list) => list?.length);
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10">
-      <Link href="/" className="text-sm text-ink-muted hover:underline">
-        ← Search
+    <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-10">
+      {/* Home, not "back": you can get here from search, /pick or a list. */}
+      <Link href="/" className={`${quietButton} -ml-3`}>
+        <ArrowLeft aria-hidden="true" className="size-4" />
+        Home
       </Link>
 
-      <div className="mt-6 flex flex-col gap-6 sm:flex-row">
+      <article className={`mt-4 shadow-soft ${card} ${posterGrid}`}>
         {movie.poster_path ? (
           <Image
             src={tmdbImageUrl(movie.poster_path, "w342")}
@@ -48,44 +52,54 @@ export default async function MoviePage(props: PageProps<"/movie/[id]">) {
             width={200}
             height={300}
             preload // it's the biggest thing on the page, so load it first
-            className="h-[300px] w-[200px] shrink-0 rounded-lg object-cover"
+            className="aspect-2/3 w-full self-start rounded-poster object-cover sm:row-span-2"
           />
         ) : (
-          <div className="h-[300px] w-[200px] shrink-0 rounded-lg bg-zinc-200 dark:bg-zinc-800" />
+          <div className="grid aspect-2/3 w-full place-items-center self-start rounded-poster bg-soft text-on-soft sm:row-span-2">
+            <Film aria-hidden="true" className="size-8" />
+          </div>
         )}
 
-        <div className="min-w-0">
-          <h1 className="text-3xl font-semibold tracking-tight">
+        <div className="min-w-0 self-center sm:self-start">
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
             {movie.title}
-            {year && <span className="ml-2 font-normal text-ink-muted">({year})</span>}
+            {/* A real space (not a margin), so the year can wrap to the next line. */}
+            {year && <> <span className="font-normal text-ink-muted">({year})</span></>}
           </h1>
-          {movie.tagline && <p className="mt-1 italic text-ink-muted">{movie.tagline}</p>}
-
-          <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="mt-2 text-sm text-ink-muted">
             {[runtime, movie.genres.map((g) => g.name).join(", ")]
               .filter(Boolean)
               .join(" · ")}
           </p>
-
-          {movie.overview && <p className="mt-4 leading-7">{movie.overview}</p>}
-
-          <RatingButtons movieId={movie.id} verdict={myVerdict} />
-          <ListToggles movieId={movie.id} lists={myLists} className="mt-6" />
         </div>
-      </div>
 
-      <section className="mt-10">
-        <h2 className="mb-4 text-xl font-semibold">Where to watch in the US</h2>
+        {/* The tagline sits under the poster on phones: too long for the narrow
+            column beside it. */}
+        <div className="col-span-2 flex min-w-0 flex-col gap-4 sm:col-span-1 sm:col-start-2">
+          {movie.tagline && <p className="font-semibold text-ink-muted italic">{movie.tagline}</p>}
+          {movie.overview && <p className="leading-relaxed">{movie.overview}</p>}
+        </div>
+
+        {/* Your actions, under a divider (as on /pick). */}
+        <div className="col-span-2 grid gap-5 border-t-2 border-line pt-5 sm:grid-cols-2 sm:gap-6">
+          <RatingButtons movieId={movie.id} verdict={myVerdict} />
+          <ListToggles movieId={movie.id} lists={myLists} />
+        </div>
+      </article>
+
+      <section className={`mt-6 ${card}`}>
+        <h2 className="text-xl font-semibold tracking-tight">Where to watch in the US</h2>
 
         {hasAny ? (
-          <div className="flex flex-col gap-5">
+          <div className="mt-4 flex flex-col gap-5">
             <ProviderRow label="Stream" providers={providers?.flatrate} />
             <ProviderRow label="Free" providers={free} />
             <ProviderRow label="Rent" providers={providers?.rent} />
             <ProviderRow label="Buy" providers={providers?.buy} />
           </div>
         ) : (
-          <p className="text-ink-muted">
+          <p className="mt-3 flex items-start gap-2.5 text-ink-muted">
+            <Tv aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
             Not available to stream, rent, or buy in the US right now.
           </p>
         )}
@@ -96,8 +110,15 @@ export default async function MoviePage(props: PageProps<"/movie/[id]">) {
           {providers?.link && (
             <>
               {" "}
-              <a href={providers.link} target="_blank" rel="noopener noreferrer" className="underline">
+              <a
+                href={providers.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 font-semibold text-on-soft underline underline-offset-2"
+              >
                 See all options on TMDB
+                <ExternalLink aria-hidden="true" className="size-3" />
+                <span className="sr-only">(opens in a new tab)</span>
               </a>
             </>
           )}
@@ -111,17 +132,18 @@ function ProviderRow({ label, providers }: { label: string; providers?: WatchPro
   if (!providers?.length) return null;
   return (
     <div>
-      <h3 className="mb-2 text-sm font-medium text-ink-muted">{label}</h3>
-      <ul className="flex flex-wrap gap-3">
+      <h3 className={`mb-2 ${sectionLabel}`}>{label}</h3>
+      <ul className="flex flex-wrap gap-2">
         {providers.map((p) => (
-          <li key={p.provider_id} title={p.provider_name}>
+          <li key={p.provider_id} className={providerTag}>
             <Image
               src={tmdbImageUrl(p.logo_path, "w92")}
-              alt={p.provider_name}
-              width={44}
-              height={44}
-              className="h-11 w-11 rounded-lg"
+              alt=""
+              width={28}
+              height={28}
+              className="size-7 rounded-full"
             />
+            {p.provider_name}
           </li>
         ))}
       </ul>

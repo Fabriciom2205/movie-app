@@ -26,6 +26,11 @@ export const toggleChip = `${toggle} cursor-pointer select-none has-checked:bord
 /** A <button aria-pressed>: the same look, driven by aria-pressed. */
 export const toggleButton = `${toggle} disabled:opacity-60 aria-pressed:border-primary aria-pressed:bg-soft aria-pressed:text-on-soft`;
 
+/** A <button aria-pressed> whose selected look you add yourself, for toggles
+ *  that mean something other than "chosen" (rating: liked = mint, not for me
+ *  = peach). Add `aria-pressed:` classes for fill, text and outline. */
+export const toggleButtonBase = `${toggle} disabled:opacity-60`;
+
 /** White panel. Add `shadow-soft` for the one card a page is about. */
 export const card = "rounded-card border-3 border-line bg-card p-5 sm:p-6";
 
@@ -39,8 +44,13 @@ export const card = "rounded-card border-3 border-line bg-card p-5 sm:p-6";
 export const posterGrid =
   "grid grid-cols-[120px_minmax(0,1fr)] gap-x-4 gap-y-5 sm:grid-cols-[200px_minmax(0,1fr)] sm:gap-x-6";
 
-/** Small label above a group of controls or a bit of data. */
-export const sectionLabel = "text-sm font-semibold text-ink-muted";
+/** Small label above a group of controls or a bit of data. font-body so it
+ *  looks the same on an <h3> (headings get Fredoka by default). */
+export const sectionLabel = "font-body text-sm font-semibold text-ink-muted";
+
+/** A provider (Netflix, Prime Video...) as data, not a button: logo + name on
+ *  the sky color. Put a 28px round logo (`size-7 rounded-full`) first. */
+export const providerTag = "inline-flex items-center gap-2 rounded-full bg-page py-1 pr-3.5 pl-1 text-sm font-semibold";
 
 /** Not pressable: an icon + short text in a pastel pair (add e.g. `bg-mint text-on-mint`).
  *  radius-field: a pill on one line, a rounded box if it wraps. */

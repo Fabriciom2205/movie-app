@@ -16,7 +16,17 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { ListToggles } from "@/app/movie/[id]/list-toggles";
-import { banner, card, posterGrid, primaryButton, quietButton, secondaryButton, sectionLabel, tag } from "@/app/ui";
+import {
+  banner,
+  card,
+  posterGrid,
+  primaryButton,
+  providerTag,
+  quietButton,
+  secondaryButton,
+  sectionLabel,
+  tag,
+} from "@/app/ui";
 import { getMyLists } from "@/lib/my-movie";
 import { recommendMovie, type Person, type RecommendRequest, type ReasonLine } from "@/lib/recommender";
 import { createClient } from "@/lib/supabase/server";
@@ -130,13 +140,9 @@ export default async function PickPage(props: PageProps<"/pick">) {
 
               <div>
                 <p className={sectionLabel}>Stream it on</p>
-                {/* Tags on the sky color, so they don't look like buttons. */}
                 <ul className="mt-2 flex flex-wrap gap-2">
                   {pick.services.map((s) => (
-                    <li
-                      key={s.provider_id}
-                      className="inline-flex items-center gap-2 rounded-full bg-page py-1 pr-3.5 pl-1 text-sm font-semibold"
-                    >
+                    <li key={s.provider_id} className={providerTag}>
                       <Image
                         src={tmdbImageUrl(s.logo_path, "w92")}
                         alt=""
