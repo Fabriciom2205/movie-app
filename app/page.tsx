@@ -1,6 +1,7 @@
 import Form from "next/form";
 import Image from "next/image";
 import Link from "next/link";
+import { Film, ListVideo, LogOut, Popcorn, Search, Settings, Sparkles } from "lucide-react";
 import { signOut } from "@/app/login/actions";
 import { createClient } from "@/lib/supabase/server";
 import { getMovieGenres, releaseYear, searchMovies, tmdbImageUrl } from "@/lib/tmdb";
@@ -38,72 +39,101 @@ export default async function Home(props: PageProps<"/">) {
   const askedGenres = ([] as string[]).concat(params.genre ?? []).map(Number);
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-4 py-10">
-      <div className="mb-6 flex items-baseline justify-between gap-4">
-        <h1 className="shrink-0 text-3xl font-semibold tracking-tight">Movie Night</h1>
-        <div className="flex min-w-0 items-baseline gap-3 text-sm text-ink-muted">
+    <main className="mx-auto w-full max-w-2xl px-4 py-8 sm:py-10">
+      <header className="mb-6 flex items-center justify-between gap-3">
+        <h1 className="flex shrink-0 items-center gap-2.5 text-3xl font-semibold tracking-tight">
+          <span className="grid size-10 place-items-center rounded-full bg-primary text-on-primary">
+            <Popcorn aria-hidden="true" className="size-5" />
+          </span>
+          Movie Night
+        </h1>
+        <nav aria-label="Main" className="flex min-w-0 items-center gap-1 text-sm font-semibold">
           {/* Who's signed in: your display name (Settings), or the email until
-              there is one. No room for it on phones. */}
-          <span className="hidden truncate sm:block">{myName ?? auth?.claims.email}</span>
-          <Link href="/lists" className="shrink-0 hover:underline">
-            Lists
+              there is one. Only where there's room. */}
+          <span className="hidden truncate px-2 font-normal text-ink-muted md:block">
+            {myName ?? auth?.claims.email}
+          </span>
+          {/* Phones get icons only (the three labels don't fit next to the
+              title); the label stays for screen readers. */}
+          <Link href="/lists" className={navItem}>
+            <ListVideo aria-hidden="true" className="size-5" />
+            <span className="sr-only sm:not-sr-only">Lists</span>
           </Link>
-          <Link href="/settings" className="shrink-0 hover:underline">
-            Settings
+          <Link href="/settings" className={navItem}>
+            <Settings aria-hidden="true" className="size-5" />
+            <span className="sr-only sm:not-sr-only">Settings</span>
           </Link>
           <form action={signOut} className="shrink-0">
-            <button type="submit" className="whitespace-nowrap hover:underline">
-              Sign out
+            <button type="submit" className={navItem}>
+              <LogOut aria-hidden="true" className="size-5" />
+              <span className="sr-only sm:not-sr-only">Sign&nbsp;out</span>
             </button>
           </form>
-        </div>
-      </div>
+        </nav>
+      </header>
 
-      <section className="mb-10 rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
-        <h2 className="mb-4 text-xl font-semibold">What are we watching tonight?</h2>
-        {ratingCount < FEW_RATINGS && (
-          <p className="mb-5 rounded-md bg-zinc-100 px-3 py-2 text-sm text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
-            <Link href="/rate" className="font-medium underline">
-              Rate a few movies you&rsquo;ve seen
-            </Link>{" "}
-            so recommendations learn your taste
-            {ratingCount > 0 && ` (${ratingCount} so far)`}.
-          </p>
-        )}
+      <section className="mb-10 rounded-card border-3 border-line bg-card p-5 shadow-soft sm:p-6">
+        <h2 className="mb-4 text-xl font-semibold tracking-tight">What are we watching tonight?</h2>
         <RecommendForm
           people={people}
           genres={genres.filter((g) => !HIDDEN_GENRES.has(g.id)).sort((a, b) => a.name.localeCompare(b.name))}
           initialWatchers={asked.length ? asked : people.map((p) => p.id)} // default: everyone
           initialGenres={askedGenres}
         />
-        {ratingCount >= FEW_RATINGS && (
-          <Link href="/rate" className="mt-4 inline-block text-sm text-ink-muted hover:underline">
+        {/* Below the button, so "Recommend a movie" stays on a phone's first
+            screen. Lilac + sparkles = your taste (the same as "Because you
+            liked..." on /pick). */}
+        {ratingCount < FEW_RATINGS ? (
+          <p className="mt-5 flex items-start gap-2.5 rounded-field bg-lilac px-4 py-3 text-sm text-on-lilac">
+            <Sparkles aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+            <span>
+              <Link href="/rate" className="font-bold underline underline-offset-2">
+                Rate a few movies you&rsquo;ve seen
+              </Link>{" "}
+              so recommendations learn your taste
+              {ratingCount > 0 && ` (${ratingCount} so far)`}.
+            </span>
+          </p>
+        ) : (
+          <Link
+            href="/rate"
+            className="mt-3 inline-flex min-h-10 items-center text-sm font-semibold text-on-soft underline-offset-4 hover:underline"
+          >
             Rate more movies you&rsquo;ve seen
           </Link>
         )}
       </section>
 
-      <h2 className="mb-2 text-sm font-medium text-ink-muted">Or look up a movie</h2>
+      <h2 className="mb-3 text-lg font-semibold">Or look up a movie</h2>
       {/* action="" submits to this same page as /?q=... */}
       <Form action="" className="mb-8 flex gap-2">
-        <input
-          key={query} // resets the box when navigating back/forward
-          name="q"
-          defaultValue={query}
-          placeholder="Search for a movie…"
-          aria-label="Search for a movie"
-          className="flex-1 rounded-md border border-zinc-300 bg-transparent px-3 py-2 dark:border-zinc-700"
-        />
+        <div className="relative min-w-0 flex-1">
+          <Search
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 left-3.5 size-5 -translate-y-1/2 text-ink-muted"
+          />
+          <input
+            key={query} // resets the box when navigating back/forward
+            type="search"
+            name="q"
+            defaultValue={query}
+            placeholder="Search for a movie…"
+            aria-label="Search for a movie"
+            autoComplete="off"
+            enterKeyHint="search"
+            className="h-11 w-full rounded-field border-2 border-line bg-card pr-3 pl-11 placeholder:text-ink-muted"
+          />
+        </div>
         <button
           type="submit"
-          className="rounded-md bg-foreground px-4 py-2 font-medium text-background"
+          className="h-11 shrink-0 rounded-full border-2 border-line bg-card px-5 font-semibold transition-colors duration-150 ease-out hover:bg-soft motion-safe:active:translate-y-px"
         >
           Search
         </button>
       </Form>
 
       {query && results.length === 0 && (
-        <p className="text-ink-muted">No movies found for “{query}”.</p>
+        <p className="text-ink-muted">No movies found for &ldquo;{query}&rdquo;. Try another spelling or fewer words.</p>
       )}
 
       <ul className="flex flex-col gap-3">
@@ -113,7 +143,7 @@ export default async function Home(props: PageProps<"/">) {
             <li key={movie.id}>
               <Link
                 href={`/movie/${movie.id}`}
-                className="flex gap-4 rounded-md p-2 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                className="flex gap-4 rounded-card border-2 border-line bg-card p-3 transition-colors duration-150 ease-out hover:border-primary"
               >
                 {movie.poster_path ? (
                   <Image
@@ -121,19 +151,19 @@ export default async function Home(props: PageProps<"/">) {
                     alt=""
                     width={62}
                     height={93}
-                    className="h-[93px] w-[62px] shrink-0 rounded object-cover"
+                    className="h-[93px] w-[62px] shrink-0 rounded-thumb object-cover"
                   />
                 ) : (
-                  <div className="h-[93px] w-[62px] shrink-0 rounded bg-zinc-200 dark:bg-zinc-800" />
+                  <div className="grid h-[93px] w-[62px] shrink-0 place-items-center rounded-thumb bg-soft text-on-soft">
+                    <Film aria-hidden="true" className="size-6" />
+                  </div>
                 )}
-                <div className="min-w-0">
-                  <p className="font-medium">
+                <div className="min-w-0 py-0.5">
+                  <p className="font-heading text-lg leading-snug font-medium">
                     {movie.title}
-                    {year && <span className="ml-2 text-ink-muted">({year})</span>}
+                    {year && <span className="ml-2 font-normal text-ink-muted">({year})</span>}
                   </p>
-                  <p className="line-clamp-2 text-sm text-zinc-600 dark:text-zinc-400">
-                    {movie.overview}
-                  </p>
+                  <p className="mt-1 line-clamp-2 text-sm text-ink-muted">{movie.overview}</p>
                 </div>
               </Link>
             </li>
@@ -143,6 +173,10 @@ export default async function Home(props: PageProps<"/">) {
     </main>
   );
 }
+
+// Quiet header links (MASTER.md "Quiet" buttons): no fill until hovered.
+const navItem =
+  "inline-flex h-10 min-w-10 shrink-0 items-center justify-center gap-1.5 rounded-full px-2.5 text-ink-muted transition-colors duration-150 ease-out hover:bg-soft hover:text-ink";
 
 // You first, then everyone you share a list with, by name.
 function toPeople(profiles: { user_id: string; display_name: string }[], userId: string | undefined): FormPerson[] {

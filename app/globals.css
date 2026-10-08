@@ -40,6 +40,7 @@
   --radius-card: 24px;
   --radius-poster: 18px;
   --radius-field: 16px;
+  --radius-thumb: 12px;
 
   --shadow-soft: 0 6px 20px rgb(37 99 235 / 0.10);
 }
@@ -73,5 +74,13 @@
   h2,
   h3 {
     font-family: var(--font-heading);
+    text-wrap: balance;
+  }
+
+  /* Every link, button and field gets the same visible keyboard focus ring.
+     A focus-visible:* class on an element still wins over this. */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
   }
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Form from "next/form";
+import { Check } from "lucide-react";
 
 export type FormPerson = { id: string; name: string; isMe: boolean };
 export type FormGenre = { id: number; name: string };
@@ -33,11 +34,11 @@ export function RecommendForm({
   const nobodyWatching = watching.size === 0;
 
   return (
-    <Form action="/pick" className="flex flex-col gap-5">
+    <Form action="/pick" className="flex flex-col gap-6">
       {/* Only worth asking once you share a list with someone. */}
       {people.length > 1 && (
         <fieldset>
-          <legend className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Who&rsquo;s watching</legend>
+          <legend className={legendClass}>Who&rsquo;s watching</legend>
           <div className="mt-2 flex flex-wrap gap-2">
             {people.map((p) => (
               <label key={p.id} className={chipClass}>
@@ -47,8 +48,9 @@ export function RecommendForm({
                   value={p.id}
                   checked={watching.has(p.id)}
                   onChange={() => toggle(p.id)}
-                  className="sr-only"
+                  className="peer sr-only"
                 />
+                <Check aria-hidden="true" className={checkClass} />
                 {p.isMe ? "You" : p.name}
               </label>
             ))}
@@ -57,8 +59,8 @@ export function RecommendForm({
       )}
 
       <fieldset>
-        <legend className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
-          In the mood for <span className="font-normal text-ink-muted">(optional, pick any)</span>
+        <legend className={legendClass}>
+          In the mood for <span className="font-normal">(optional, pick any)</span>
         </legend>
         <div className="mt-2 flex flex-wrap gap-2">
           {genres.map((g) => (
@@ -68,29 +70,39 @@ export function RecommendForm({
                 name="genre"
                 value={g.id}
                 defaultChecked={initialGenres.includes(g.id)}
-                className="sr-only"
+                className="peer sr-only"
               />
+              <Check aria-hidden="true" className={checkClass} />
               {g.name}
             </label>
           ))}
         </div>
       </fieldset>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
         <button
           type="submit"
           disabled={nobodyWatching}
-          className="rounded-md bg-foreground px-5 py-2 font-medium text-background disabled:opacity-60"
+          className="h-12 w-full rounded-full bg-primary px-7 font-heading text-lg font-medium text-on-primary transition-colors duration-150 ease-out hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-primary motion-safe:active:translate-y-px sm:w-auto"
         >
           Recommend a movie
         </button>
-        {nobodyWatching && <p className="text-sm text-ink-muted">Tick at least one person.</p>}
+        {/* Always in the page so screen readers hear it when it appears. */}
+        <p aria-live="polite" className="text-sm text-ink-muted">
+          {nobodyWatching && "Tick at least one person."}
+        </p>
       </div>
     </Form>
   );
 }
 
-// A checkbox drawn as a pill: the real input is visually hidden (sr-only) but
-// still focusable and announced; the label shows its state.
+const legendClass = "text-sm font-semibold text-ink-muted";
+
+// A checkbox drawn as a pill (MASTER.md "Toggle pills"): the real input is
+// visually hidden (sr-only) but still focusable and announced; the label shows
+// its state. Selected = soft blue, a primary outline and a check icon, so it
+// isn't told by color alone. Works before JavaScript loads (CSS only).
 const chipClass =
-  "cursor-pointer select-none rounded-full border border-zinc-300 px-3 py-1.5 text-sm transition-colors hover:bg-zinc-100 has-checked:border-zinc-900 has-checked:bg-zinc-900 has-checked:text-white has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-zinc-500 dark:border-zinc-700 dark:hover:bg-zinc-900 dark:has-checked:border-zinc-100 dark:has-checked:bg-zinc-100 dark:has-checked:text-zinc-900";
+  "inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-full border-2 border-line bg-card px-4 text-sm font-semibold select-none transition-colors duration-150 ease-out hover:bg-soft has-checked:border-primary has-checked:bg-soft has-checked:text-on-soft has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-primary motion-safe:active:translate-y-px";
+
+const checkClass = "-ml-1 hidden size-4 shrink-0 peer-checked:block";
