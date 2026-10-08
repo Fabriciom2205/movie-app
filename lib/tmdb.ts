@@ -42,6 +42,36 @@ export type WatchProviders = {
   buy?: WatchProvider[];
 };
 
+// A movie as TMDB lists it in discover and recommendations results.
+export type MovieListItem = MovieSearchResult & {
+  genre_ids: number[];
+  vote_average: number; // 0-10
+  vote_count: number;
+  popularity: number;
+};
+
+type MovieListResponse = {
+  page: number;
+  results: MovieListItem[];
+  total_pages: number;
+  total_results: number;
+};
+
+export type Genre = { id: number; name: string };
+
+// Details plus where to watch in one region, from a single request.
+export type MovieWithProviders = MovieDetails & {
+  vote_average: number;
+  vote_count: number;
+  providers: WatchProviders | null; // null: not available in this region
+};
+
+type MovieWithProvidersResponse = MovieDetails & {
+  vote_average: number;
+  vote_count: number;
+  "watch/providers": { results: Record<string, WatchProviders> };
+};
+
 type WatchProvidersResponse = {
   id: number;
   results: Record<string, WatchProviders>; // keyed by country code, e.g. "US"
@@ -151,6 +181,71 @@ export async function getRegions(): Promise<Region[]> {
     language: "en-US",
   });
   return data.results.sort((a, b) => a.english_name.localeCompare(b.english_name));
+}
+
+// Movies streaming on any of these services in a region (subscription, free
+// or free with ads, the same rule the picker uses), optionally in any of these
+// genres. Most popular first; very obscure titles are left out.
+export async function discoverMovies(options: {
+  region: string;
+  providerIds: number[];
+  genreIds?: number[];
+  page?: number;
+}): Promise<MovieListItem[]> {
+  // With no services, TMDB would ignore the filter and return everything.
+  if (options.providerIds.length === 0) return [];
+
+  const data = await tmdbFetch<MovieListResponse>("/discover/movie", {
+    watch_region: options.region,
+    with_watch_providers: options.providerIds.join("|"), // "|" means OR
+    with_watch_monetization_types: "flatrate|free|ads",
+    ...(options.genreIds?.length ? { with_genres: options.genreIds.join("|") } : {}),
+    sort_by: "popularity.desc",
+    "vote_count.gte": "200",
+    include_adult: "false",
+    language: "en-US",
+    page: String(options.page ?? 1),
+  });
+  return data.results;
+}
+
+// TMDB's "if you liked this" list for one movie (first page, up to 20).
+// Says nothing about where they stream. Empty when the movie doesn't exist.
+export async function getRecommendations(id: number): Promise<MovieListItem[]> {
+  try {
+    const data = await tmdbFetch<MovieListResponse>(`/movie/${id}/recommendations`, {
+      language: "en-US",
+      page: "1",
+    });
+    return data.results;
+  } catch (err) {
+    if (err instanceof TmdbError && err.status === 404) return [];
+    throw err;
+  }
+}
+
+// All movie genres, e.g. { id: 35, name: "Comedy" }.
+export async function getMovieGenres(): Promise<Genre[]> {
+  const data = await tmdbFetch<{ genres: Genre[] }>("/genre/movie/list", { language: "en-US" });
+  return data.genres;
+}
+
+// Details (runtime, genres, rating) and where to watch, in ONE request instead
+// of two, using TMDB's append_to_response. Returns null for an unknown movie.
+export async function getMovieWithProviders(
+  id: number,
+  region: string,
+): Promise<MovieWithProviders | null> {
+  try {
+    const { "watch/providers": watch, ...movie } = await tmdbFetch<MovieWithProvidersResponse>(
+      `/movie/${id}`,
+      { language: "en-US", append_to_response: "watch/providers" },
+    );
+    return { ...movie, providers: watch.results[region] ?? null };
+  } catch (err) {
+    if (err instanceof TmdbError && err.status === 404) return null;
+    throw err;
+  }
 }
 
 // TMDB serves pre-sized images. w92 suits logos, w185 thumbnails, w342+ detail posters.
