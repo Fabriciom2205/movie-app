@@ -1,8 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Bookmark, Sparkles, Star, ThumbsDown, ThumbsUp, type LucideIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  Bookmark,
+  Film,
+  Info,
+  SearchX,
+  Shuffle,
+  Sparkles,
+  Star,
+  ThumbsDown,
+  ThumbsUp,
+  Tv,
+  type LucideIcon,
+} from "lucide-react";
 import { ListToggles } from "@/app/movie/[id]/list-toggles";
+import { banner, card, posterGrid, primaryButton, quietButton, secondaryButton, sectionLabel, tag } from "@/app/ui";
 import { getMyLists } from "@/lib/my-movie";
 import { recommendMovie, type Person, type RecommendRequest, type ReasonLine } from "@/lib/recommender";
 import { createClient } from "@/lib/supabase/server";
@@ -13,11 +27,12 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_GENRES = 10;
 const MAX_SKIP = 100;
 
-const REASON_ICONS: Record<ReasonLine["kind"], LucideIcon> = {
-  friendsLiked: ThumbsUp,
-  becauseYouLiked: Sparkles,
-  onList: Bookmark,
-  wellRated: Star,
+// Each kind of reason has its own icon and pastel pair (MASTER.md "Reason chips").
+const REASONS: Record<ReasonLine["kind"], { icon: LucideIcon; color: string }> = {
+  friendsLiked: { icon: ThumbsUp, color: "bg-mint text-on-mint" },
+  becauseYouLiked: { icon: Sparkles, color: "bg-lilac text-on-lilac" },
+  onList: { icon: Bookmark, color: "bg-soft text-on-soft" },
+  wellRated: { icon: Star, color: "bg-peach text-on-peach" },
 };
 
 // /pick?watch=<user id>&watch=<user id>&genre=35&genre=53&skip=603,550&seed=48213
@@ -42,113 +57,131 @@ export default async function PickPage(props: PageProps<"/pick">) {
   const changeUrl = pickUrl({ ...req, skip: [], seed: null }).replace("/pick", "/"); // same choices, on the home form
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10">
-      <Link href={changeUrl} className="text-sm text-ink-muted hover:underline">
-        ← Change what you&rsquo;re in the mood for
+    <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-10">
+      <Link href={changeUrl} className={`${quietButton} -ml-3`}>
+        <ArrowLeft aria-hidden="true" className="size-4" />
+        Change what you&rsquo;re in the mood for
       </Link>
 
-      <p className="mt-6 text-sm font-medium text-ink-muted">Tonight&rsquo;s pick {forWhom}</p>
-
       {pick ? (
-        <div className="mt-3 flex flex-col gap-6 sm:flex-row">
-          {/* Poster and title open the full movie page (rent/buy options and more). */}
-          <Link href={`/movie/${pick.movie.id}`} className="shrink-0 self-start" tabIndex={-1} aria-hidden="true">
-            {pick.movie.poster_path ? (
-              <Image
-                src={tmdbImageUrl(pick.movie.poster_path, "w342")}
-                alt=""
-                width={200}
-                height={300}
-                preload
-                className="h-[300px] w-[200px] rounded-lg object-cover transition-opacity hover:opacity-90"
-              />
-            ) : (
-              <div className="h-[300px] w-[200px] rounded-lg bg-zinc-200 dark:bg-zinc-800" />
-            )}
-          </Link>
-
-          <div className="min-w-0">
-            <h1 className="text-3xl font-semibold tracking-tight">
-              <Link href={`/movie/${pick.movie.id}`} className="hover:underline">
-                {pick.movie.title}
-              </Link>
-              {pick.movie.release_date && (
-                <span className="ml-2 font-normal text-ink-muted">({releaseYear(pick.movie.release_date)})</span>
-              )}
-            </h1>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-              {[formatRuntime(pick.movie.runtime), pick.movie.genres.map((g) => g.name).join(", ")]
-                .filter(Boolean)
-                .join(" · ")}
-            </p>
-
-            {(pick.reasons.length > 0 || pick.dislikedBy.length > 0) && (
-              <ul className="mt-4 flex flex-col gap-1.5">
-                {pick.reasons.slice(0, 3).map((reason) => {
-                  const Icon = REASON_ICONS[reason.kind];
-                  return (
-                    <li key={reason.kind} className="flex items-start gap-2 font-medium">
-                      <Icon aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-ink-muted" />
-                      {reason.text}
-                    </li>
-                  );
-                })}
-                {pick.dislikedBy.map((name) => (
-                  <li key={name} className="flex items-start gap-2 text-ink-muted">
-                    <ThumbsDown aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0" />
-                    {name} wasn&rsquo;t into it
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {pick.movie.overview && (
-              <p className="mt-4 line-clamp-4 leading-7 text-zinc-700 dark:text-zinc-300">{pick.movie.overview}</p>
-            )}
-
-            <div className="mt-5">
-              <p className="text-sm font-medium text-ink-muted">Stream it on</p>
-              <ul className="mt-2 flex flex-wrap gap-3">
-                {pick.services.map((s) => (
-                  <li key={s.provider_id} className="flex items-center gap-2">
-                    <Image
-                      src={tmdbImageUrl(s.logo_path, "w92")}
-                      alt=""
-                      width={32}
-                      height={32}
-                      className="h-8 w-8 rounded-md"
-                    />
-                    <span className="text-sm">{s.provider_name}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {result.watchersWithoutServices.length > 0 && (
-              <ServicesHint missing={result.watchersWithoutServices} watchers={result.watchers} />
-            )}
-
-            <PickRating movieId={pick.movie.id} title={pick.movie.title} />
-            <ListToggles movieId={pick.movie.id} lists={myLists} />
-
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              {result.moreLeft ? (
-                <Link href={anotherUrl} className="rounded-md bg-foreground px-4 py-2 font-medium text-background">
-                  Pick another
-                </Link>
+        <>
+          <p className={`mt-4 ${sectionLabel}`}>Tonight&rsquo;s pick {forWhom}</p>
+          <article className={`mt-3 shadow-soft ${card} ${posterGrid}`}>
+            {/* Poster and title open the full movie page (rent/buy options and more). */}
+            <Link href={`/movie/${pick.movie.id}`} className="self-start sm:row-span-2" tabIndex={-1} aria-hidden="true">
+              {pick.movie.poster_path ? (
+                <Image
+                  src={tmdbImageUrl(pick.movie.poster_path, "w342")}
+                  alt=""
+                  width={200}
+                  height={300}
+                  preload
+                  className="aspect-2/3 w-full rounded-poster object-cover transition-opacity duration-150 hover:opacity-90"
+                />
               ) : (
-                startOverUrl && (
-                  <Link href={startOverUrl} className="rounded-md bg-foreground px-4 py-2 font-medium text-background">
-                    Start over
-                  </Link>
-                )
+                <div className="grid aspect-2/3 w-full place-items-center rounded-poster bg-soft text-on-soft">
+                  <Film aria-hidden="true" className="size-8" />
+                </div>
               )}
+            </Link>
+
+            <div className="min-w-0 self-center sm:self-start">
+              <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                <Link
+                  href={`/movie/${pick.movie.id}`}
+                  className="decoration-2 underline-offset-4 hover:underline"
+                >
+                  {pick.movie.title}
+                </Link>
+                {/* A real space (not a margin), so the year can wrap to the next line. */}
+                {pick.movie.release_date && (
+                  <> <span className="font-normal text-ink-muted">({releaseYear(pick.movie.release_date)})</span></>
+                )}
+              </h1>
+              <p className="mt-2 text-sm text-ink-muted">
+                {[formatRuntime(pick.movie.runtime), pick.movie.genres.map((g) => g.name).join(", ")]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </p>
             </div>
-            {!result.moreLeft && (
-              <p className="mt-3 text-sm text-ink-muted">That&rsquo;s the last one we found for tonight.</p>
-            )}
-          </div>
-        </div>
+
+            <div className="col-span-2 flex min-w-0 flex-col gap-5 sm:col-span-1 sm:col-start-2">
+              {(pick.reasons.length > 0 || pick.dislikedBy.length > 0) && (
+                <ul className="flex flex-wrap gap-2">
+                  {pick.reasons.slice(0, 3).map((reason) => {
+                    const { icon: Icon, color } = REASONS[reason.kind];
+                    return (
+                      <li key={reason.kind} className={`${tag} ${color}`}>
+                        <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+                        {reason.text}
+                      </li>
+                    );
+                  })}
+                  {pick.dislikedBy.map((name) => (
+                    <li key={name} className={`${tag} bg-peach text-on-peach`}>
+                      <ThumbsDown aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+                      {name} wasn&rsquo;t into it
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {pick.movie.overview && <p className="line-clamp-4 leading-relaxed">{pick.movie.overview}</p>}
+
+              <div>
+                <p className={sectionLabel}>Stream it on</p>
+                {/* Tags on the sky color, so they don't look like buttons. */}
+                <ul className="mt-2 flex flex-wrap gap-2">
+                  {pick.services.map((s) => (
+                    <li
+                      key={s.provider_id}
+                      className="inline-flex items-center gap-2 rounded-full bg-page py-1 pr-3.5 pl-1 text-sm font-semibold"
+                    >
+                      <Image
+                        src={tmdbImageUrl(s.logo_path, "w92")}
+                        alt=""
+                        width={28}
+                        height={28}
+                        className="size-7 rounded-full"
+                      />
+                      {s.provider_name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {result.watchersWithoutServices.length > 0 && (
+                <ServicesHint missing={result.watchersWithoutServices} watchers={result.watchers} />
+              )}
+
+              <div>
+                {result.moreLeft ? (
+                  <Link href={anotherUrl} className={`${primaryButton} w-full sm:w-auto`}>
+                    <Shuffle aria-hidden="true" className="size-5" />
+                    Pick another
+                  </Link>
+                ) : (
+                  startOverUrl && (
+                    <Link href={startOverUrl} className={`${primaryButton} w-full sm:w-auto`}>
+                      <Shuffle aria-hidden="true" className="size-5" />
+                      Start over
+                    </Link>
+                  )
+                )}
+                {!result.moreLeft && (
+                  <p className="mt-3 text-sm text-ink-muted">That&rsquo;s the last one we found for tonight.</p>
+                )}
+              </div>
+            </div>
+
+            {/* Secondary actions, under a divider: rate it (a rating means you've
+                seen it, so the next pick leaves it out) or save it for later. */}
+            <div className="col-span-2 grid gap-5 border-t-2 border-line pt-5 sm:grid-cols-2 sm:gap-6">
+              <PickRating movieId={pick.movie.id} title={pick.movie.title} />
+              <ListToggles movieId={pick.movie.id} lists={myLists} />
+            </div>
+          </article>
+        </>
       ) : (
         <NothingFound
           problem={result.problem}
@@ -160,7 +193,7 @@ export default async function PickPage(props: PageProps<"/pick">) {
       )}
 
       {/* Required attribution: TMDB's availability data comes from JustWatch. */}
-      <p className="mt-12 text-xs text-ink-muted">Availability data provided by JustWatch.</p>
+      <p className="mt-10 text-xs text-ink-muted">Availability data provided by JustWatch.</p>
     </main>
   );
 }
@@ -177,22 +210,27 @@ function ServicesHint({ missing, watchers }: { missing: Person[]; watchers: Pers
   const includesMe = missing.some((p) => p.isMe);
 
   return (
-    <p className="mt-4 text-sm text-ink-muted">
-      {subject.charAt(0).toUpperCase() + subject.slice(1)} {verb} picked streaming services yet, so this pick
-      only uses {basis} services.
-      {includesMe && (
-        <>
-          {" "}
-          <Link href="/settings" className="underline">
-            Add yours in Settings
-          </Link>
-          .
-        </>
-      )}
+    <p className={`${banner} bg-soft text-on-soft`}>
+      <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+      <span>
+        {subject.charAt(0).toUpperCase() + subject.slice(1)} {verb} picked streaming services yet, so this pick
+        only uses {basis} services.
+        {includesMe && (
+          <>
+            {" "}
+            <Link href="/settings" className="font-bold underline underline-offset-2">
+              Add yours in Settings
+            </Link>
+            .
+          </>
+        )}
+      </span>
     </p>
   );
 }
 
+// No pick: a card that says why, with one clear way forward (the primary
+// button) and the other options as secondary buttons.
 function NothingFound({
   problem,
   watchersWithoutServices,
@@ -206,21 +244,18 @@ function NothingFound({
   startOverUrl: string | null;
   changeUrl: string;
 }) {
-  const primary = "rounded-md bg-foreground px-4 py-2 font-medium text-background";
-  const secondary =
-    "rounded-md border border-zinc-300 px-4 py-2 font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-900";
-
   if (problem === "noServices") {
     return (
-      <div className="mt-3">
-        <h1 className="text-2xl font-semibold">Pick your streaming services first</h1>
-        <p className="mt-3 text-zinc-600 dark:text-zinc-400">
+      <div className={`mt-4 shadow-soft ${card}`}>
+        <EmptyIcon icon={Tv} />
+        <h1 className="text-2xl font-semibold tracking-tight">Pick your streaming services first</h1>
+        <p className="mt-2 leading-relaxed">
           Recommendations only include movies you can stream tonight, so they need to know what you pay for.
           {watchersWithoutServices.length > 1 &&
             ` Nobody watching has picked any yet (${joinNames(watchersWithoutServices.map((p) => (p.isMe ? "you" : p.name)))}).`}
         </p>
         <div className="mt-6">
-          <Link href="/settings" className={primary}>
+          <Link href="/settings" className={primaryButton}>
             Go to Settings
           </Link>
         </div>
@@ -229,30 +264,39 @@ function NothingFound({
   }
 
   return (
-    <div className="mt-3">
-      <h1 className="text-2xl font-semibold">
-        {startOverUrl ? "That's everything we found for tonight" : "Couldn't find anything right now"}
+    <div className={`mt-4 shadow-soft ${card}`}>
+      <EmptyIcon icon={SearchX} />
+      <h1 className="text-2xl font-semibold tracking-tight">
+        {startOverUrl ? "That’s everything we found for tonight" : "Couldn’t find anything right now"}
       </h1>
-      <p className="mt-3 text-zinc-600 dark:text-zinc-400">
+      <p className="mt-2 leading-relaxed">
         {moreUrl
           ? "None of the best matches are streaming on your services at the moment."
           : "Try other moods, or no mood at all."}
       </p>
-      <div className="mt-6 flex flex-wrap gap-3">
+      <div className="mt-6 flex flex-wrap items-center gap-3">
         {moreUrl && (
-          <Link href={moreUrl} className={primary}>
+          <Link href={moreUrl} className={primaryButton}>
             Keep looking
           </Link>
         )}
         {startOverUrl && (
-          <Link href={startOverUrl} className={moreUrl ? secondary : primary}>
+          <Link href={startOverUrl} className={moreUrl ? secondaryButton : primaryButton}>
             Start over
           </Link>
         )}
-        <Link href={changeUrl} className={secondary}>
+        <Link href={changeUrl} className={secondaryButton}>
           Change moods
         </Link>
       </div>
+    </div>
+  );
+}
+
+function EmptyIcon({ icon: Icon }: { icon: LucideIcon }) {
+  return (
+    <div className="mb-4 grid size-12 place-items-center rounded-full bg-soft text-on-soft">
+      <Icon aria-hidden="true" className="size-6" />
     </div>
   );
 }

@@ -70,7 +70,7 @@ export default async function MoviePage(props: PageProps<"/movie/[id]">) {
           {movie.overview && <p className="mt-4 leading-7">{movie.overview}</p>}
 
           <RatingButtons movieId={movie.id} verdict={myVerdict} />
-          <ListToggles movieId={movie.id} lists={myLists} />
+          <ListToggles movieId={movie.id} lists={myLists} className="mt-6" />
         </div>
       </div>
 

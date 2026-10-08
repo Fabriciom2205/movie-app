@@ -86,6 +86,11 @@ text; titles tight (`tracking-tight`). Sentence case everywhere.
 
 ## 2. Components
 
+These are written once as class strings in `app/ui.ts` (`primaryButton`,
+`secondaryButton`, `quietButton`, `toggleChip`, `toggleButton`, `card`,
+`posterGrid`, `sectionLabel`, `tag`, `banner`). Pages import them instead of
+re-typing classes; changing a component = changing it there.
+
 **Page:** `bg-page text-ink font-body`, content `max-w-2xl`/`max-w-3xl` centered,
 `px-4 py-10`. Mobile-first: everything must work at 375px with no sideways scroll.
 
@@ -120,7 +125,30 @@ it works before JavaScript loads.
 
 **Reason chips** on /pick: small pills with an icon and text in a pastel pair:
 friend liked = mint, because-you-liked = lilac, on your list = soft (blue),
-rated N on TMDB = peach. "X wasn't into it" = peach.
+rated N on TMDB = peach. "X wasn't into it" = peach. They're `tag`s: no
+outline (so they don't look pressable) and `radius-field`, which is a pill on
+one line and a rounded box when a long reason wraps.
+
+**Movie with its poster** (`posterGrid`, /pick and the movie page): the poster
+sits beside the title, 120px wide on phones (so the title and what follows fit
+on the first screen) and 200px from `sm` up; the details go under both on
+phones and beside the poster wider up. Movie titles are `text-2xl` on phones,
+`text-3xl` from `sm`. Put a real space (not a margin) between a title and its
+"(year)", or the two can't wrap apart and stick out of a narrow column.
+
+**Order on a result card** (/pick): what it is and why (title, reason tags,
+overview), where to watch (provider tags), then the primary action ("Pick
+another"); below a 2px `line` divider, the secondary actions (rate it, add to
+a list). Streaming providers are `bg-page` tags with a round logo, so on the
+white card they read as data, not buttons.
+
+**Empty and error states:** a card with a `soft` circle holding an icon
+(`Tv`, `SearchX`, `CloudOff`...), a heading that says what happened, a sentence
+with the way forward, then one primary button and any alternatives as secondary.
+
+**Loading:** the shape of what's coming in `soft` blocks (same grid, same
+card), pulsing only with `motion-safe:animate-pulse`, plus a short `aria-live`
+line ("Finding something for tonight…").
 
 **Inputs and selects:** `bg-card`, 2px `line` outline, `radius-field`, 44px tall,
 focus = 2px `primary` ring. Labels above in `text-sm text-ink-muted font-semibold`.
@@ -134,6 +162,9 @@ with a `Film` icon in `on-soft`. Always `next/image`.
 **Messages:** success = mint chip style; inline errors = `text-danger`,
 banners = `bg-danger-soft text-on-danger-soft`, both `role="alert"`; empty
 states are an invitation with one clear action. Banners use `radius-field`.
+An info banner (e.g. "you haven't picked services, so...") is `bg-soft
+text-on-soft` with the `Info` icon. The "Saved: you liked X." confirmation is
+a mint `tag` with `CircleCheck`, inside an always-present `aria-live` region.
 A taste nudge ("Rate a few movies you've seen") is a lilac banner with the
 `Sparkles` icon: lilac + sparkles = your taste, as on /pick. On the home page
 it sits under the main button, so that button stays on a phone's first screen.

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Form from "next/form";
 import { Check } from "lucide-react";
+import { primaryButton, sectionLabel, toggleChip } from "@/app/ui";
 
 export type FormPerson = { id: string; name: string; isMe: boolean };
 export type FormGenre = { id: number; name: string };
@@ -38,10 +39,10 @@ export function RecommendForm({
       {/* Only worth asking once you share a list with someone. */}
       {people.length > 1 && (
         <fieldset>
-          <legend className={legendClass}>Who&rsquo;s watching</legend>
+          <legend className={sectionLabel}>Who&rsquo;s watching</legend>
           <div className="mt-2 flex flex-wrap gap-2">
             {people.map((p) => (
-              <label key={p.id} className={chipClass}>
+              <label key={p.id} className={toggleChip}>
                 <input
                   type="checkbox"
                   name="watch"
@@ -59,12 +60,12 @@ export function RecommendForm({
       )}
 
       <fieldset>
-        <legend className={legendClass}>
+        <legend className={sectionLabel}>
           In the mood for <span className="font-normal">(optional, pick any)</span>
         </legend>
         <div className="mt-2 flex flex-wrap gap-2">
           {genres.map((g) => (
-            <label key={g.id} className={chipClass}>
+            <label key={g.id} className={toggleChip}>
               <input
                 type="checkbox"
                 name="genre"
@@ -83,7 +84,7 @@ export function RecommendForm({
         <button
           type="submit"
           disabled={nobodyWatching}
-          className="h-12 w-full rounded-full bg-primary px-7 font-heading text-lg font-medium text-on-primary transition-colors duration-150 ease-out hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-primary motion-safe:active:translate-y-px sm:w-auto"
+          className={`${primaryButton} w-full sm:w-auto`}
         >
           Recommend a movie
         </button>
@@ -96,13 +97,5 @@ export function RecommendForm({
   );
 }
 
-const legendClass = "text-sm font-semibold text-ink-muted";
-
-// A checkbox drawn as a pill (MASTER.md "Toggle pills"): the real input is
-// visually hidden (sr-only) but still focusable and announced; the label shows
-// its state. Selected = soft blue, a primary outline and a check icon, so it
-// isn't told by color alone. Works before JavaScript loads (CSS only).
-const chipClass =
-  "inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-full border-2 border-line bg-card px-4 text-sm font-semibold select-none transition-colors duration-150 ease-out hover:bg-soft has-checked:border-primary has-checked:bg-soft has-checked:text-on-soft has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-primary motion-safe:active:translate-y-px";
-
+// The check icon inside a toggleChip, shown when its checkbox is ticked.
 const checkClass = "-ml-1 hidden size-4 shrink-0 peer-checked:block";
