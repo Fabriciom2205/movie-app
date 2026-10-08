@@ -2,9 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Bookmark, Sparkles, Star, ThumbsDown, ThumbsUp, type LucideIcon } from "lucide-react";
+import { ListToggles } from "@/app/movie/[id]/list-toggles";
+import { getMyLists } from "@/lib/my-movie";
 import { recommendMovie, type RecommendRequest, type ReasonLine } from "@/lib/recommender";
 import { createClient } from "@/lib/supabase/server";
 import { formatRuntime, releaseYear, tmdbImageUrl } from "@/lib/tmdb";
+import { PickRating } from "./pick-rating";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_GENRES = 10;
@@ -29,6 +32,8 @@ export default async function PickPage(props: PageProps<"/pick">) {
 
   const result = await recommendMovie(userId, req);
   const { pick } = result;
+  // For the list pills: your lists, and which already have this movie.
+  const myLists = pick ? await getMyLists(pick.movie.id) : [];
   const forWhom =
     result.watchers.length > 1 ? `for ${joinNames(result.watchers.map((w) => (w.isMe ? "you" : w.name)))}` : "";
   const anotherUrl = pickUrl({ ...req, skip: result.nextSkip });
@@ -46,22 +51,27 @@ export default async function PickPage(props: PageProps<"/pick">) {
 
       {pick ? (
         <div className="mt-3 flex flex-col gap-6 sm:flex-row">
-          {pick.movie.poster_path ? (
-            <Image
-              src={tmdbImageUrl(pick.movie.poster_path, "w342")}
-              alt={`${pick.movie.title} poster`}
-              width={200}
-              height={300}
-              preload
-              className="h-[300px] w-[200px] shrink-0 rounded-lg object-cover"
-            />
-          ) : (
-            <div className="h-[300px] w-[200px] shrink-0 rounded-lg bg-zinc-200 dark:bg-zinc-800" />
-          )}
+          {/* Poster and title open the full movie page (rent/buy options and more). */}
+          <Link href={`/movie/${pick.movie.id}`} className="shrink-0 self-start" tabIndex={-1} aria-hidden="true">
+            {pick.movie.poster_path ? (
+              <Image
+                src={tmdbImageUrl(pick.movie.poster_path, "w342")}
+                alt=""
+                width={200}
+                height={300}
+                preload
+                className="h-[300px] w-[200px] rounded-lg object-cover transition-opacity hover:opacity-90"
+              />
+            ) : (
+              <div className="h-[300px] w-[200px] rounded-lg bg-zinc-200 dark:bg-zinc-800" />
+            )}
+          </Link>
 
           <div className="min-w-0">
             <h1 className="text-3xl font-semibold tracking-tight">
-              {pick.movie.title}
+              <Link href={`/movie/${pick.movie.id}`} className="hover:underline">
+                {pick.movie.title}
+              </Link>
               {pick.movie.release_date && (
                 <span className="ml-2 font-normal text-zinc-500">({releaseYear(pick.movie.release_date)})</span>
               )}
@@ -114,6 +124,9 @@ export default async function PickPage(props: PageProps<"/pick">) {
               </ul>
             </div>
 
+            <PickRating movieId={pick.movie.id} title={pick.movie.title} />
+            <ListToggles movieId={pick.movie.id} lists={myLists} />
+
             <div className="mt-8 flex flex-wrap items-center gap-3">
               {result.moreLeft ? (
                 <Link href={anotherUrl} className="rounded-md bg-foreground px-4 py-2 font-medium text-background">
@@ -126,12 +139,6 @@ export default async function PickPage(props: PageProps<"/pick">) {
                   </Link>
                 )
               )}
-              <Link
-                href={`/movie/${pick.movie.id}`}
-                className="rounded-md border border-zinc-300 px-4 py-2 font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-900"
-              >
-                Movie details
-              </Link>
             </div>
             {!result.moreLeft && (
               <p className="mt-3 text-sm text-zinc-500">That&rsquo;s the last one we found for tonight.</p>

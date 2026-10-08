@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 import {
   formatRuntime,
   getMovie,
@@ -10,8 +9,8 @@ import {
   tmdbImageUrl,
   type WatchProvider,
 } from "@/lib/tmdb";
-import type { Verdict } from "./actions";
-import { ListToggles, type ListOption } from "./list-toggles";
+import { getMyLists, getMyVerdict } from "@/lib/my-movie";
+import { ListToggles } from "./list-toggles";
 import { RatingButtons } from "./rating-buttons";
 
 export default async function MoviePage(props: PageProps<"/movie/[id]">) {
@@ -128,38 +127,6 @@ function ProviderRow({ label, providers }: { label: string; providers?: WatchPro
       </ul>
     </div>
   );
-}
-
-// The signed-in user's own rating. Filter by user_id: list-mates' ratings are
-// readable too, so "any rating for this movie" could be someone else's.
-async function getMyVerdict(movieId: number): Promise<Verdict | null> {
-  const supabase = await createClient();
-  const { data: auth } = await supabase.auth.getClaims();
-  const userId = auth?.claims.sub;
-  if (!userId) return null;
-
-  const { data } = await supabase
-    .from("ratings")
-    .select("verdict")
-    .eq("user_id", userId)
-    .eq("movie_id", movieId)
-    .maybeSingle();
-  return (data?.verdict as Verdict | undefined) ?? null;
-}
-
-// The user's lists (RLS returns only lists they're in), each marked with
-// whether this movie is already on it.
-async function getMyLists(movieId: number): Promise<ListOption[]> {
-  const supabase = await createClient();
-  const [lists, items] = await Promise.all([
-    supabase.from("lists").select("id, name").order("created_at"),
-    supabase.from("list_items").select("list_id").eq("movie_id", movieId),
-  ]);
-  if (lists.error) throw lists.error;
-  if (items.error) throw items.error;
-
-  const withMovie = new Set(items.data.map((i) => i.list_id));
-  return lists.data.map((l) => ({ id: l.id, name: l.name, hasMovie: withMovie.has(l.id) }));
 }
 
 // "free" and "ads" can list the same service; keep the first of each.
