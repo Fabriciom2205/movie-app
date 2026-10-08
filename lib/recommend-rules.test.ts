@@ -156,6 +156,20 @@ test("randomness can reorder close calls but never beats a friend's like", () =>
   assert.deepEqual(ids(ranked), [2, 1]);
 });
 
+test("randomness can lift a movie past one with an extra 'because you liked'", () => {
+  // Movie 1 is recommended by two of your likes, movie 2 by one; luck favors 2.
+  const luck = [0, 1];
+  let call = 0;
+  const ranked = rank({
+    seedRecommendations: [
+      { seed: { id: 100, title: "Dune", likedBy: [ME] }, movies: [movie(1), movie(2)] },
+      { seed: { id: 101, title: "Arrival", likedBy: [ME] }, movies: [movie(1)] },
+    ],
+    random: () => luck[call++],
+  });
+  assert.deepEqual(ids(ranked), [2, 1]);
+});
+
 test("randomness does reorder movies that are otherwise tied", () => {
   const values = [0.1, 0.9];
   let call = 0;

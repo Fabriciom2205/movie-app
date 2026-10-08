@@ -184,7 +184,7 @@ export async function getRegions(): Promise<Region[]> {
 }
 
 // Movies streaming on any of these services in a region (subscription, free
-// or free with ads, the same rule the picker uses), optionally in any of these
+// or free with ads, the same rule findFirstAvailable uses), optionally in any of these
 // genres. Most popular first; very obscure titles are left out.
 export async function discoverMovies(options: {
   region: string;
@@ -205,6 +205,18 @@ export async function discoverMovies(options: {
     include_adult: "false",
     language: "en-US",
     page: String(options.page ?? 1),
+  });
+  return data.results;
+}
+
+// The movies with the most TMDB votes (Interstellar, Inception, The Dark
+// Knight...): the ones people are most likely to have seen. 20 per page.
+export async function getWellKnownMovies(page = 1): Promise<MovieListItem[]> {
+  const data = await tmdbFetch<MovieListResponse>("/discover/movie", {
+    sort_by: "vote_count.desc",
+    include_adult: "false",
+    language: "en-US",
+    page: String(page),
   });
   return data.results;
 }

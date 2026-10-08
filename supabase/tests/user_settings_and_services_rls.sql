@@ -88,7 +88,7 @@ begin
   select count(*) into n from public.user_services where user_id = friend;
   log := log || E'\n13 me, sharing a list: my friend''s services (expect 1): ' || n;
 
-  -- What the picker will ask: which services does at least one of us have?
+  -- What the recommender asks: which services does at least one of us have?
   select count(distinct s.provider_id) into n
   from public.user_services s
   join public.list_members m on m.user_id = s.user_id
