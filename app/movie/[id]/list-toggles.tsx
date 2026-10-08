@@ -3,13 +3,23 @@
 import { useId, useOptimistic, useState, useTransition } from "react";
 import Link from "next/link";
 import { Check, Plus } from "lucide-react";
+import { sectionLabel, toggleButton } from "@/app/ui";
 import { setMovieOnList } from "./actions";
 
 export type ListOption = { id: string; name: string; hasMovie: boolean };
 
 type Change = { listId: string; on: boolean };
 
-export function ListToggles({ movieId, lists }: { movieId: number; lists: ListOption[] }) {
+// Used on the movie page and on /pick; `className` is for the caller's spacing.
+export function ListToggles({
+  movieId,
+  lists,
+  className,
+}: {
+  movieId: number;
+  lists: ListOption[];
+  className?: string;
+}) {
   // Each click is queued as a change on top of the server's data, so several
   // lists can be toggled at once. Once every save finishes, React drops the
   // changes and shows the server's (refreshed) data again.
@@ -31,15 +41,15 @@ export function ListToggles({ movieId, lists }: { movieId: number; lists: ListOp
   }
 
   return (
-    <div className="mt-6">
-      <p id={headingId} className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+    <div className={className}>
+      <p id={headingId} className={sectionLabel}>
         Your lists
       </p>
 
       {lists.length === 0 ? (
         <p className="mt-2 text-sm text-ink-muted">
           No lists yet.{" "}
-          <Link href="/lists" className="underline">
+          <Link href="/lists" className="font-semibold text-on-soft underline underline-offset-2">
             Make one
           </Link>{" "}
           to save movies for later.
@@ -59,13 +69,9 @@ export function ListToggles({ movieId, lists }: { movieId: number; lists: ListOp
                 type="button"
                 aria-pressed={list.hasMovie}
                 onClick={() => toggle(list)}
-                className={`inline-flex max-w-full items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500 ${
-                  list.hasMovie
-                    ? "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900"
-                    : "border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
-                }`}
+                className={toggleButton}
               >
-                <Icon aria-hidden="true" className="h-4 w-4 shrink-0" strokeWidth={2.25} />
+                <Icon aria-hidden="true" className="size-4 shrink-0" strokeWidth={2.25} />
                 <span className="truncate">{list.name}</span>
               </button>
             );
@@ -74,7 +80,7 @@ export function ListToggles({ movieId, lists }: { movieId: number; lists: ListOp
       )}
 
       {error && (
-        <p role="alert" className="mt-2 text-sm text-danger dark:text-red-400">
+        <p role="alert" className="mt-2 text-sm text-danger">
           {error}
         </p>
       )}

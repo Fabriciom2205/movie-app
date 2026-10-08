@@ -161,7 +161,8 @@ export default async function Home(props: PageProps<"/">) {
                 <div className="min-w-0 py-0.5">
                   <p className="font-heading text-lg leading-snug font-medium">
                     {movie.title}
-                    {year && <span className="ml-2 font-normal text-ink-muted">({year})</span>}
+                    {/* A real space (not a margin), so the year can wrap. */}
+                    {year && <> <span className="font-normal text-ink-muted">({year})</span></>}
                   </p>
                   <p className="mt-1 line-clamp-2 text-sm text-ink-muted">{movie.overview}</p>
                 </div>

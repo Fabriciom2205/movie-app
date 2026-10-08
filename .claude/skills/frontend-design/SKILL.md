@@ -50,8 +50,10 @@ including the UI UX Pro Max skill's.
    `--stack nextjs` for Next-specific advice). Its SKILL.md shows the path as
    `${CLAUDE_PLUGIN_ROOT}/.claude/skills/...`; in this repo it's the path above.
    Don't use its `--persist` / `--force` (MASTER.md is hand-maintained).
-3. Build it with tokens. Keep pages server components where possible; client
-   components only for state and interaction.
+3. Build it with tokens and the shared component classes in `app/ui.ts`
+   (`primaryButton`, `card`, `toggleChip`, `tag`...; add one there rather than
+   re-typing a component's classes in a page). Keep pages server components
+   where possible; client components only for state and interaction.
 4. Check it:
    - `npx eslint .`, `npm run typecheck`, `npm test`, `npm run build`
    - in the browser preview at desktop width **and** 375px; screenshot both
