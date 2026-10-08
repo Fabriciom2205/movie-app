@@ -32,10 +32,11 @@ export default async function PickPage(props: PageProps<"/pick">) {
     result.watchers.length > 1 ? `for ${joinNames(result.watchers.map((w) => (w.isMe ? "you" : w.name)))}` : "";
   const anotherUrl = pickUrl({ ...req, skip: result.nextSkip });
   const startOverUrl = req.skip.length > 0 ? pickUrl({ ...req, skip: [] }) : null;
+  const changeUrl = pickUrl({ ...req, skip: [] }).replace("/pick", "/"); // same choices, on the home form
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10">
-      <Link href="/" className="text-sm text-zinc-500 hover:underline">
+      <Link href={changeUrl} className="text-sm text-zinc-500 hover:underline">
         ← Change what you&rsquo;re in the mood for
       </Link>
 
@@ -141,6 +142,7 @@ export default async function PickPage(props: PageProps<"/pick">) {
           watchersWithoutServices={result.watchersWithoutServices}
           moreUrl={result.moreLeft ? anotherUrl : null}
           startOverUrl={startOverUrl}
+          changeUrl={changeUrl}
         />
       )}
 
@@ -155,11 +157,13 @@ function NothingFound({
   watchersWithoutServices,
   moreUrl,
   startOverUrl,
+  changeUrl,
 }: {
   problem: "noServices" | "nothingFound" | null;
   watchersWithoutServices: string[];
   moreUrl: string | null;
   startOverUrl: string | null;
+  changeUrl: string;
 }) {
   const primary = "rounded-md bg-foreground px-4 py-2 font-medium text-background";
   const secondary =
@@ -204,7 +208,7 @@ function NothingFound({
             Start over
           </Link>
         )}
-        <Link href="/" className={secondary}>
+        <Link href={changeUrl} className={secondary}>
           Change moods
         </Link>
       </div>

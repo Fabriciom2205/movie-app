@@ -2,30 +2,31 @@ import Form from "next/form";
 import Image from "next/image";
 import Link from "next/link";
 import { signOut } from "@/app/login/actions";
-import { getDisplayNames } from "@/lib/profiles";
 import { createClient } from "@/lib/supabase/server";
-import { releaseYear, searchMovies, tmdbImageUrl } from "@/lib/tmdb";
-import { PickerForm, type PickerList } from "./picker-form";
+import { getMovieGenres, releaseYear, searchMovies, tmdbImageUrl } from "@/lib/tmdb";
+import { RecommendForm, type FormPerson } from "./recommend-form";
 
-type ListRow = { id: string; name: string; list_members: { user_id: string }[] };
+// Not a mood anyone picks for movie night.
+const HIDDEN_GENRES = new Set([10770]); // TV Movie
 
 export default async function Home(props: PageProps<"/">) {
-  const { q } = await props.searchParams;
-  const query = typeof q === "string" ? q.trim() : "";
+  const params = await props.searchParams;
+  const query = typeof params.q === "string" ? params.q.trim() : "";
 
   const supabase = await createClient();
-  const [{ data: auth }, results, lists] = await Promise.all([
+  const [{ data: auth }, results, profiles, genres] = await Promise.all([
     supabase.auth.getClaims(),
     query ? searchMovies(query) : Promise.resolve([]),
-    // Newest first, so the picker defaults to the list you made last.
-    supabase
-      .from("lists")
-      .select("id, name, list_members(user_id)")
-      .order("created_at", { ascending: false })
-      .overrideTypes<ListRow[], { merge: false }>(),
+    // RLS: you and the people you share a list with.
+    supabase.from("profiles").select("user_id, display_name"),
+    getMovieGenres(),
   ]);
-  if (lists.error) throw lists.error;
-  const pickerLists = await toPickerLists(lists.data, auth?.claims.sub);
+  if (profiles.error) throw profiles.error;
+
+  const people = toPeople(profiles.data, auth?.claims.sub);
+  // Coming back from /pick: keep what was chosen (/?watch=...&genre=...).
+  const asked = ([] as string[]).concat(params.watch ?? []).filter((id) => people.some((p) => p.id === id));
+  const askedGenres = ([] as string[]).concat(params.genre ?? []).map(Number);
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-10">
@@ -50,7 +51,12 @@ export default async function Home(props: PageProps<"/">) {
 
       <section className="mb-10 rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
         <h2 className="mb-4 text-xl font-semibold">What are we watching tonight?</h2>
-        <PickerForm lists={pickerLists} />
+        <RecommendForm
+          people={people}
+          genres={genres.filter((g) => !HIDDEN_GENRES.has(g.id)).sort((a, b) => a.name.localeCompare(b.name))}
+          initialWatchers={asked.length ? asked : people.map((p) => p.id)} // default: everyone
+          initialGenres={askedGenres}
+        />
       </section>
 
       <h2 className="mb-2 text-sm font-medium text-zinc-500">Or look up a movie</h2>
@@ -114,14 +120,9 @@ export default async function Home(props: PageProps<"/">) {
   );
 }
 
-// Lists with their members' names, you first, for the picker form.
-async function toPickerLists(lists: ListRow[], userId: string | undefined): Promise<PickerList[]> {
-  const names = await getDisplayNames([...new Set(lists.flatMap((l) => l.list_members.map((m) => m.user_id)))]);
-  return lists.map((l) => ({
-    id: l.id,
-    name: l.name,
-    members: l.list_members
-      .map((m) => ({ id: m.user_id, name: names.get(m.user_id) ?? "Someone", isMe: m.user_id === userId }))
-      .sort((a, b) => Number(b.isMe) - Number(a.isMe)),
-  }));
+// You first, then everyone you share a list with, by name.
+function toPeople(profiles: { user_id: string; display_name: string }[], userId: string | undefined): FormPerson[] {
+  return profiles
+    .map((p) => ({ id: p.user_id, name: p.display_name, isMe: p.user_id === userId }))
+    .sort((a, b) => Number(b.isMe) - Number(a.isMe) || a.name.localeCompare(b.name));
 }
