@@ -1,0 +1,49 @@
+# Health check: is the live app up, and can it reach its database?
+#
+# Twice a day, ask the production app's /api/health endpoint, which runs one
+# tiny database query. That does two jobs:
+#  - catches outages: a failed run turns red and GitHub emails the person who
+#    last changed this schedule
+#  - keeps the free Supabase project awake: it pauses after a week without
+#    database activity, and "a few requests a day" is enough to prevent that
+#
+# Run it by hand any time: Actions tab -> Health check -> Run workflow.
+#
+# Note: GitHub turns off scheduled workflows in a public repo after 60 days
+# with no repository activity. Any push re-enables them; GitHub emails first.
+name: Health check
+
+on:
+  schedule:
+    # 06:23 and 18:23 UTC. Not on the hour: GitHub delays scheduled runs most
+    # around :00, when everyone's cron jobs start at once.
+    - cron: "23 6,18 * * *"
+  workflow_dispatch:
+
+# This job only sends one web request: it needs no access to the repo at all.
+permissions: {}
+
+jobs:
+  ping:
+    name: App and database are up
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      HEALTH_URL: https://movie-app-gamma-liard-97.vercel.app/api/health
+
+    steps:
+      # Retries ride out a brief blip (a cold start, a 503) without paging anyone.
+      # Then check the answer itself: a redirect (say, to /login if the route
+      # went missing) isn't an error to curl, but it isn't a healthy app either.
+      - name: Ask the live app to query its database
+        run: |
+          response=$(curl --silent --show-error \
+            --retry 3 --retry-delay 20 --retry-all-errors --max-time 30 \
+            --write-out '\n%{http_code}' "$HEALTH_URL")
+          status=${response##*$'\n'}
+          body=${response%$'\n'*}
+          echo "HTTP $status $body"
+          if [ "$status" != 200 ] || [ "$body" != '{"ok":true}' ]; then
+            echo '::error::Health check failed: expected HTTP 200 {"ok":true}'
+            exit 1
+          fi

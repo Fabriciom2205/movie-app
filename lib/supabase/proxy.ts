@@ -1,8 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Paths a logged-out visitor may see.
-const PUBLIC_PATHS = ["/login"];
+// Paths a logged-out visitor may see. /api/health is called by the scheduled
+// health check, which has no login.
+const PUBLIC_PATHS = ["/login", "/api/health"];
 
 // Runs before every page (see /proxy.ts). Refreshes the login cookie and
 // sends logged-out visitors to /login. This is a convenience check only:
@@ -37,7 +38,9 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  const isPublic = PUBLIC_PATHS.some((p) => request.nextUrl.pathname.startsWith(p));
+  // Exact path or a sub-path: "/login" and "/login/..." but not "/loginx".
+  const path = request.nextUrl.pathname;
+  const isPublic = PUBLIC_PATHS.some((p) => path === p || path.startsWith(`${p}/`));
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
