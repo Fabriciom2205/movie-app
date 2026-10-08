@@ -1,45 +1,51 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useId } from "react";
+import { field, primaryButton, sectionLabel } from "@/app/ui";
 import { signIn, type LoginState } from "./actions";
 
 const initialState: LoginState = { error: null };
 
 export function LoginForm() {
   const [state, formAction, pending] = useActionState(signIn, initialState);
+  const id = useId();
 
   return (
-    <form action={formAction} className="flex flex-col gap-3">
-      <label className="flex flex-col gap-1 text-sm">
-        Email
+    <form action={formAction} className="flex flex-col gap-4">
+      <div>
+        <label htmlFor={`${id}-email`} className={sectionLabel}>
+          Email
+        </label>
         <input
+          id={`${id}-email`}
           name="email"
           type="email"
           autoComplete="email"
+          spellCheck={false}
           required
-          className="rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-base dark:border-zinc-700"
+          className={`mt-2 ${field}`}
         />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        Password
+      </div>
+      <div>
+        <label htmlFor={`${id}-password`} className={sectionLabel}>
+          Password
+        </label>
         <input
+          id={`${id}-password`}
           name="password"
           type="password"
           autoComplete="current-password"
           required
-          className="rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-base dark:border-zinc-700"
+          className={`mt-2 ${field}`}
         />
-      </label>
+      </div>
 
-      <p aria-live="polite" className="min-h-5 text-sm text-danger dark:text-red-400">
+      {/* Always in the page so screen readers hear the error when it appears. */}
+      <p aria-live="polite" className="min-h-5 text-sm text-danger">
         {state.error}
       </p>
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-md bg-foreground px-4 py-2 font-medium text-background disabled:opacity-60"
-      >
+      <button type="submit" disabled={pending} className={`w-full ${primaryButton}`}>
         {pending ? "Signing in…" : "Sign in"}
       </button>
     </form>
