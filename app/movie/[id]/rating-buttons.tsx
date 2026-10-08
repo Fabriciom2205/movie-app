@@ -2,22 +2,24 @@
 
 import { useId, useOptimistic, useState, useTransition } from "react";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
+import { sectionLabel, toggleButtonBase } from "@/app/ui";
 import { setRating, type Verdict } from "./actions";
 
+// Selected colors carry the meaning, as on /pick: liked = mint, not for me =
+// peach, each with its dark partner as the outline. The thumb also fills in,
+// so the choice shows by shape too, not only by color.
 const OPTIONS = [
   {
     value: "up",
     label: "Liked it",
     Icon: ThumbsUp,
-    selected:
-      "border-emerald-600 bg-emerald-600 text-white dark:border-emerald-500 dark:bg-emerald-500 dark:text-emerald-950",
+    selected: "aria-pressed:border-on-mint aria-pressed:bg-mint aria-pressed:text-on-mint",
   },
   {
     value: "down",
     label: "Not for me",
     Icon: ThumbsDown,
-    selected:
-      "border-rose-600 bg-rose-600 text-white dark:border-rose-500 dark:bg-rose-500 dark:text-rose-950",
+    selected: "aria-pressed:border-on-peach aria-pressed:bg-peach aria-pressed:text-on-peach",
   },
 ] as const;
 
@@ -46,8 +48,8 @@ export function RatingButtons({ movieId, verdict }: { movieId: number; verdict: 
   }
 
   return (
-    <div className="mt-6">
-      <p id={headingId} className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+    <div>
+      <p id={headingId} className={sectionLabel}>
         {HEADINGS[optimisticVerdict ?? "none"]}
       </p>
 
@@ -65,13 +67,14 @@ export function RatingButtons({ movieId, verdict }: { movieId: number; verdict: 
               type="button"
               aria-pressed={isSelected}
               onClick={() => choose(value)}
-              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500 ${
-                isSelected
-                  ? selected
-                  : "border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
-              }`}
+              className={`${toggleButtonBase} ${selected}`}
             >
-              <Icon aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
+              <Icon
+                aria-hidden="true"
+                className="size-4"
+                strokeWidth={2.25}
+                fill={isSelected ? "currentColor" : "none"}
+              />
               {label}
             </button>
           );
@@ -79,7 +82,7 @@ export function RatingButtons({ movieId, verdict }: { movieId: number; verdict: 
       </div>
 
       {error ? (
-        <p role="alert" className="mt-2 text-sm text-danger dark:text-red-400">
+        <p role="alert" className="mt-2 text-sm text-danger">
           {error}
         </p>
       ) : (
