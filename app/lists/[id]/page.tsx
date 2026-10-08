@@ -60,7 +60,7 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
   const others = memberIds.filter((m) => m !== userId).map((m) => names.get(m) ?? "someone");
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-4 py-8 sm:py-10">
+    <main id="content" className="mx-auto w-full max-w-2xl px-4 py-8 sm:py-10">
       <Link href="/lists" className={`${quietButton} -ml-3`}>
         <ArrowLeft aria-hidden="true" className="size-4" />
         Your lists

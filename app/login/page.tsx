@@ -10,7 +10,7 @@ export default async function LoginPage() {
   if (data?.claims) redirect("/");
 
   return (
-    <main className="mx-auto w-full max-w-sm px-4 py-12 sm:py-20">
+    <main id="content" className="mx-auto w-full max-w-sm px-4 py-12 sm:py-20">
       <div className={`shadow-soft ${card}`}>
         {/* The home page's logo, bigger. */}
         <span className="grid size-14 place-items-center rounded-full bg-primary text-on-primary">

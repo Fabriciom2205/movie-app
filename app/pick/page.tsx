@@ -67,7 +67,7 @@ export default async function PickPage(props: PageProps<"/pick">) {
   const changeUrl = pickUrl({ ...req, skip: [], seed: null }).replace("/pick", "/"); // same choices, on the home form
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-10">
+    <main id="content" className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-10">
       <Link href={changeUrl} className={`${quietButton} -ml-3`}>
         <ArrowLeft aria-hidden="true" className="size-4" />
         Change what you&rsquo;re in the mood for

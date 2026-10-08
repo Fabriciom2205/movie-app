@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Fredoka, Nunito } from "next/font/google";
+import { secondaryButton } from "@/app/ui";
 import "./globals.css";
 
 // The design system's two fonts: Fredoka for headings, Nunito for the rest.
@@ -35,6 +36,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${fredoka.variable} ${nunito.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {/* Skip link: the first thing Tab reaches. It waits above the screen
+            and slides into view when focused. Every page marks where its own
+            content starts with id="content" (the home page: after its nav). */}
+        <a
+          href="#content"
+          className={`${secondaryButton} fixed top-3 left-3 z-50 shadow-soft -translate-y-20 focus:translate-y-0`}
+        >
+          Skip to content
+        </a>
         <div className="flex-1">{children}</div>
         <footer className="px-4 py-6 text-center text-xs text-ink-muted">
           This product uses the TMDB API but is not endorsed or certified by TMDB.

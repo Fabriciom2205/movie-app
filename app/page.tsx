@@ -73,7 +73,7 @@ export default async function Home(props: PageProps<"/">) {
         </nav>
       </header>
 
-      <section className="mb-10 rounded-card border-3 border-line bg-card p-5 shadow-soft sm:p-6">
+      <section id="content" className="mb-10 rounded-card border-3 border-line bg-card p-5 shadow-soft sm:p-6">
         <h2 className="mb-4 text-xl font-semibold tracking-tight">What are we watching tonight?</h2>
         <RecommendForm
           people={people}

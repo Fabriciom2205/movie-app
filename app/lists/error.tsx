@@ -8,7 +8,7 @@ import { card, primaryButton, quietButton } from "@/app/ui";
 // the button actions (remove, delete, leave) failing.
 export default function ListsError({ retry }: { error: Error & { digest?: string }; retry: () => void }) {
   return (
-    <main className="mx-auto w-full max-w-2xl px-4 py-8 sm:py-10">
+    <main id="content" className="mx-auto w-full max-w-2xl px-4 py-8 sm:py-10">
       <div className={`mt-14 shadow-soft ${card}`}>
         <div className="mb-4 grid size-12 place-items-center rounded-full bg-soft text-on-soft">
           <CloudOff aria-hidden="true" className="size-6" />

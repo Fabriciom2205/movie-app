@@ -4,7 +4,7 @@
 export default function RateLoading() {
   const block = "bg-soft motion-safe:animate-pulse";
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-8 sm:py-10">
+    <main id="content" className="mx-auto w-full max-w-4xl px-4 py-8 sm:py-10">
       <div className="h-10" /> {/* where the Done link goes */}
       <p aria-live="polite" className="sr-only">
         Loading movies to rate…
