@@ -1,6 +1,6 @@
 ---
 name: frontend-design
-description: How to build or change any page, component or style in this movie app (Next.js 16 + Tailwind v4) so it matches the Movie Night design system. Use for every UI task in this repo - new pages, restyling, layout fixes, adding buttons/forms/chips, colors, fonts, icons, spacing, mobile layout, accessibility - and for reviewing UI changes before a PR.
+description: How to build or change any page, component or style in this movie app (Next.js 16 + Tailwind v4) so it matches the Movie Night design system. Use for every UI task in this repo - new pages, restyling, layout fixes, adding buttons/forms/chips, colors, fonts, icons, spacing, mobile layout, accessibility - for restyling the app loosely after an existing website, and for reviewing UI changes before a PR.
 ---
 
 # Frontend design for Movie Night
@@ -65,8 +65,44 @@ including the UI UX Pro Max skill's.
    screenshots described in the PR.
 6. If a design decision changes, update MASTER.md in the same PR, with why.
 
+## Designing from a reference site
+
+When the user wants the look "loosely based on" an existing website. Neither
+this skill nor UI UX Pro Max can study a site on its own; use the browser.
+
+1. **Ask what they like about it.** "Based on" can mean the colors, the type,
+   how dense or airy it is, the shapes, or one component (a card, a nav).
+   Ask which pages, and what to keep from Movie Night.
+2. **Study the real site in the browser** (the built-in browser pane, or
+   Claude in Chrome if the user asks for it). Screenshot the pages they named
+   at desktop width and 375px. Then read the actual values instead of guessing
+   from screenshots: paste `scripts/read-styles.js` into the browser's
+   JavaScript tool on each page. It only reads, and returns the most-used text
+   colors, backgrounds, fonts, corner radii, shadows and samples of headings,
+   links, buttons and inputs. Parts behind a login: the user signs in
+   themselves in the browser; never type their credentials.
+3. **Adapt, don't copy.** Take the feel (density, shapes, type style, contrast,
+   mood). Never their logo, name, images, illustrations, copy or exact brand
+   palette: Movie Night must not look like it belongs to them. A custom brand
+   font can't be used; pick the closest Google Font (loaded with
+   `next/font/google`; UI UX Pro Max's `--domain typography` search helps).
+4. **Propose before building.** Show the user the new token values next to
+   the current ones (a table, plus a quick mock or a screenshot of one page)
+   and wait for a yes. A dark reference site means reversing "always light":
+   use the dark palette in MASTER.md's appendix, and confirm that first.
+5. **Record it in MASTER.md first**, in the same PR as the code: the new
+   values with contrast numbers from `scripts/contrast.mjs`, and a short
+   "Reference" note (which site, which parts, the date). Then change the
+   tokens in `app/globals.css` and the components in `app/ui.ts`; since every
+   page uses those, most of the app follows. Page layouts that need more go
+   in small PRs, one page at a time, as usual.
+6. **Check it like any UI change** (workflow step 4): every changed color pair,
+   375px, before/after screenshots.
+
 ## Files in this skill
 
 - `references/web-interface-guidelines.md`: review checklist, pinned (see its
   header for source, commit and license; update it only in its own PR).
 - `scripts/contrast.mjs`: contrast ratio of two colors.
+- `scripts/read-styles.js`: paste into the browser's JavaScript tool on a
+  reference site to read its real colors, fonts, radii and shadows (read-only).
