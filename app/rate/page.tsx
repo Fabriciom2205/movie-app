@@ -45,7 +45,7 @@ export default async function RatePage(props: PageProps<"/rate">) {
   const moreUrl = page + 2 <= MAX_PAGE ? `/rate?page=${page + 2}` : null;
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-8 sm:py-10">
+    <main id="content" className="mx-auto w-full max-w-4xl px-4 py-8 sm:py-10">
       <Link href="/" className={`${quietButton} -ml-3`}>
         <ArrowLeft aria-hidden="true" className="size-4" />
         Done

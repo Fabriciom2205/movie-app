@@ -5,7 +5,7 @@ import { sectionLabel } from "@/app/ui";
 // data): the pick card's shape, laid out like page.tsx.
 export default function PickLoading() {
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-10">
+    <main id="content" className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-10">
       <div className="h-10" /> {/* where the back link goes */}
       <p aria-live="polite" className={`mt-4 ${sectionLabel}`}>
         Finding something for tonight…

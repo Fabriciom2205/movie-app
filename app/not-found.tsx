@@ -7,7 +7,7 @@ import { card, primaryButton } from "@/app/ui";
 // follows the device's dark mode instead of this always-light design.
 export default function NotFound() {
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-10">
+    <main id="content" className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-10">
       <div className={`mt-14 shadow-soft ${card}`}>
         <div className="mb-4 grid size-12 place-items-center rounded-full bg-soft text-on-soft">
           <SearchX aria-hidden="true" className="size-6" />
