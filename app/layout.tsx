@@ -49,22 +49,24 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         {/* The room art, fixed behind every page (decoration only). Its source
             is design-system/movie-night/moonlit-room.svg; MASTER.md says how
-            it's laid out. Phones: a band across the top showing the window
-            and moon, fading into the night color. Wider: the whole room. */}
-        <div aria-hidden="true" className="fixed inset-x-0 top-0 -z-10 h-[45svh] sm:inset-0 sm:h-auto">
+            it's laid out. Phones: a small strip of the room across the top
+            (fairy lights, the window and moon) fading into the night color;
+            wider: the whole room. */}
+        <div aria-hidden="true" className="fixed inset-x-0 top-0 -z-10 h-56 sm:inset-0 sm:h-auto">
           <Image
             src={moonlitRoom}
             alt=""
             fill
             loading="eager"
             placeholder="blur"
-            sizes="(max-width: 639px) 200vw, 100vw"
+            sizes="(max-width: 639px) 110vw, 100vw"
             className="object-cover object-[8%_50%] lg:object-center"
           />
           <div className="absolute inset-x-0 bottom-0 h-24 bg-linear-to-b from-transparent to-night sm:hidden" />
         </div>
-        {/* On phones the content starts lower, so the moon peeks out above it. */}
-        <div className="flex-1 px-2 pt-36 sm:px-6 sm:pt-10">{children}</div>
+        {/* On phones the content starts 96px down, so the moon peeks out above
+            it, and runs edge to edge so text keeps its width. */}
+        <div className="flex-1 pt-24 sm:px-6 sm:pt-10">{children}</div>
         <footer className="px-4 py-6 text-center text-xs">
           <p className="inline-block rounded-field bg-night/85 px-3 py-1.5 text-on-night">
             This product uses the TMDB API but is not endorsed or certified by TMDB.

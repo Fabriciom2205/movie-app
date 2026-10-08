@@ -113,7 +113,9 @@ each page's `<main>` is a `pagePanel` (opaque `bg-page`, `radius-card`,
 `max-w-3xl`, `max-w-4xl`), centered. Text never sits directly on the art.
 Pages whose content is one card (login, not found, the error pages) skip the
 panel: the card floats on the art and is the panel. Phones: the content
-starts 144px down (`pt-36`) so the moon shows above it; from `sm` up, 40px.
+starts 96px down (`pt-24`) so the moon shows above it, and the panel runs
+edge to edge (text keeps its width, so "Recommend a movie" stays as high as
+it can); from `sm` up, the panel floats 24px from the sides and 40px down.
 Mobile-first: everything must work at 375px with no sideways scroll.
 
 **Card:** `bg-card` (cream), 3px `line` outline, `radius-card`, padding 20-24px.
@@ -305,9 +307,10 @@ serves smaller sizes per device).
   with the cat's and the plant's shadows cut out and the sheer curtains as
   soft partial shade.
 - **On the page:** a fixed, `aria-hidden` `next/image` (`fill`,
-  `object-cover`, `alt=""`) behind everything. Phones: a band across the top
-  (45% of the screen height, positioned on the window), fading into `night`;
-  from `sm`: the whole screen, centered from `lg`.
+  `object-cover`, `alt=""`) behind everything. Phones: a 224px strip across
+  the top (the whole room, small: fairy lights, window and moon show above
+  the panel), fading into `night`; from `sm`: the whole screen, centered from
+  `lg`.
 - **Changing it:** edit the SVG, then export it again to
   `app/moonlit-room.webp` at 2560px with any renderer that supports SVG
   filters (it was made with resvg). Keep the important things out of the
