@@ -1,10 +1,12 @@
+import { pagePanel } from "@/app/ui";
+
 // Shown right away while the well-known movies load from TMDB: the grid's
-// shape in soft blue, laid out like rate-grid.tsx. Pulses only if the device
+// shape in soft lavender, laid out like rate-grid.tsx. Pulses only if the device
 // allows motion.
 export default function RateLoading() {
   const block = "bg-soft motion-safe:animate-pulse";
   return (
-    <main id="content" className="mx-auto w-full max-w-4xl px-4 py-8 sm:py-10">
+    <main id="content" className={`${pagePanel} max-w-4xl`}>
       <div className="h-10" /> {/* where the Done link goes */}
       <p aria-live="polite" className="sr-only">
         Loading movies to rate…

@@ -1,6 +1,6 @@
 import { card, posterGrid } from "@/app/ui";
 
-// A movie card's shape (posterGrid) in soft blue, for loading.tsx files: the
+// A movie card's shape (posterGrid) in soft lavender, for loading.tsx files: the
 // movie drops into the same place instead of the page jumping. Pulses only if
 // the device allows motion. Hidden from screen readers, so the page should
 // say what's loading in words (aria-live).

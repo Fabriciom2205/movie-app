@@ -5,8 +5,9 @@ description: How to build or change any page, component or style in this movie a
 
 # Frontend design for Movie Night
 
-The look is decided in `design-system/movie-night/MASTER.md`: cute and bubbly,
-always light, sky-blue pastel world, blue as the main color, Fredoka + Nunito.
+The look is decided in `design-system/movie-night/MASTER.md`: cute and bubbly
+light panels in front of a moonlit-room illustration, lavender as the main
+color, cream cards, Fredoka + Nunito.
 **Read that file before changing UI.** It wins over any other suggestion,
 including the UI UX Pro Max skill's.
 
@@ -37,6 +38,9 @@ including the UI UX Pro Max skill's.
    secondary or quiet.
 8. **Keep data credits visible:** the TMDB footer and "Availability data
    provided by JustWatch" wherever provider data shows.
+9. **Text never sits on the room art.** A page's content goes in a
+   `pagePanel` `<main>` (or, for a single-card page, in that card). The only
+   exception is the footer credit, on its own `night` pill.
 
 ## Workflow for a UI change
 

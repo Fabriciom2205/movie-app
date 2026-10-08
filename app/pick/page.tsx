@@ -19,6 +19,7 @@ import { ListToggles } from "@/app/movie/[id]/list-toggles";
 import {
   banner,
   card,
+  pagePanel,
   posterGrid,
   primaryButton,
   providerTag,
@@ -39,8 +40,8 @@ const MAX_SKIP = 100;
 
 // Each kind of reason has its own icon and pastel pair (MASTER.md "Reason chips").
 const REASONS: Record<ReasonLine["kind"], { icon: LucideIcon; color: string }> = {
-  friendsLiked: { icon: ThumbsUp, color: "bg-mint text-on-mint" },
-  becauseYouLiked: { icon: Sparkles, color: "bg-lilac text-on-lilac" },
+  friendsLiked: { icon: ThumbsUp, color: "bg-sage text-on-sage" },
+  becauseYouLiked: { icon: Sparkles, color: "bg-pink text-on-pink" },
   onList: { icon: Bookmark, color: "bg-soft text-on-soft" },
   wellRated: { icon: Star, color: "bg-peach text-on-peach" },
 };
@@ -67,7 +68,7 @@ export default async function PickPage(props: PageProps<"/pick">) {
   const changeUrl = pickUrl({ ...req, skip: [], seed: null }).replace("/pick", "/"); // same choices, on the home form
 
   return (
-    <main id="content" className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-10">
+    <main id="content" className={`${pagePanel} max-w-3xl`}>
       <Link href={changeUrl} className={`${quietButton} -ml-3`}>
         <ArrowLeft aria-hidden="true" className="size-4" />
         Change what you&rsquo;re in the mood for

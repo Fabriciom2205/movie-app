@@ -11,10 +11,10 @@ const primaryLook =
   "bg-primary font-heading font-medium text-on-primary hover:bg-primary-hover disabled:hover:bg-primary";
 const secondaryLook = "border-2 border-line bg-card font-semibold text-ink hover:bg-soft disabled:hover:bg-card";
 
-/** The ONE main action per screen: blue, Fredoka, 48px tall. */
+/** The ONE main action per screen: lavender, Fredoka, 48px tall. */
 export const primaryButton = `${pill} h-12 px-7 text-lg ${primaryLook}`;
 
-/** Everything else you can press: white with a soft blue outline. */
+/** Everything else you can press: cream with a soft lavender outline. */
 export const secondaryButton = `${pill} h-10 px-4 text-sm ${secondaryLook}`;
 
 /** Low-key actions (Back, Sign out, Remove): no fill until hovered. */
@@ -44,12 +44,18 @@ export const toggleChip = `${toggle} cursor-pointer select-none has-checked:bord
 export const toggleButton = `${toggle} disabled:opacity-60 aria-pressed:border-primary aria-pressed:bg-soft aria-pressed:text-on-soft`;
 
 /** A <button aria-pressed> whose selected look you add yourself, for toggles
- *  that mean something other than "chosen" (rating: liked = mint, not for me
+ *  that mean something other than "chosen" (rating: liked = sage, not for me
  *  = peach). Add `aria-pressed:` classes for fill, text and outline. */
 export const toggleButtonBase = `${toggle} disabled:opacity-60`;
 
-/** White panel. Add `shadow-soft` for the one card a page is about. */
+/** Cream card. Add `shadow-soft` for the one card a page is about. */
 export const card = "rounded-card border-3 border-line bg-card p-5 sm:p-6";
+
+/** The panel a page's content sits on, in front of the room art. Add the
+ *  page's width: `${pagePanel} max-w-2xl`. Opaque, so text never sits on the
+ *  art. Pages whose content is a single card (login, not found, errors) skip
+ *  it: there the card is the panel. */
+export const pagePanel = "mx-auto w-full rounded-card bg-page px-4 py-8 shadow-soft sm:px-8 sm:py-10";
 
 /** A movie with its poster: poster beside the title (120px on phones, so the
  *  title and what comes right after fit on the first screen; 200px wider up),
@@ -66,10 +72,10 @@ export const posterGrid =
 export const sectionLabel = "font-body text-sm font-semibold text-ink-muted";
 
 /** A provider (Netflix, Prime Video...) as data, not a button: logo + name on
- *  the sky color. Put a 28px round logo (`size-7 rounded-full`) first. */
+ *  the page color. Put a 28px round logo (`size-7 rounded-full`) first. */
 export const providerTag = "inline-flex items-center gap-2 rounded-full bg-page py-1 pr-3.5 pl-1 text-sm font-semibold";
 
-/** Not pressable: an icon + short text in a pastel pair (add e.g. `bg-mint text-on-mint`).
+/** Not pressable: an icon + short text in a pastel pair (add e.g. `bg-sage text-on-sage`).
  *  radius-field: a pill on one line, a rounded box if it wraps. */
 export const tag = "inline-flex items-start gap-1.5 rounded-field px-3 py-1 text-sm font-semibold";
 

@@ -189,7 +189,7 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
 
       {/* Stays at the bottom of the screen while the form is on it, so Save is
           always in reach after ticking a service far down the list. */}
-      <div className="sticky bottom-0 z-10 -mx-4 flex items-center gap-4 border-t-2 border-line bg-page/95 px-4 py-3 backdrop-blur-sm">
+      <div className="sticky bottom-0 z-10 -mx-4 flex items-center gap-4 border-t-2 border-line bg-page/95 px-4 py-3 backdrop-blur-sm sm:-mx-8 sm:px-8">
         <button type="submit" disabled={pending} className={primaryButton}>
           {pending ? "Saving…" : "Save"}
         </button>
@@ -200,7 +200,7 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
             <p className="text-danger">{state.message}</p>
           ) : (
             state.message && (
-              <p className={`${tag} bg-mint text-on-mint`}>
+              <p className={`${tag} bg-sage text-on-sage`}>
                 <CircleCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
                 {state.message}
               </p>

@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, Film, LogOut, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react";
-import { card, dangerButton, quietButton, secondaryButton } from "@/app/ui";
+import { card, dangerButton, pagePanel, quietButton, secondaryButton } from "@/app/ui";
 import { getDisplayNames } from "@/lib/profiles";
 import { createClient } from "@/lib/supabase/server";
 import { formatRuntime, releaseYear, tmdbImageUrl } from "@/lib/tmdb";
@@ -60,7 +60,7 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
   const others = memberIds.filter((m) => m !== userId).map((m) => names.get(m) ?? "someone");
 
   return (
-    <main id="content" className="mx-auto w-full max-w-2xl px-4 py-8 sm:py-10">
+    <main id="content" className={`${pagePanel} max-w-2xl`}>
       <Link href="/lists" className={`${quietButton} -ml-3`}>
         <ArrowLeft aria-hidden="true" className="size-4" />
         Your lists
@@ -97,7 +97,7 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
                 .filter(Boolean)
                 .join(" · ");
               return (
-                // The outline turns blue when the movie link is hovered (not Remove).
+                // The outline turns lavender when the movie link is hovered (not Remove).
                 <li
                   key={item.movie_id}
                   className="flex items-center gap-1 rounded-card border-2 border-line bg-card p-2 transition-colors duration-150 ease-out has-[a:hover]:border-primary"
@@ -253,7 +253,7 @@ async function getSeenBy(
 }
 
 // Who on this list has seen the movie, as small tags (you first): "You liked
-// it" in mint, "Alex wasn't into it" in peach (the /pick colors), or "Not seen
+// it" in sage, "Alex wasn't into it" in peach (the /pick colors), or "Not seen
 // yet". The point of a shared list: spot what a friend has already seen.
 function SeenBy({
   ratings,
@@ -277,7 +277,7 @@ function SeenBy({
           <li
             key={r.userId}
             className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
-              liked ? "bg-mint text-on-mint" : "bg-peach text-on-peach"
+              liked ? "bg-sage text-on-sage" : "bg-peach text-on-peach"
             }`}
           >
             <Icon aria-hidden="true" className="size-3.5 shrink-0" />

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { quietButton } from "@/app/ui";
+import { pagePanel, quietButton } from "@/app/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getProviderList, getRegions, tmdbImageUrl, type WatchProvider } from "@/lib/tmdb";
 import { SettingsForm, type ProviderOption } from "./settings-form";
@@ -60,7 +60,7 @@ export default async function SettingsPage() {
       : providers.slice(0, FALLBACK_SHORTLIST_SIZE).map((p) => p.provider_id);
 
   return (
-    <main id="content" className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-10">
+    <main id="content" className={`${pagePanel} max-w-3xl`}>
       <Link href="/" className={`${quietButton} -ml-3`}>
         <ArrowLeft aria-hidden="true" className="size-4" />
         Home

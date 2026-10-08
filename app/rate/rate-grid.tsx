@@ -80,7 +80,7 @@ export function RateGrid({ movies, moreUrl }: { movies: RateMovie[]; moreUrl: st
                   onClick={() => rate(movie, "up")}
                   aria-label="Liked it"
                   title="Liked it"
-                  className={`${thumbButton} hover:border-on-mint hover:bg-mint hover:text-on-mint active:border-on-mint active:bg-mint active:text-on-mint`}
+                  className={`${thumbButton} hover:border-on-sage hover:bg-sage hover:text-on-sage active:border-on-sage active:bg-sage active:text-on-sage`}
                 >
                   <ThumbsUp aria-hidden="true" className="size-5" strokeWidth={2.25} />
                 </button>
@@ -116,7 +116,7 @@ export function RateGrid({ movies, moreUrl }: { movies: RateMovie[]; moreUrl: st
 
 // Round icon buttons: on a phone a card is ~145px wide, too narrow for two
 // labeled pills side by side. The label is the aria-label (and a tooltip); the
-// page's intro explains the thumbs. They take the meaning colors (liked = mint,
+// page's intro explains the thumbs. They take the meaning colors (liked = sage,
 // not for me = peach) on hover and while pressed.
 const thumbButton =
   "inline-flex h-10 items-center justify-center rounded-full border-2 border-line bg-card text-ink transition-colors duration-150 ease-out motion-safe:active:translate-y-px";

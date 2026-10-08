@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft, ChevronRight, ListVideo } from "lucide-react";
-import { quietButton } from "@/app/ui";
+import { pagePanel, quietButton } from "@/app/ui";
 import { getDisplayNames } from "@/lib/profiles";
 import { createClient } from "@/lib/supabase/server";
 import { CreateListForm } from "./forms";
@@ -34,7 +34,7 @@ export default async function ListsPage() {
   const names = await getDisplayNames(otherIds);
 
   return (
-    <main id="content" className="mx-auto w-full max-w-2xl px-4 py-8 sm:py-10">
+    <main id="content" className={`${pagePanel} max-w-2xl`}>
       <Link href="/" className={`${quietButton} -ml-3`}>
         <ArrowLeft aria-hidden="true" className="size-4" />
         Home

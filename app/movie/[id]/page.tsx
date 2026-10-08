@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink, Film, Tv } from "lucide-react";
-import { card, posterGrid, providerTag, quietButton, sectionLabel } from "@/app/ui";
+import { card, pagePanel, posterGrid, providerTag, quietButton, sectionLabel } from "@/app/ui";
 import {
   formatRuntime,
   getMovie,
@@ -37,7 +37,7 @@ export default async function MoviePage(props: PageProps<"/movie/[id]">) {
     [providers.flatrate, free, providers.rent, providers.buy].some((list) => list?.length);
 
   return (
-    <main id="content" className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-10">
+    <main id="content" className={`${pagePanel} max-w-3xl`}>
       {/* Home, not "back": you can get here from search, /pick or a list. */}
       <Link href="/" className={`${quietButton} -ml-3`}>
         <ArrowLeft aria-hidden="true" className="size-4" />

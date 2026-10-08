@@ -1,0 +1,365 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <!-- "Moonlit room": original art for Movie Night. Laid out for a centered
+       content panel: the window and moon live in the left ~480px, the bed and
+       plushies in the right ~420px; the middle is mostly covered. -->
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#251E50"/>
+      <stop offset="0.55" stop-color="#372C6E"/>
+      <stop offset="1" stop-color="#30265F"/>
+    </linearGradient>
+    <pattern id="stripes" width="48" height="48" patternUnits="userSpaceOnUse">
+      <rect width="24" height="48" fill="#FFFFFF" opacity="0.014"/>
+    </pattern>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1B1954"/>
+      <stop offset="0.45" stop-color="#3A3288"/>
+      <stop offset="0.82" stop-color="#7A60B6"/>
+      <stop offset="1" stop-color="#C58BC2"/>
+    </linearGradient>
+    <radialGradient id="moonGlow">
+      <stop offset="0" stop-color="#FFF2D8" stop-opacity="0.55"/>
+      <stop offset="0.45" stop-color="#E9D9FF" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#E9D9FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="moon" cx="0.38" cy="0.35" r="0.75">
+      <stop offset="0" stop-color="#FFF9EC"/>
+      <stop offset="1" stop-color="#EBDCC4"/>
+    </radialGradient>
+    <radialGradient id="lampGlow">
+      <stop offset="0" stop-color="#FFC9DC" stop-opacity="0.6"/>
+      <stop offset="0.4" stop-color="#F7A6C8" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#F7A6C8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bulbGlow">
+      <stop offset="0" stop-color="#FFE3A0" stop-opacity="0.85"/>
+      <stop offset="0.35" stop-color="#FFD27A" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#FFD27A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="blanket" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C274A8"/>
+      <stop offset="1" stop-color="#8C4C86"/>
+    </linearGradient>
+    <radialGradient id="vignette" cx="0.5" cy="0.42" r="0.78">
+      <stop offset="0.55" stop-color="#0F0B24" stop-opacity="0"/>
+      <stop offset="1" stop-color="#0F0B24" stop-opacity="0.6"/>
+    </radialGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#DCCFFF" stop-opacity="0.07"/>
+      <stop offset="1" stop-color="#DCCFFF" stop-opacity="0.015"/>
+    </linearGradient>
+    <filter id="soft" x="-5%" y="-5%" width="110%" height="110%">
+      <feGaussianBlur stdDeviation="2.5"/>
+    </filter>
+    <!-- The cat and the plant on the sill block part of the moonlight -->
+    <mask id="sillShadows" maskUnits="userSpaceOnUse" x="0" y="860" width="960" height="240">
+      <rect x="0" y="860" width="960" height="240" fill="#FFFFFF"/>
+      <!-- sheer curtains: soft partial shade at the sides of the light -->
+      <g fill="#8A8A8A" filter="url(#curtainSoft)">
+        <path d="M298.8 1078.0 L296.4 1078.0 L287.3 1069.2 L277.8 1059.9 L268.5 1050.7 L259.5 1041.6 L250.9 1032.6 L242.8 1023.9 L235.3 1015.4 L228.5 1007.1 L222.5 999.2 L217.4 991.5 L213.3 984.3 L212.0 977.3 L210.5 970.4 L208.8 963.7 L207.0 957.1 L205.1 950.8 L203.1 944.6 L201.1 938.6 L199.0 932.8 L197.0 927.2 L195.2 922.0 L197.4 922.0 L199.5 922.0 L79.0 922.0 L159.0 1078.0 Z"/>
+        <path d="M691.2 1078.0 L693.6 1078.0 L683.9 1069.2 L673.3 1059.9 L662.8 1050.7 L652.3 1041.6 L641.7 1032.6 L631.0 1023.9 L620.2 1015.4 L609.3 1007.1 L598.2 999.2 L586.9 991.5 L575.4 984.3 L561.6 977.3 L548.4 970.4 L535.7 963.7 L523.4 957.1 L511.7 950.8 L500.4 944.6 L489.5 938.6 L479.1 932.8 L469.2 927.2 L459.8 922.0 L457.6 922.0 L455.5 922.0 L576.0 922.0 L831.0 1078.0 Z"/>
+      </g>
+      <g fill="#000000" filter="url(#soft)">
+        <path d="M189.3 922.0 L192.9 928.3 L198.1 934.1 L204.7 939.4 L212.5 944.1 L221.5 948.2 L231.6 951.7 L242.5 954.5 L254.1 956.5 L266.3 957.7 L278.6 958.2 L289.9 957.7 L298.6 956.4 L305.0 954.2 L309.1 951.3 L311.1 947.7 L311.0 943.5 L309.0 938.7 L305.3 933.5 L300.0 927.9 L293.4 922.0 Z"/>
+        <path d="M232.3 937.9 L228.1 933.6 L222.7 929.6 L216.8 926.1 L210.5 923.5 L204.5 921.8 L198.9 921.3 L194.3 921.8 L190.8 923.5 L188.7 926.1 L188.2 929.6 L189.1 933.6 L191.7 937.9 L195.5 942.2 L200.6 946.2 L206.5 949.7 L212.8 952.3 L219.2 954.0 L225.0 954.6 L230.0 954.0 L233.8 952.3 L236.0 949.7 L236.4 946.2 L235.2 942.2 Z"/>
+        <path d="M202.6 946.6 L220.4 965.4 L225.2 952.4 Z"/>
+        <path d="M229.4 953.1 L251.6 966.9 L238.3 947.3 Z"/>
+        <path d="M460.9 923.4 L512.3 923.4 L545.8 950.9 L505.8 950.9 Z"/>
+        <path d="M518.6 950.9 L525.4 959.0 L530.3 965.9 L533.6 971.8 L535.6 976.9 L536.5 981.2 L536.6 985.1 L536.2 988.5 L535.7 991.7 L535.2 994.8 L535.0 998.0 L540.8 997.0 L545.6 995.3 L549.1 993.1 L551.4 990.1 L552.4 986.5 L551.9 982.2 L549.9 977.2 L546.4 971.5 L541.2 965.2 L534.3 958.2 Z"/>
+        <path d="M529.7 952.4 L544.1 962.2 L557.3 970.9 L569.7 978.7 L581.4 985.6 L592.5 991.8 L603.2 997.4 L613.8 1002.5 L624.2 1007.2 L634.8 1011.7 L645.7 1016.0 L637.0 1009.5 L627.5 1003.0 L617.5 996.5 L606.9 990.1 L595.9 983.7 L584.6 977.3 L572.9 971.0 L561.1 964.7 L549.1 958.5 L537.0 952.4 Z"/>
+        <path d="M533.1 950.9 L545.9 956.0 L557.6 960.3 L568.3 963.9 L578.1 967.0 L587.0 969.5 L595.2 971.5 L602.8 973.0 L609.7 974.2 L616.2 975.0 L622.2 975.5 L613.1 971.4 L604.0 967.5 L594.8 964.0 L585.8 960.9 L576.7 958.0 L567.9 955.4 L559.2 953.2 L550.6 951.2 L542.4 949.5 L534.4 948.0 Z"/>
+      </g>
+    </mask>
+    <filter id="curtainSoft" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+    <clipPath id="glass">
+      <rect x="82" y="172" width="416" height="496"/>
+    </clipPath>
+    <!-- Hand-drawn feel: nudge every edge a pixel or two, then a soft paper grain. -->
+    <filter id="wobble" x="-2%" y="-2%" width="104%" height="104%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="1" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="grain" x="0" y="0" width="1" height="1">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3" stitchTiles="stitch"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.09 0"/>
+    </filter>
+    <g id="bulb">
+      <circle r="30" fill="url(#bulbGlow)"/>
+      <circle r="5.5" fill="#FFE7AE" stroke="#171230" stroke-width="2"/>
+    </g>
+    <path id="sparkle" d="M0,-10 C1,-3 3,-1 10,0 C3,1 1,3 0,10 C-1,3 -3,1 -10,0 C-3,-1 -1,-3 0,-10 Z"/>
+  </defs>
+
+  <g filter="url(#wobble)">
+  <!-- Wall and floor -->
+  <rect x="-40" y="-40" width="2000" height="1160" fill="url(#wall)"/>
+  <rect width="1920" height="893" fill="url(#stripes)"/>
+  <rect x="-40" y="905" width="2000" height="215" fill="#1F1940"/>
+  <rect y="893" width="1920" height="12" fill="#2D2457"/>
+  <g stroke="#2A2252" stroke-width="2">
+    <path d="M0 940 L1920 940 M0 990 L1920 990 M0 1045 L1920 1045"/>
+    <path d="M300 905 L296 940 M900 940 L904 990 M1500 905 L1497 940 M620 990 L616 1045 M1250 990 L1254 1045 M1760 940 L1757 990"/>
+  </g>
+
+  <!-- Star stickers on the wall -->
+  <g fill="#F6D98B" opacity="0.5">
+    <use href="#sparkle" transform="translate(1480 190) scale(0.9)"/>
+    <use href="#sparkle" transform="translate(1640 470) scale(0.7)"/>
+    <use href="#sparkle" transform="translate(600 520) scale(0.8)"/>
+    <use href="#sparkle" transform="translate(1290 600) scale(0.6)"/>
+    <use href="#sparkle" transform="translate(640 300) scale(0.5)"/>
+  </g>
+
+  <!-- ===== Left: the window ===== -->
+  <circle cx="205" cy="300" r="320" fill="url(#moonGlow)" opacity="0.6"/>
+  <rect x="60" y="150" width="460" height="540" rx="6" fill="#231B47" stroke="#171230" stroke-width="4"/>
+  <g clip-path="url(#glass)">
+    <rect x="82" y="172" width="416" height="496" fill="url(#sky)"/>
+    <g fill="#FFF4D6">
+      <circle cx="110" cy="200" r="2"/><circle cx="160" cy="250" r="1.6"/><circle cx="330" cy="196" r="2.4"/>
+      <circle cx="380" cy="290" r="1.5"/><circle cx="125" cy="360" r="1.8"/><circle cx="350" cy="380" r="1.4"/>
+      <circle cx="470" cy="205" r="1.8"/><circle cx="480" cy="430" r="1.5"/><circle cx="320" cy="455" r="1.6"/>
+      <circle cx="112" cy="470" r="2"/><circle cx="420" cy="240" r="1.4"/><circle cx="450" cy="470" r="1.2"/>
+      <use href="#sparkle" transform="translate(395 330) scale(0.7)"/>
+      <use href="#sparkle" transform="translate(470 300) scale(0.55)"/>
+      <use href="#sparkle" transform="translate(130 215) scale(0.45)"/>
+    </g>
+    <!-- shooting star -->
+    <path d="M330 252 L420 214" stroke="#FFF4D6" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+    <circle cx="420" cy="214" r="3" fill="#FFF8E6"/>
+    <!-- moon -->
+    <circle cx="205" cy="300" r="150" fill="url(#moonGlow)"/>
+    <circle cx="205" cy="300" r="88" fill="url(#moon)"/>
+    <g fill="#E6D5BC" opacity="0.8">
+      <circle cx="178" cy="277" r="13"/><circle cx="232" cy="327" r="10"/>
+      <circle cx="244" cy="273" r="7"/><circle cx="190" cy="334" r="6"/><circle cx="220" cy="298" r="4"/>
+    </g>
+    <ellipse cx="245" cy="362" rx="110" ry="11" fill="#7E69BE" opacity="0.55"/>
+    <!-- clouds -->
+    <g fill="#5A4BA2">
+      <circle cx="105" cy="600" r="58"/><circle cx="185" cy="575" r="54"/><circle cx="265" cy="610" r="60"/>
+      <circle cx="345" cy="585" r="56"/><circle cx="425" cy="605" r="54"/><circle cx="495" cy="582" r="58"/>
+      <rect x="82" y="600" width="416" height="80"/>
+    </g>
+    <g fill="#8A73C6">
+      <circle cx="140" cy="640" r="46"/><circle cx="222" cy="625" r="42"/><circle cx="305" cy="650" r="48"/>
+      <circle cx="390" cy="630" r="44"/><circle cx="470" cy="648" r="46"/>
+      <rect x="82" y="645" width="416" height="40"/>
+    </g>
+    <g fill="#D99AC4" opacity="0.55">
+      <ellipse cx="200" cy="668" rx="110" ry="12"/><ellipse cx="410" cy="672" rx="100" ry="10"/>
+    </g>
+    <!-- glass sheen -->
+    <path d="M100 420 L240 180 L280 180 L140 420 Z" fill="#FFFFFF" opacity="0.05"/>
+    <path d="M330 668 L460 430 L480 430 L350 668 Z" fill="#FFFFFF" opacity="0.04"/>
+  </g>
+  <rect x="285" y="172" width="10" height="496" fill="#231B47"/>
+  <rect x="82" y="414" width="416" height="10" fill="#231B47"/>
+
+  <!-- curtain rod and sheer curtains -->
+  <path d="M26 138 L554 138" stroke="#1A1433" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="24" cy="138" r="8" fill="#1A1433"/><circle cx="556" cy="138" r="8" fill="#1A1433"/>
+  <g fill="#A895E0" opacity="0.42" stroke="#C9BBF5" stroke-width="2">
+    <path d="M32 140 L120 140 C112 260 98 380 104 470 C120 560 130 640 140 700 L32 700 Z"/>
+    <path d="M548 140 L460 140 C468 260 482 380 476 470 C460 560 450 640 440 700 L548 700 Z"/>
+  </g>
+  <g stroke="#D7CCFA" stroke-width="2" fill="none" opacity="0.35">
+    <path d="M66 150 C64 300 72 420 78 690"/><path d="M92 150 C88 300 86 420 110 690"/>
+    <path d="M514 150 C516 300 508 420 502 690"/><path d="M488 150 C492 300 494 420 470 690"/>
+  </g>
+  <ellipse cx="108" cy="470" rx="12" ry="7" fill="#D9C9F6" stroke="#171230" stroke-width="2"/>
+  <ellipse cx="472" cy="470" rx="12" ry="7" fill="#D9C9F6" stroke="#171230" stroke-width="2"/>
+
+  <!-- sill -->
+  <rect x="40" y="688" width="500" height="22" rx="4" fill="#5A4A9C" stroke="#171230" stroke-width="4"/>
+  <rect x="48" y="710" width="484" height="14" fill="#3B2F70" stroke="#171230" stroke-width="3"/>
+
+  <!-- sleeping cat on the sill -->
+  <g>
+    <path d="M128 690 C120 660 150 640 195 640 C240 640 255 662 250 690 Z" fill="#1C1636" stroke="#171230" stroke-width="3"/>
+    <circle cx="140" cy="668" r="23" fill="#1C1636"/>
+    <path d="M122 656 L126 630 L142 648 Z" fill="#1C1636" stroke="#171230" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M146 647 L158 628 L161 655 Z" fill="#1C1636" stroke="#171230" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M248 682 C255 700 200 704 155 694" stroke="#1C1636" stroke-width="12" stroke-linecap="round" fill="none"/>
+    <path d="M150 645 C175 638 220 636 242 652" stroke="#7B6AC0" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.8"/>
+    <path d="M128 668 q6 4 12 0 M144 668 q6 4 12 0" stroke="#7B6AC0" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- plant on the sill -->
+  <g stroke="#171230" stroke-width="3" stroke-linejoin="round">
+    <path d="M466 650 C450 610 430 600 416 585 C440 588 462 606 472 640 Z" fill="#4F8A78"/>
+    <path d="M476 648 C476 600 485 580 500 560 C504 590 496 620 484 648 Z" fill="#5E9C86"/>
+    <path d="M482 650 C502 625 520 618 538 616 C530 636 510 648 488 654 Z" fill="#3F7468"/>
+    <path d="M444 688 L504 688 L496 650 L452 650 Z" fill="#D07E95"/>
+  </g>
+
+  <!-- cubby shelf under the window -->
+  <rect x="52" y="724" width="476" height="172" fill="#3A2E6E" stroke="#171230" stroke-width="4"/>
+  <g fill="#271F55" stroke="#171230" stroke-width="3">
+    <rect x="68" y="742" width="137" height="136" rx="4"/>
+    <rect x="221" y="742" width="137" height="136" rx="4"/>
+    <rect x="374" y="742" width="137" height="136" rx="4"/>
+  </g>
+  <g stroke="#171230" stroke-width="2.5">
+    <rect x="82" y="790" width="22" height="88" fill="#E58FB4"/>
+    <rect x="104" y="802" width="18" height="76" fill="#8FC1B5"/>
+    <rect x="122" y="784" width="24" height="94" fill="#F2C57C"/>
+    <rect x="148" y="808" width="16" height="70" fill="#B9A6E8" transform="rotate(12 156 878)"/>
+    <rect x="384" y="820" width="116" height="58" rx="10" fill="#9C7BB0"/>
+    <path d="M394 820 C402 790 482 790 490 820" fill="none" stroke-width="4"/>
+  </g>
+  <!-- teddy peeking out of the middle cubby -->
+  <g stroke="#171230" stroke-width="3">
+    <circle cx="266" cy="808" r="12" fill="#C99A82"/><circle cx="314" cy="808" r="12" fill="#C99A82"/>
+    <ellipse cx="290" cy="850" rx="42" ry="30" fill="#C99A82"/>
+    <circle cx="290" cy="826" r="30" fill="#C99A82"/>
+    <ellipse cx="290" cy="836" rx="12" ry="9" fill="#EBD0BB" stroke-width="2"/>
+  </g>
+  <circle cx="281" cy="820" r="3" fill="#2E2433"/><circle cx="299" cy="820" r="3" fill="#2E2433"/>
+  <ellipse cx="290" cy="833" rx="4" ry="3" fill="#2E2433"/>
+
+
+  <!-- ===== Middle: rug and wall art (mostly behind the content) ===== -->
+  <ellipse cx="960" cy="1000" rx="430" ry="62" fill="#4A3B88" stroke="#171230" stroke-width="4"/>
+  <ellipse cx="960" cy="1000" rx="360" ry="46" fill="none" stroke="#7562B8" stroke-width="3" stroke-dasharray="14 10"/>
+  <!-- moonlight through the window: four panes on the floor, with the window bars' shadows between them -->
+  <path d="M82 172 L498 172 L735 1078 L255 1078 L150 922 L82 668 Z" fill="url(#beam)"/>
+  <g fill="#DCCFFF" opacity="0.22" filter="url(#soft)" mask="url(#sillShadows)">
+    <path d="M150 922 L317 922 L391 992 L197 992 Z"/>
+    <path d="M338 922 L505 922 L608 992 L415 992 Z"/>
+    <path d="M206 1005 L404 1005 L481 1078 L255 1078 Z"/>
+    <path d="M429 1005 L627 1005 L735 1078 L509 1078 Z"/>
+  </g>
+  <!-- popcorn poster, a nod to Movie Night -->
+  <g transform="rotate(-3 855 340)">
+    <rect x="780" y="240" width="150" height="200" fill="#EDE3F7" stroke="#171230" stroke-width="4"/>
+    <path d="M820 330 L890 330 L880 410 L830 410 Z" fill="#FFFFFF" stroke="#171230" stroke-width="3"/>
+    <path d="M834 330 L838 410 M855 330 L855 410 M876 330 L872 410" stroke="#E5739B" stroke-width="7"/>
+    <g fill="#FFF3D1" stroke="#171230" stroke-width="2.5">
+      <circle cx="828" cy="322" r="13"/><circle cx="848" cy="312" r="14"/><circle cx="870" cy="316" r="13"/>
+      <circle cx="886" cy="326" r="11"/><circle cx="858" cy="298" r="11"/>
+    </g>
+    <rect x="830" y="232" width="50" height="16" fill="#E9C8D8" opacity="0.8"/>
+  </g>
+  <!-- record on the wall -->
+  <circle cx="1060" cy="320" r="72" fill="#15112B" stroke="#171230" stroke-width="4"/>
+  <g fill="none" stroke="#2C2554" stroke-width="2">
+    <circle cx="1060" cy="320" r="58"/><circle cx="1060" cy="320" r="46"/><circle cx="1060" cy="320" r="36"/>
+  </g>
+  <circle cx="1060" cy="320" r="22" fill="#E58FB4"/><circle cx="1060" cy="320" r="3" fill="#15112B"/>
+
+  <!-- ===== Right: lamp, bed and plushies ===== -->
+  <!-- Shifted left so the teddy still shows on 16:10 laptops, where the sides get cropped. -->
+  <g transform="translate(-60 0)">
+  <circle cx="1572" cy="620" r="330" fill="url(#lampGlow)"/>
+
+  <!-- framed pictures -->
+  <rect x="1545" y="225" width="112" height="140" fill="#E7D9F3" stroke="#171230" stroke-width="4"/>
+  <path d="M1557 352 L1590 300 L1610 325 L1628 296 L1645 352 Z" fill="#8D78C9" stroke="#171230" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M1622 262 a14 14 0 1 0 10 22 a11 11 0 1 1 -10 -22 Z" fill="#F2C57C"/>
+  <rect x="1685" y="262" width="92" height="92" rx="46" fill="#E7D9F3" stroke="#171230" stroke-width="4"/>
+  <path d="M1731 318 C1706 302 1710 284 1722 284 C1728 284 1731 290 1731 292 C1731 290 1734 284 1740 284 C1752 284 1756 302 1731 318 Z" fill="#E5739B" stroke="#171230" stroke-width="2.5"/>
+
+  <!-- shelf above the bed -->
+  <rect x="1680" y="430" width="230" height="14" fill="#5A4A9C" stroke="#171230" stroke-width="4"/>
+  <g stroke="#171230" stroke-width="2.5">
+    <rect x="1694" y="370" width="20" height="60" fill="#8FC1B5"/>
+    <rect x="1714" y="362" width="24" height="68" fill="#E58FB4"/>
+    <rect x="1738" y="378" width="18" height="52" fill="#F2C57C"/>
+    <rect x="1760" y="376" width="16" height="54" fill="#B9A6E8" transform="rotate(-14 1760 430)"/>
+  </g>
+  <!-- jar of little lights -->
+  <rect x="1826" y="380" width="44" height="50" rx="10" fill="#B9A6E8" fill-opacity="0.35" stroke="#171230" stroke-width="3"/>
+  <rect x="1830" y="370" width="36" height="12" rx="3" fill="#D07E95" stroke="#171230" stroke-width="2.5"/>
+  <g fill="#FFE3A0"><circle cx="1840" cy="405" r="3"/><circle cx="1854" cy="396" r="2.5"/><circle cx="1858" cy="415" r="3"/><circle cx="1844" cy="420" r="2"/></g>
+
+  <!-- nightstand with lamp and mug -->
+  <rect x="1490" y="728" width="150" height="170" rx="6" fill="#3A2E6E" stroke="#171230" stroke-width="4"/>
+  <path d="M1490 800 L1640 800" stroke="#171230" stroke-width="3"/>
+  <circle cx="1565" cy="768" r="6" fill="#F2C57C" stroke="#171230" stroke-width="2"/>
+  <ellipse cx="1545" cy="726" rx="28" ry="7" fill="#2A2156" stroke="#171230" stroke-width="3"/>
+  <path d="M1545 724 L1545 640" stroke="#171230" stroke-width="5"/>
+  <path d="M1499 642 L1591 642 L1573 584 L1517 584 Z" fill="#F7B3CD" stroke="#171230" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M1509 642 L1581 642" stroke="#FFE3EE" stroke-width="3" opacity="0.8"/>
+  <path d="M1596 690 L1624 690 L1621 726 L1599 726 Z" fill="#B9A6E8" stroke="#171230" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M1624 698 C1636 698 1636 716 1622 716" fill="none" stroke="#171230" stroke-width="3"/>
+  <path d="M1606 682 C1602 674 1612 670 1608 662 M1616 682 C1612 674 1622 670 1618 662" stroke="#E7D9F3" stroke-width="2" fill="none" opacity="0.6" stroke-linecap="round"/>
+
+  <!-- bed -->
+  <rect x="1950" y="540" width="60" height="370" rx="8" fill="#4A3B88" stroke="#171230" stroke-width="4"/>
+  <rect x="1650" y="700" width="345" height="40" rx="10" fill="#E6D7F5" stroke="#171230" stroke-width="4"/>
+  <rect x="1780" y="648" width="112" height="60" rx="28" fill="#F1E8FA" stroke="#171230" stroke-width="4"/>
+  <path d="M1645 722 C1720 712 1830 718 1990 714 L1990 900 C1885 912 1850 896 1815 908 C1778 920 1742 898 1705 910 C1675 916 1652 904 1645 898 Z" fill="url(#blanket)" stroke="#171230" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M1645 722 C1720 712 1830 718 1990 714 L1990 746 C1830 750 1720 744 1645 754 Z" fill="#E2A6CB" stroke="#171230" stroke-width="3" stroke-linejoin="round"/>
+  <g stroke="#7A3F75" stroke-width="2.5" fill="none" opacity="0.7" stroke-dasharray="9 8">
+    <path d="M1650 800 C1730 792 1830 798 1990 794"/><path d="M1650 852 C1730 846 1830 852 1990 848"/>
+  </g>
+  <g stroke="#7A3F75" stroke-width="3" fill="none" opacity="0.6" stroke-linecap="round">
+    <path d="M1700 760 C1708 800 1696 850 1708 905"/><path d="M1860 758 C1866 800 1852 850 1866 900"/>
+  </g>
+  <rect x="1660" y="905" width="14" height="18" fill="#171230"/><rect x="1960" y="905" width="14" height="18" fill="#171230"/>
+
+  <!-- plush bunny -->
+  <g stroke="#171230" stroke-width="3">
+    <ellipse cx="1696" cy="598" rx="10" ry="34" fill="#F4ECF9" transform="rotate(-12 1696 598)"/>
+    <ellipse cx="1728" cy="598" rx="10" ry="34" fill="#F4ECF9" transform="rotate(12 1728 598)"/>
+    <ellipse cx="1712" cy="690" rx="32" ry="30" fill="#F4ECF9"/>
+    <circle cx="1712" cy="642" r="27" fill="#F4ECF9"/>
+    <ellipse cx="1690" cy="716" rx="12" ry="7" fill="#F4ECF9"/><ellipse cx="1734" cy="716" rx="12" ry="7" fill="#F4ECF9"/>
+  </g>
+  <ellipse cx="1696" cy="600" rx="4" ry="22" fill="#F3B4CB" transform="rotate(-12 1696 600)"/>
+  <ellipse cx="1728" cy="600" rx="4" ry="22" fill="#F3B4CB" transform="rotate(12 1728 600)"/>
+  <circle cx="1702" cy="642" r="3" fill="#2E2433"/><circle cx="1722" cy="642" r="3" fill="#2E2433"/>
+  <path d="M1708 652 q4 3 8 0" stroke="#2E2433" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <ellipse cx="1693" cy="652" rx="6" ry="3.5" fill="#F3B4CB" opacity="0.8"/><ellipse cx="1731" cy="652" rx="6" ry="3.5" fill="#F3B4CB" opacity="0.8"/>
+
+  <!-- teddy bear -->
+  <g stroke="#171230" stroke-width="3">
+    <circle cx="1825" cy="626" r="11" fill="#C99A82"/><circle cx="1871" cy="626" r="11" fill="#C99A82"/>
+    <ellipse cx="1848" cy="694" rx="34" ry="28" fill="#C99A82"/>
+    <circle cx="1848" cy="650" r="28" fill="#C99A82"/>
+    <ellipse cx="1848" cy="660" rx="12" ry="9" fill="#EBD0BB" stroke-width="2"/>
+    <ellipse cx="1822" cy="718" rx="12" ry="7" fill="#C99A82"/><ellipse cx="1874" cy="718" rx="12" ry="7" fill="#C99A82"/>
+  </g>
+  <circle cx="1825" cy="626" r="5" fill="#EBD0BB"/><circle cx="1871" cy="626" r="5" fill="#EBD0BB"/>
+  <circle cx="1838" cy="645" r="3" fill="#2E2433"/><circle cx="1858" cy="645" r="3" fill="#2E2433"/>
+  <ellipse cx="1848" cy="656" rx="4" ry="3" fill="#2E2433"/>
+
+  </g>
+
+  <!-- hanging plant -->
+  <path d="M1860 0 L1860 118" stroke="#171230" stroke-width="3"/>
+  <path d="M1828 118 L1892 118 C1890 150 1876 162 1860 162 C1844 162 1830 150 1828 118 Z" fill="#D07E95" stroke="#171230" stroke-width="3"/>
+  <g stroke="#3F7468" stroke-width="3" fill="none">
+    <path d="M1838 128 C1820 180 1832 230 1818 290"/><path d="M1880 130 C1900 190 1886 240 1902 320"/>
+  </g>
+  <g fill="#5E9C86" stroke="#171230" stroke-width="2">
+    <ellipse cx="1826" cy="170" rx="10" ry="6" transform="rotate(-30 1826 170)"/>
+    <ellipse cx="1832" cy="215" rx="10" ry="6" transform="rotate(30 1832 215)"/>
+    <ellipse cx="1820" cy="258" rx="10" ry="6" transform="rotate(-30 1820 258)"/>
+    <ellipse cx="1894" cy="180" rx="10" ry="6" transform="rotate(30 1894 180)"/>
+    <ellipse cx="1888" cy="232" rx="10" ry="6" transform="rotate(-30 1888 232)"/>
+    <ellipse cx="1898" cy="282" rx="10" ry="6" transform="rotate(30 1898 282)"/>
+    <ellipse cx="1844" cy="140" rx="12" ry="7" transform="rotate(-50 1844 140)"/>
+    <ellipse cx="1876" cy="140" rx="12" ry="7" transform="rotate(50 1876 140)"/>
+  </g>
+
+  <!-- fairy lights across the top -->
+  <path d="M0 64 Q120 130 240 72 Q360 124 480 68 Q600 136 720 74 Q840 122 960 66 Q1080 134 1200 72 Q1320 126 1440 70 Q1560 132 1680 74 Q1800 120 1920 67" stroke="#140F2C" stroke-width="2.5" fill="none"/>
+  <g>
+    <use href="#bulb" x="60" y="93"/><use href="#bulb" x="120" y="103"/><use href="#bulb" x="180" y="97"/>
+    <use href="#bulb" x="300" y="95"/><use href="#bulb" x="360" y="101"/><use href="#bulb" x="420" y="93"/>
+    <use href="#bulb" x="540" y="98"/><use href="#bulb" x="600" y="108"/><use href="#bulb" x="660" y="101"/>
+    <use href="#bulb" x="780" y="96"/><use href="#bulb" x="840" y="100"/><use href="#bulb" x="900" y="92"/>
+    <use href="#bulb" x="1020" y="96"/><use href="#bulb" x="1080" y="106"/><use href="#bulb" x="1140" y="99"/>
+    <use href="#bulb" x="1260" y="96"/><use href="#bulb" x="1320" y="102"/><use href="#bulb" x="1380" y="95"/>
+    <use href="#bulb" x="1500" y="98"/><use href="#bulb" x="1560" y="106"/><use href="#bulb" x="1620" y="100"/>
+    <use href="#bulb" x="1740" y="95"/><use href="#bulb" x="1800" y="99"/><use href="#bulb" x="1860" y="91"/>
+  </g>
+  </g>
+
+  <rect width="1920" height="1080" fill="url(#vignette)"/>
+  <rect width="1920" height="1080" filter="url(#grain)"/>
+</svg>
