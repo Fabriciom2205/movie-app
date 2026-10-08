@@ -6,14 +6,31 @@
 const pill =
   "inline-flex items-center justify-center gap-2 rounded-full transition-colors duration-150 ease-out motion-safe:active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60";
 
+// How each kind of button looks; the exports below add a size.
+const primaryLook =
+  "bg-primary font-heading font-medium text-on-primary hover:bg-primary-hover disabled:hover:bg-primary";
+const secondaryLook = "border-2 border-line bg-card font-semibold text-ink hover:bg-soft disabled:hover:bg-card";
+
 /** The ONE main action per screen: blue, Fredoka, 48px tall. */
-export const primaryButton = `${pill} h-12 px-7 bg-primary font-heading text-lg font-medium text-on-primary hover:bg-primary-hover disabled:hover:bg-primary`;
+export const primaryButton = `${pill} h-12 px-7 text-lg ${primaryLook}`;
 
 /** Everything else you can press: white with a soft blue outline. */
-export const secondaryButton = `${pill} h-10 px-4 border-2 border-line bg-card text-sm font-semibold text-ink hover:bg-soft disabled:hover:bg-card`;
+export const secondaryButton = `${pill} h-10 px-4 text-sm ${secondaryLook}`;
 
-/** Low-key actions (Back, Sign out): no fill until hovered. */
+/** Low-key actions (Back, Sign out, Remove): no fill until hovered. */
 export const quietButton = `${pill} h-10 px-3 text-sm font-semibold text-ink-muted hover:bg-soft hover:text-ink`;
+
+/** Deleting something for good: red text and a red-tinted outline, never the
+ *  primary style, and always behind a confirmation (ConfirmButton). */
+export const dangerButton = `${pill} h-10 px-4 text-sm border-2 border-danger/40 bg-card font-semibold text-danger hover:bg-danger-soft`;
+
+/** A text input: 44px, white, soft outline. Give it a <label> (or aria-label). */
+export const field =
+  "h-11 w-full min-w-0 rounded-field border-2 border-line bg-card px-3.5 placeholder:text-ink-muted";
+
+/** Buttons in a row with a `field`: the field's 44px height. */
+export const fieldPrimaryButton = `${pill} h-11 shrink-0 px-5 ${primaryLook}`;
+export const fieldSecondaryButton = `${pill} h-11 shrink-0 px-5 ${secondaryLook}`;
 
 const toggle =
   "inline-flex min-h-10 max-w-full items-center gap-1.5 rounded-full border-2 border-line bg-card px-4 text-sm font-semibold text-ink transition-colors duration-150 ease-out hover:bg-soft motion-safe:active:translate-y-px";

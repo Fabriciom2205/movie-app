@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Film, ListVideo, LogOut, Popcorn, Search, Settings, Sparkles } from "lucide-react";
 import { signOut } from "@/app/login/actions";
+import { fieldSecondaryButton } from "@/app/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getMovieGenres, releaseYear, searchMovies, tmdbImageUrl } from "@/lib/tmdb";
 import { RecommendForm, type FormPerson } from "./recommend-form";
@@ -126,7 +127,7 @@ export default async function Home(props: PageProps<"/">) {
         </div>
         <button
           type="submit"
-          className="h-11 shrink-0 rounded-full border-2 border-line bg-card px-5 font-semibold transition-colors duration-150 ease-out hover:bg-soft motion-safe:active:translate-y-px"
+          className={fieldSecondaryButton}
         >
           Search
         </button>
