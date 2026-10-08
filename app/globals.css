@@ -32,11 +32,6 @@
   --color-danger-soft: #FEE2E2;
   --color-on-danger-soft: #991B1B;
 
-  /* Old names, still used by pages that haven't been redesigned yet
-     (bg-foreground text-background buttons). Remove once none are left. */
-  --color-foreground: var(--color-ink);
-  --color-background: var(--color-card);
-
   --radius-card: 24px;
   --radius-poster: 18px;
   --radius-field: 16px;
@@ -52,11 +47,6 @@
   --font-heading: var(--font-fredoka);
   --font-body: var(--font-nunito);
 }
-
-/* Always light. Pages still carry old dark: classes until their redesign;
-   tying dark: to a .dark class that nothing has switches them all off.
-   Delete this line once no dark: class is left in app/. */
-@custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
   :root {

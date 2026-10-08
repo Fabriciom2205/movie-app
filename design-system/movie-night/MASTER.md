@@ -243,16 +243,17 @@ it sits under the main button, so that button stays on a phone's first screen.
 - Always light: `color-scheme: light` in `globals.css` and in the `viewport`
   export of `app/layout.tsx` (with `themeColor` = `page`, so phones tint their
   browser bar to match).
-- Temporary, until every page is redesigned (2026-10-08, design pass step 1):
-  - `globals.css` ties `dark:` to a `.dark` class nothing has, which switches
-    off the old `dark:` classes still in pages (otherwise a phone in dark mode
-    would get light text on the light page). Each page's PR deletes its
-    `dark:` classes; the last one deletes that line.
-  - `foreground` / `background` are kept as aliases of `ink` / `card` for the
-    old `bg-foreground text-background` buttons. Removed with the last one.
-  - The old `text-zinc-500` and `text-red-600` were swapped for `ink-muted` and
-    `danger` everywhere at once, since both fail text contrast on the sky page
-    (4.40:1). Other `zinc-*` classes pass and wait for their page's PR.
+- The design pass (2026-10-08, PRs #16 to the login PR) converted every page.
+  Since its last step, `app/` has no `dark:` classes, no Tailwind palette
+  colors (`zinc-*`, `red-600`...), no raw hex in pages and no old
+  `foreground` / `background` names; the temporary switch that turned old
+  `dark:` classes off during the pass is gone. Don't add `dark:` classes: Tailwind's
+  default `dark:` follows the device setting, so one would bring dark-mode
+  colors back onto this always-light design. If dark mode is ever wanted, use
+  the appendix below (dark values of the same tokens).
+- Testing logged-out pages (login) without signing out: load the page in an
+  `<iframe credentialless>` from the dev tools console; it gets no cookies,
+  so it sees what a signed-out visitor sees.
 - Credit lines (TMDB footer, "Availability data provided by JustWatch") stay
   visible on every page that shows that data.
 
