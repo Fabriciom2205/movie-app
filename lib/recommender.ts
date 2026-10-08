@@ -10,6 +10,7 @@ import {
 } from "@/lib/tmdb";
 import {
   findFirstAvailable,
+  luckFor,
   rankRecommendations,
   type CandidateMovie,
   type Reason,
@@ -24,6 +25,7 @@ export type RecommendRequest = {
   watcherIds: string[]; // you and/or people you share a list with; empty = just you
   genreIds: number[]; // tonight's mood chips; empty = any genre
   skip: number[]; // movies already shown or ruled out ("Pick another")
+  seed: number; // from the URL: same seed, same luck, same pick
 };
 
 export type Person = { id: string; name: string; isMe: boolean };
@@ -41,7 +43,7 @@ export type RecommendResult = {
   nextSkip: number[]; // skip list for "Pick another"
   moreLeft: boolean;
   problem: "noServices" | "nothingFound" | null;
-  watchersWithoutServices: string[]; // names
+  watchersWithoutServices: Person[]; // their recommendations rest on the others' services
 };
 
 const MAX_SEEDS = 10; // most recent likes to base "because you liked" on
@@ -99,7 +101,7 @@ export async function recommendMovie(userId: string, req: RecommendRequest): Pro
   if (services.error) throw services.error;
   const watcherServices = new Set(services.data.map((s) => s.provider_id));
   const withServices = new Set(services.data.map((s) => s.user_id));
-  const watchersWithoutServices = watcherIds.filter((id) => !withServices.has(id)).map((id) => person(id).name);
+  const watchersWithoutServices = watcherIds.filter((id) => !withServices.has(id)).map(person);
 
   const empty = {
     watchers: watcherIds.map(person),
@@ -146,7 +148,7 @@ export async function recommendMovie(userId: string, req: RecommendRequest): Pro
     ),
     genreFilter,
     skip: new Set(req.skip),
-    random: Math.random,
+    luck: (movieId) => luckFor(req.seed, movieId),
   });
 
   const found = await findFirstAvailable(ranked, {

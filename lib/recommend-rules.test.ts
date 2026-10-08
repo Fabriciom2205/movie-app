@@ -5,6 +5,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   findFirstAvailable,
+  luckFor,
   rankRecommendations,
   type CandidateMovie,
   type RankedMovie,
@@ -36,7 +37,7 @@ function rank(overrides: Partial<RecommendInput> = {}) {
     listItems: [],
     genreFilter: new Set(),
     skip: new Set(),
-    random: () => 0, // no randomness unless a test adds it
+    luck: () => 0, // no luck unless a test adds it
     ...overrides,
   });
 }
@@ -145,36 +146,56 @@ test("a higher TMDB rating ranks higher, all else equal", () => {
   assert.deepEqual(ranked[0].reasons, [{ kind: "wellRated", voteAverage: 8.2 }]);
 });
 
-test("randomness can reorder close calls but never beats a friend's like", () => {
+test("luck can reorder close calls but never beats a friend's like", () => {
   // The worst luck for the friend's pick, the best for the 9.5-rated one.
-  let call = 0;
   const ranked = rank({
     discovered: [movie(1, { voteAverage: 9.5 })],
     ratings: [{ userId: FRIEND, movie: movie(2, { voteAverage: null }), verdict: "up" }],
-    random: () => (call++ === 0 ? 1 : 0),
+    luck: (id) => (id === 1 ? 0.999 : 0),
   });
   assert.deepEqual(ids(ranked), [2, 1]);
 });
 
-test("randomness can lift a movie past one with an extra 'because you liked'", () => {
+test("luck can lift a movie past one with an extra 'because you liked'", () => {
   // Movie 1 is recommended by two of your likes, movie 2 by one; luck favors 2.
-  const luck = [0, 1];
-  let call = 0;
   const ranked = rank({
     seedRecommendations: [
       { seed: { id: 100, title: "Dune", likedBy: [ME] }, movies: [movie(1), movie(2)] },
       { seed: { id: 101, title: "Arrival", likedBy: [ME] }, movies: [movie(1)] },
     ],
-    random: () => luck[call++],
+    luck: (id) => (id === 2 ? 0.999 : 0),
   });
   assert.deepEqual(ids(ranked), [2, 1]);
 });
 
-test("randomness does reorder movies that are otherwise tied", () => {
-  const values = [0.1, 0.9];
-  let call = 0;
-  const ranked = rank({ discovered: [movie(1), movie(2)], random: () => values[call++] });
+test("luck does reorder movies that are otherwise tied", () => {
+  const ranked = rank({ discovered: [movie(1), movie(2)], luck: (id) => (id === 2 ? 0.9 : 0.1) });
   assert.deepEqual(ids(ranked), [2, 1]);
+});
+
+// ---- Luck from the seed in the URL ----
+
+test("the same seed always gives the same luck; a different seed gives different luck", () => {
+  assert.equal(luckFor(48213, 603), luckFor(48213, 603));
+  const movies = Array.from({ length: 50 }, (_, i) => i + 1);
+  const differ = movies.filter((id) => luckFor(1, id) !== luckFor(2, id)).length;
+  assert.ok(differ >= 48, `only ${differ} of 50 movies got different luck`);
+});
+
+test("luck stays between 0 and 1 and is spread evenly", () => {
+  const values = Array.from({ length: 10_000 }, (_, i) => luckFor(7, i + 1));
+  assert.ok(values.every((v) => v >= 0 && v < 1));
+  const mean = values.reduce((a, b) => a + b, 0) / values.length;
+  assert.ok(Math.abs(mean - 0.5) < 0.02, `mean was ${mean}`);
+  const lowQuarter = values.filter((v) => v < 0.25).length / values.length;
+  assert.ok(Math.abs(lowQuarter - 0.25) < 0.02, `bottom quarter held ${lowQuarter}`);
+});
+
+test("one movie's luck doesn't depend on which other movies are being ranked", () => {
+  const luck = (id: number) => luckFor(99, id);
+  const all = rank({ discovered: [movie(1), movie(2), movie(3), movie(4)], luck });
+  const without3 = rank({ discovered: [movie(1), movie(2), movie(4)], luck });
+  assert.deepEqual(ids(without3), ids(all).filter((id) => id !== 3));
 });
 
 // ---- Merging sources ----

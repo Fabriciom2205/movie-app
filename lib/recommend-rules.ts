@@ -30,7 +30,7 @@ export type RecommendInput = {
   listItems: { movie: CandidateMovie; listName: string }[]; // the watchers' lists
   genreFilter: Set<number>; // tonight's mood chips; empty = any genre
   skip: Set<number>; // already shown ("Pick another")
-  random: () => number; // Math.random, or a fake in tests
+  luck: (movieId: number) => number; // 0-1 per movie: luckFor(seed, id), or a fake in tests
 };
 
 // Why a movie was suggested, strongest first. The page turns these into text.
@@ -63,6 +63,21 @@ export const WEIGHTS = {
   noise: 4, // random extra between 0 and this
 };
 const NEUTRAL_RATING = 6.5;
+
+// A movie's luck tonight: a number from 0 up to (not including) 1, worked
+// out from the seed in the /pick URL and the movie's id. The same seed always
+// gives the same luck, so reloading a pick (or adding it to a list, which
+// refreshes the page) keeps the same movie; a new seed reshuffles. Each movie's
+// luck depends only on its own id, so skipping or rating one movie doesn't
+// reshuffle the rest. (A small integer hash; good enough for shuffling movies,
+// not for anything secret.)
+export function luckFor(seed: number, movieId: number): number {
+  let h = (seed ^ Math.imul(movieId, 0x9e3779b1)) >>> 0;
+  h = Math.imul(h ^ (h >>> 16), 0x85ebca6b);
+  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35);
+  h ^= h >>> 16;
+  return (h >>> 0) / 4294967296; // 2^32
+}
 
 export function rankRecommendations(input: RecommendInput): RankedMovie[] {
   // ---- Merge every source into one entry per movie ----
@@ -143,7 +158,7 @@ export function rankRecommendations(input: RecommendInput): RankedMovie[] {
 
     ranked.push({
       item: { movie, score, reasons, dislikedBy },
-      sortKey: score + input.random() * WEIGHTS.noise,
+      sortKey: score + input.luck(movie.id) * WEIGHTS.noise,
     });
   }
 
