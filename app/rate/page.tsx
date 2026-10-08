@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ArrowLeft, Sparkles } from "lucide-react";
+import { quietButton, tag } from "@/app/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getWellKnownMovies, releaseYear, tmdbImageUrl } from "@/lib/tmdb";
 import { RateGrid, type RateMovie } from "./rate-grid";
@@ -43,20 +45,24 @@ export default async function RatePage(props: PageProps<"/rate">) {
   const moreUrl = page + 2 <= MAX_PAGE ? `/rate?page=${page + 2}` : null;
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-10">
-      <Link href="/" className="text-sm text-ink-muted hover:underline">
-        ← Done
+    <main className="mx-auto w-full max-w-4xl px-4 py-8 sm:py-10">
+      <Link href="/" className={`${quietButton} -ml-3`}>
+        <ArrowLeft aria-hidden="true" className="size-4" />
+        Done
       </Link>
 
-      <h1 className="mt-6 text-3xl font-semibold tracking-tight">Rate movies you&rsquo;ve seen</h1>
-      <p className="mt-2 max-w-2xl text-zinc-600 dark:text-zinc-400">
-        Every rating teaches the recommender what you like, and movies you&rsquo;ve rated won&rsquo;t be
-        recommended to you. Skip anything you haven&rsquo;t seen.
+      <h1 className="mt-4 text-3xl font-semibold tracking-tight">Rate movies you&rsquo;ve seen</h1>
+      <p className="mt-2 max-w-2xl leading-relaxed">
+        Thumbs up if you liked it, thumbs down if it wasn&rsquo;t for you, or skip anything you haven&rsquo;t
+        seen. Every rating teaches the recommender your taste, and movies you&rsquo;ve rated won&rsquo;t be
+        recommended to you.
       </p>
-      <p className="mt-2 text-sm text-ink-muted">
+      {/* Lilac + sparkles = your taste, as on the home page. */}
+      <p className={`mt-4 ${tag} bg-lilac text-on-lilac`}>
+        <Sparkles aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
         {ratedCount === 0
-          ? "No ratings yet."
-          : `You've rated ${ratedCount} ${ratedCount === 1 ? "movie" : "movies"} so far.`}
+          ? "No ratings yet"
+          : `You’ve rated ${ratedCount} ${ratedCount === 1 ? "movie" : "movies"} so far`}
       </p>
 
       <RateGrid movies={movies} moreUrl={moreUrl} />

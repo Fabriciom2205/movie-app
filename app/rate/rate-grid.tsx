@@ -3,8 +3,9 @@
 import { useOptimistic, useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { EyeOff, ThumbsDown, ThumbsUp } from "lucide-react";
+import { CircleAlert, EyeOff, Film, PartyPopper, ThumbsDown, ThumbsUp } from "lucide-react";
 import { setRating, type Verdict } from "@/app/movie/[id]/actions";
+import { banner, card, quietButton, secondaryButton } from "@/app/ui";
 
 export type RateMovie = { id: number; title: string; year: string | null; posterUrl: string | null };
 
@@ -35,43 +36,65 @@ export function RateGrid({ movies, moreUrl }: { movies: RateMovie[]; moreUrl: st
   return (
     <>
       {error && (
-        <p role="alert" className="mt-4 text-sm text-danger dark:text-red-400">
+        <p role="alert" className={`mt-4 ${banner} bg-danger-soft text-on-danger-soft`}>
+          <CircleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
           {error}
         </p>
       )}
 
       {visible.length === 0 ? (
-        <p className="mt-8 text-zinc-600 dark:text-zinc-400">That&rsquo;s all of these.</p>
+        <div className={`mt-6 ${card}`}>
+          <div className="mb-3 grid size-11 place-items-center rounded-full bg-soft text-on-soft">
+            <PartyPopper aria-hidden="true" className="size-5" />
+          </div>
+          <p className="font-semibold">That&rsquo;s all of these</p>
+          <p className="mt-1 text-ink-muted">
+            {moreUrl ? "Load the next batch, or head home for a recommendation." : "Head home for a recommendation."}
+          </p>
+        </div>
       ) : (
-        <ul className="mt-6 grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 md:grid-cols-4">
+        <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4">
           {visible.map((movie) => (
-            <li key={movie.id} className="flex flex-col">
+            <li key={movie.id} className="flex flex-col rounded-card border-2 border-line bg-card p-2.5">
               {movie.posterUrl ? (
                 <Image
                   src={movie.posterUrl}
                   alt=""
                   width={185}
                   height={278}
-                  className="aspect-[2/3] h-auto w-full rounded-lg object-cover"
+                  className="aspect-2/3 h-auto w-full rounded-poster object-cover"
                 />
               ) : (
-                <div className="aspect-[2/3] w-full rounded-lg bg-zinc-200 dark:bg-zinc-800" />
+                <div className="grid aspect-2/3 w-full place-items-center rounded-poster bg-soft text-on-soft">
+                  <Film aria-hidden="true" className="size-8" />
+                </div>
               )}
-              <p className="mt-2 font-medium leading-tight">
+              <p className="mt-2.5 px-1 font-heading leading-snug font-medium">
                 {movie.title}
                 {movie.year && <span className="font-normal text-ink-muted"> ({movie.year})</span>}
               </p>
-              <div className="mt-2 flex flex-col gap-1.5" role="group" aria-label={`Rate ${movie.title}`}>
-                <button type="button" onClick={() => rate(movie, "up")} className={buttonClass}>
-                  <ThumbsUp aria-hidden="true" className="h-4 w-4" />
-                  Liked it
+              {/* mt-auto: the buttons line up at the bottom of each row of cards. */}
+              <div role="group" aria-label={`Rate ${movie.title}`} className="mt-auto grid grid-cols-2 gap-2 pt-3">
+                <button
+                  type="button"
+                  onClick={() => rate(movie, "up")}
+                  aria-label="Liked it"
+                  title="Liked it"
+                  className={`${thumbButton} hover:border-on-mint hover:bg-mint hover:text-on-mint active:border-on-mint active:bg-mint active:text-on-mint`}
+                >
+                  <ThumbsUp aria-hidden="true" className="size-5" strokeWidth={2.25} />
                 </button>
-                <button type="button" onClick={() => rate(movie, "down")} className={buttonClass}>
-                  <ThumbsDown aria-hidden="true" className="h-4 w-4" />
-                  Not for me
+                <button
+                  type="button"
+                  onClick={() => rate(movie, "down")}
+                  aria-label="Not for me"
+                  title="Not for me"
+                  className={`${thumbButton} hover:border-on-peach hover:bg-peach hover:text-on-peach active:border-on-peach active:bg-peach active:text-on-peach`}
+                >
+                  <ThumbsDown aria-hidden="true" className="size-5" strokeWidth={2.25} />
                 </button>
-                <button type="button" onClick={() => skip(movie)} className={`${buttonClass} text-ink-muted`}>
-                  <EyeOff aria-hidden="true" className="h-4 w-4" />
+                <button type="button" onClick={() => skip(movie)} className={`col-span-2 ${quietButton}`}>
+                  <EyeOff aria-hidden="true" className="size-4" />
                   Haven&rsquo;t seen
                 </button>
               </div>
@@ -81,11 +104,8 @@ export function RateGrid({ movies, moreUrl }: { movies: RateMovie[]; moreUrl: st
       )}
 
       {moreUrl && (
-        <div className="mt-10">
-          <Link
-            href={moreUrl}
-            className="rounded-md border border-zinc-300 px-4 py-2 font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-900"
-          >
+        <div className="mt-8 flex justify-center">
+          <Link href={moreUrl} className={secondaryButton}>
             Show more movies
           </Link>
         </div>
@@ -94,5 +114,9 @@ export function RateGrid({ movies, moreUrl }: { movies: RateMovie[]; moreUrl: st
   );
 }
 
-const buttonClass =
-  "inline-flex items-center justify-center gap-2 rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500 dark:border-zinc-700 dark:hover:bg-zinc-900";
+// Round icon buttons: on a phone a card is ~145px wide, too narrow for two
+// labeled pills side by side. The label is the aria-label (and a tooltip); the
+// page's intro explains the thumbs. They take the meaning colors (liked = mint,
+// not for me = peach) on hover and while pressed.
+const thumbButton =
+  "inline-flex h-10 items-center justify-center rounded-full border-2 border-line bg-card text-ink transition-colors duration-150 ease-out motion-safe:active:translate-y-px";

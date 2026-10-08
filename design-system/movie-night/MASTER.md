@@ -166,6 +166,16 @@ get their initial in a `soft` circle (decorative, `aria-hidden`). Settings
 end with Delete (`dangerButton`, `Trash2`) or Leave (`secondaryButton`,
 `LogOut`) plus one line saying what it does; both confirm first.
 
+**Rating grid** (/rate): each movie is a card (poster, title, then buttons
+pinned to the bottom with `mt-auto`, so they line up across a row). Liked /
+not for me are round icon buttons side by side, the one place the app uses
+icon-only buttons: on a phone a card is ~145px wide, too narrow for two
+labeled pills, and three stacked 40px pills would make each card very tall.
+They carry the label as `aria-label` and `title`, the page's intro explains
+the thumbs, and they take the meaning colors on hover and while pressed
+(mint / peach with the `on-*` outline). "Haven't seen" stays a labeled quiet
+button. The rated count is a lilac `tag` with sparkles.
+
 **Empty and error states:** a card with a `soft` circle holding an icon
 (`Tv`, `SearchX`, `CloudOff`...), a heading that says what happened, a sentence
 with the way forward, then one primary button and any alternatives as secondary.
