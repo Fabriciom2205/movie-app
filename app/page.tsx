@@ -6,6 +6,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getMovieGenres, releaseYear, searchMovies, tmdbImageUrl } from "@/lib/tmdb";
 import { RecommendForm, type FormPerson } from "./recommend-form";
 
+// Below this many ratings, the home page suggests rating some movies.
+const FEW_RATINGS = 10;
+
 // Not a mood anyone picks for movie night.
 const HIDDEN_GENRES = new Set([10770]); // TV Movie
 
@@ -14,16 +17,21 @@ export default async function Home(props: PageProps<"/">) {
   const query = typeof params.q === "string" ? params.q.trim() : "";
 
   const supabase = await createClient();
-  const [{ data: auth }, results, profiles, genres] = await Promise.all([
-    supabase.auth.getClaims(),
+  const { data: auth } = await supabase.auth.getClaims();
+  const userId = auth?.claims.sub;
+
+  const [results, profiles, genres, myRatings] = await Promise.all([
     query ? searchMovies(query) : Promise.resolve([]),
     // RLS: you and the people you share a list with.
     supabase.from("profiles").select("user_id, display_name"),
     getMovieGenres(),
+    // Just the count of your own ratings (head: no rows are sent).
+    supabase.from("ratings").select("movie_id", { count: "exact", head: true }).eq("user_id", userId ?? ""),
   ]);
   if (profiles.error) throw profiles.error;
+  const ratingCount = myRatings.count ?? 0;
 
-  const people = toPeople(profiles.data, auth?.claims.sub);
+  const people = toPeople(profiles.data, userId);
   // Coming back from /pick: keep what was chosen (/?watch=...&genre=...).
   const asked = ([] as string[]).concat(params.watch ?? []).filter((id) => people.some((p) => p.id === id));
   const askedGenres = ([] as string[]).concat(params.genre ?? []).map(Number);
@@ -51,12 +59,26 @@ export default async function Home(props: PageProps<"/">) {
 
       <section className="mb-10 rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
         <h2 className="mb-4 text-xl font-semibold">What are we watching tonight?</h2>
+        {ratingCount < FEW_RATINGS && (
+          <p className="mb-5 rounded-md bg-zinc-100 px-3 py-2 text-sm text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+            <Link href="/rate" className="font-medium underline">
+              Rate a few movies you&rsquo;ve seen
+            </Link>{" "}
+            so recommendations learn your taste
+            {ratingCount > 0 && ` (${ratingCount} so far)`}.
+          </p>
+        )}
         <RecommendForm
           people={people}
           genres={genres.filter((g) => !HIDDEN_GENRES.has(g.id)).sort((a, b) => a.name.localeCompare(b.name))}
           initialWatchers={asked.length ? asked : people.map((p) => p.id)} // default: everyone
           initialGenres={askedGenres}
         />
+        {ratingCount >= FEW_RATINGS && (
+          <Link href="/rate" className="mt-4 inline-block text-sm text-zinc-500 hover:underline">
+            Rate more movies you&rsquo;ve seen
+          </Link>
+        )}
       </section>
 
       <h2 className="mb-2 text-sm font-medium text-zinc-500">Or look up a movie</h2>

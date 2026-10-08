@@ -209,6 +209,18 @@ export async function discoverMovies(options: {
   return data.results;
 }
 
+// The movies with the most TMDB votes (Interstellar, Inception, The Dark
+// Knight...): the ones people are most likely to have seen. 20 per page.
+export async function getWellKnownMovies(page = 1): Promise<MovieListItem[]> {
+  const data = await tmdbFetch<MovieListResponse>("/discover/movie", {
+    sort_by: "vote_count.desc",
+    include_adult: "false",
+    language: "en-US",
+    page: String(page),
+  });
+  return data.results;
+}
+
 // TMDB's "if you liked this" list for one movie (first page, up to 20).
 // Says nothing about where they stream. Empty when the movie doesn't exist.
 export async function getRecommendations(id: number): Promise<MovieListItem[]> {
