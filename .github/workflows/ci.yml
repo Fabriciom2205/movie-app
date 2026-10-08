@@ -3,17 +3,26 @@
 #   pull request:  app + database checks (no deploy)
 #   push to main:  app + database checks -> migrate production DB -> deploy app
 #
+#  - changes:  what changed (scripts/ci-what-changed.sh), so the slow parts
+#              only run when they can matter
 #  - app:      the app lints, type-checks, passes its unit tests and builds from a clean checkout
 #  - database: all migrations build a fresh database, and every RLS test passes
-#  - migrate:  apply new migrations to production (only if both checks passed)
+#              (~2 minutes, mostly starting Postgres in Docker). Passes in
+#              seconds without running when nothing database-related changed.
+#  - migrate:  apply new migrations to production (only if both checks passed;
+#              skipped when no migration changed since the last successful run)
 #  - deploy:   deploy the app to Vercel production (only after migrate succeeded)
+#
+# On main, "changed" means since the last run that fully succeeded, not since
+# the previous commit, so a failed run's changes are checked again. Anything
+# unclear means everything runs.
 #
 # Vercel's own automatic deploys are off for main (vercel.json), so this
 # workflow is the only way code reaches production. PR previews stay automatic.
 #
 # Every job runs on a pinned image (ubuntu-24.04), not ubuntu-latest: "latest"
 # moves to Ubuntu 26 on 2026-10-19, and a new OS should be a change we make on
-# purpose in its own PR (change all four runs-on lines, watch one green run),
+# purpose in its own PR (change every runs-on line, watch one green run),
 # not a surprise in the middle of a deploy.
 name: CI/CD
 
@@ -34,6 +43,32 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  changes:
+    name: What changed
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read # to look up the last successful run on main
+    outputs:
+      database: ${{ steps.what.outputs.database }}
+      migrations: ${{ steps.what.outputs.migrations }}
+
+    steps:
+      - name: Check out code (with history, to compare commits)
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Decide which checks this change needs
+        id: what
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Set for pull requests; empty on main (the script then looks up the
+          # last successful run).
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: bash scripts/ci-what-changed.sh
+
   app:
     name: Lint, type-check, build
     runs-on: ubuntu-24.04
@@ -68,56 +103,86 @@ jobs:
 
   database:
     name: Migrations + RLS tests
+    needs: changes
+    # This check is required to merge, so the job always runs and reports a
+    # real result: a job that never runs would leave a pull request waiting.
+    # !cancelled(): it even runs if "What changed" failed (and then tests).
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    env:
+      # Only an explicit "false" skips the tests; anything else runs them.
+      RUN: ${{ needs.changes.outputs.database != 'false' }}
 
     steps:
+      - name: Nothing database-related changed (tests not needed)
+        if: env.RUN != 'true'
+        run: echo "No database-related files changed since the last successful run, so this check passes without starting Postgres."
+
       - name: Check out code
+        if: env.RUN == 'true'
         uses: actions/checkout@v7
 
       - name: Set up Node.js
+        if: env.RUN == 'true'
         uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
 
       - name: Install dependencies (includes the Supabase CLI)
+        if: env.RUN == 'true'
         run: npm ci
 
       # A throwaway Supabase in Docker, built from nothing but our migrations.
       # Keep Postgres + auth (our tables reference auth.users); skip the rest.
       - name: Start local Supabase and apply all migrations
+        if: env.RUN == 'true'
         run: >-
           npx supabase start
           -x realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
 
       - name: Lint database functions
+        if: env.RUN == 'true'
         run: npx supabase db lint --local --schema public,private --level warning --fail-on error
 
       - name: Run RLS tests
+        if: env.RUN == 'true'
         run: npm run test:db -- --local
 
   migrate:
     name: Migrate production database
-    needs: [app, database]
+    # Needs "What changed" to have succeeded: if it failed, nothing deploys.
+    needs: [changes, app, database]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     environment: production
     env:
       SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      # No migration changed since the last fully successful run = production
+      # already has every migration (that run migrated it). The job still runs
+      # (with nothing to do) so deploy, which needs it, goes ahead.
+      RUN: ${{ needs.changes.outputs.migrations != 'false' }}
 
     steps:
+      - name: No new migrations (nothing to apply)
+        if: env.RUN != 'true'
+        run: echo "No migration changed since the last successful run; production is already up to date."
+
       - name: Check out code
+        if: env.RUN == 'true'
         uses: actions/checkout@v7
 
       - name: Set up Node.js
+        if: env.RUN == 'true'
         uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
 
       - name: Install dependencies (includes the Supabase CLI)
+        if: env.RUN == 'true'
         run: npm ci
 
       # Connect straight to Postgres through Supabase's connection pooler in
@@ -125,9 +190,11 @@ jobs:
       # database address is IPv6-only on the free tier; the pooler is IPv4.
       # No Supabase management API (and no access token) involved.
       - name: Show pending migrations
+        if: env.RUN == 'true'
         run: npx supabase db push --db-url "$SUPABASE_DB_URL" --dry-run
 
       - name: Apply migrations
+        if: env.RUN == 'true'
         run: npx supabase db push --db-url "$SUPABASE_DB_URL" --yes
 
   deploy:
