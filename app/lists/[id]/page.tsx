@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { ArrowLeft, Film, LogOut, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react";
+import { card, dangerButton, quietButton, secondaryButton } from "@/app/ui";
 import { getDisplayNames } from "@/lib/profiles";
 import { createClient } from "@/lib/supabase/server";
 import { formatRuntime, releaseYear, tmdbImageUrl } from "@/lib/tmdb";
@@ -19,9 +21,6 @@ type ItemRow = {
 };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-const smallButton =
-  "rounded-md px-2 py-1 text-sm text-ink-muted hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-60 dark:hover:bg-zinc-900 dark:hover:text-zinc-100";
 
 export default async function ListPage(props: PageProps<"/lists/[id]">) {
   const { id } = await props.params;
@@ -58,31 +57,39 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
       memberIds,
     ),
   ]);
+  const others = memberIds.filter((m) => m !== userId).map((m) => names.get(m) ?? "someone");
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-4 py-10">
-      <Link href="/lists" className="text-sm text-ink-muted hover:underline">
-        ← Lists
+    <main className="mx-auto w-full max-w-2xl px-4 py-8 sm:py-10">
+      <Link href="/lists" className={`${quietButton} -ml-3`}>
+        <ArrowLeft aria-hidden="true" className="size-4" />
+        Your lists
       </Link>
 
-      <h1 className="mt-6 text-3xl font-semibold tracking-tight">{name}</h1>
+      <h1 className="mt-4 text-3xl font-semibold tracking-tight break-words">{name}</h1>
+      <p className="mt-1 text-ink-muted">
+        {others.length ? `Shared with ${joinWords(others)}` : "Just you for now"}
+      </p>
 
       {/* ---------------- Movies ---------------- */}
       <section className="mt-8">
-        <h2 className="mb-3 text-xl font-semibold">
+        <h2 className="text-xl font-semibold tracking-tight">
           Movies <span className="font-normal text-ink-muted">({items.data.length})</span>
         </h2>
 
         {items.data.length === 0 ? (
-          <p className="text-ink-muted">
-            No movies yet.{" "}
-            <Link href="/" className="underline">
-              Search for one
-            </Link>{" "}
-            and add it from its page.
-          </p>
+          <div className={`mt-3 ${card}`}>
+            <div className="mb-3 grid size-11 place-items-center rounded-full bg-soft text-on-soft">
+              <Film aria-hidden="true" className="size-5" />
+            </div>
+            <p className="font-semibold">No movies yet</p>
+            <p className="mt-1 text-ink-muted">Look one up from home, then add it to this list from its page.</p>
+            <Link href="/" className={`mt-4 ${secondaryButton}`}>
+              Find a movie
+            </Link>
+          </div>
         ) : (
-          <ul className="flex flex-col gap-2">
+          <ul className="mt-3 flex flex-col gap-3">
             {items.data.map((item) => {
               const movie = item.movies;
               if (!movie) return null; // can't happen: movie_id references movies
@@ -90,10 +97,14 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
                 .filter(Boolean)
                 .join(" · ");
               return (
-                <li key={item.movie_id} className="flex items-center gap-3">
+                // The outline turns blue when the movie link is hovered (not Remove).
+                <li
+                  key={item.movie_id}
+                  className="flex items-center gap-1 rounded-card border-2 border-line bg-card p-2 transition-colors duration-150 ease-out has-[a:hover]:border-primary"
+                >
                   <Link
                     href={`/movie/${item.movie_id}`}
-                    className="flex min-w-0 flex-1 items-center gap-3 rounded-md p-1 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                    className="flex min-w-0 flex-1 items-center gap-3 rounded-poster p-1"
                   >
                     {movie.poster_path ? (
                       <Image
@@ -101,23 +112,23 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
                         alt=""
                         width={46}
                         height={69}
-                        className="h-[69px] w-[46px] shrink-0 rounded object-cover"
+                        className="h-[69px] w-[46px] shrink-0 rounded-thumb object-cover"
                       />
                     ) : (
-                      <div className="h-[69px] w-[46px] shrink-0 rounded bg-zinc-200 dark:bg-zinc-800" />
+                      <div className="grid h-[69px] w-[46px] shrink-0 place-items-center rounded-thumb bg-soft text-on-soft">
+                        <Film aria-hidden="true" className="size-5" />
+                      </div>
                     )}
                     <div className="min-w-0">
-                      <p className="truncate font-medium">{movie.title}</p>
+                      <p className="truncate font-heading text-lg leading-snug font-medium">{movie.title}</p>
                       {details && <p className="text-sm text-ink-muted">{details}</p>}
-                      <p className="text-sm text-ink-muted">
-                        {describeSeenBy(seenBy.get(item.movie_id) ?? [], names, userId)}
-                      </p>
+                      <SeenBy ratings={seenBy.get(item.movie_id) ?? []} names={names} userId={userId} />
                     </div>
                   </Link>
-                  <form action={removeFromList.bind(null, id, item.movie_id)}>
+                  <form action={removeFromList.bind(null, id, item.movie_id)} className="shrink-0">
                     <button
                       type="submit"
-                      className={smallButton}
+                      className={quietButton}
                       aria-label={`Remove ${movie.title} from this list`}
                     >
                       Remove
@@ -131,24 +142,34 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
       </section>
 
       {/* ---------------- Members ---------------- */}
-      <section className="mt-10">
-        <h2 className="mb-3 text-xl font-semibold">Who&rsquo;s on this list</h2>
-        <ul className="flex flex-col gap-1">
+      <section className={`mt-8 ${card}`}>
+        <h2 className="text-xl font-semibold tracking-tight">Who&rsquo;s on this list</h2>
+        <ul className="mt-4 flex flex-col gap-3">
           {members.data.map((m) => {
             const isMe = m.user_id === userId;
             const isListCreator = m.user_id === creatorId;
+            const memberName = names.get(m.user_id) ?? "Someone";
             return (
-              <li key={m.user_id} className="flex items-center justify-between gap-3">
-                <span>
-                  {names.get(m.user_id) ?? "Someone"}
-                  {isMe && <span className="text-ink-muted"> (you)</span>}
-                  {isListCreator && <span className="text-sm text-ink-muted"> · created the list</span>}
+              <li key={m.user_id} className="flex items-center gap-3">
+                {/* Their initial in a circle, just decoration. */}
+                <span
+                  aria-hidden="true"
+                  className="grid size-10 shrink-0 place-items-center rounded-full bg-soft font-heading text-lg font-semibold text-on-soft"
+                >
+                  {memberName.charAt(0).toUpperCase()}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-semibold">
+                    {memberName}
+                    {isMe && <span className="font-normal text-ink-muted"> (you)</span>}
+                  </span>
+                  {isListCreator && <span className="block text-sm text-ink-muted">Created the list</span>}
                 </span>
                 {isCreator && !isMe && (
                   <ConfirmButton
                     action={removeMember.bind(null, id, m.user_id)}
-                    question={`Remove ${names.get(m.user_id) ?? "this person"} from "${name}"?`}
-                    className={smallButton}
+                    question={`Remove ${memberName} from "${name}"?`}
+                    className={quietButton}
                   >
                     Remove
                   </ConfirmButton>
@@ -159,36 +180,43 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
         </ul>
 
         {isCreator && (
-          <div className="mt-4">
-            <h3 className="mb-2 text-sm font-medium text-ink-muted">
-              Add someone by the email they sign in with
-            </h3>
+          <div className="mt-5 border-t-2 border-line pt-5">
             <InviteForm listId={id} />
           </div>
         )}
       </section>
 
       {/* ---------------- Settings ---------------- */}
-      <section className="mt-10">
-        <h2 className="mb-3 text-xl font-semibold">List settings</h2>
-        <RenameListForm listId={id} name={name} />
+      <section className={`mt-6 ${card}`}>
+        <h2 className="text-xl font-semibold tracking-tight">List settings</h2>
         <div className="mt-4">
+          <RenameListForm listId={id} name={name} />
+        </div>
+        <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 border-t-2 border-line pt-5">
           {isCreator ? (
-            <ConfirmButton
-              action={deleteList.bind(null, id)}
-              question={`Delete "${name}" for everyone on it? This can't be undone.`}
-              className="rounded-md border border-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 disabled:opacity-60 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
-            >
-              Delete list
-            </ConfirmButton>
+            <>
+              <ConfirmButton
+                action={deleteList.bind(null, id)}
+                question={`Delete "${name}" for everyone on it? This can't be undone.`}
+                className={dangerButton}
+              >
+                <Trash2 aria-hidden="true" className="size-4" />
+                Delete list
+              </ConfirmButton>
+              <p className="text-sm text-ink-muted">Removes it for everyone on it.</p>
+            </>
           ) : (
-            <ConfirmButton
-              action={leaveList.bind(null, id)}
-              question={`Leave "${name}"? You'll need to be added again to see it.`}
-              className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium hover:bg-zinc-100 disabled:opacity-60 dark:border-zinc-700 dark:hover:bg-zinc-900"
-            >
-              Leave list
-            </ConfirmButton>
+            <>
+              <ConfirmButton
+                action={leaveList.bind(null, id)}
+                question={`Leave "${name}"? You'll need to be added again to see it.`}
+                className={secondaryButton}
+              >
+                <LogOut aria-hidden="true" className="size-4" />
+                Leave list
+              </ConfirmButton>
+              <p className="text-sm text-ink-muted">You&rsquo;d need to be added again to see it.</p>
+            </>
           )}
         </div>
       </section>
@@ -224,18 +252,45 @@ async function getSeenBy(
   return seenBy;
 }
 
-// "Seen by you (liked it), Alex (not for me)", or "Not seen yet". You first.
-function describeSeenBy(
-  ratings: { userId: string; verdict: Verdict }[],
-  names: Map<string, string>,
-  userId: string,
-): string {
-  if (ratings.length === 0) return "Not seen yet";
-  const parts = [...ratings]
-    .sort((a, b) => Number(b.userId === userId) - Number(a.userId === userId))
-    .map((r) => {
-      const who = r.userId === userId ? "you" : (names.get(r.userId) ?? "someone");
-      return `${who} (${r.verdict === "up" ? "liked it" : "not for me"})`;
-    });
-  return `Seen by ${parts.join(", ")}`;
+// Who on this list has seen the movie, as small tags (you first): "You liked
+// it" in mint, "Alex wasn't into it" in peach (the /pick colors), or "Not seen
+// yet". The point of a shared list: spot what a friend has already seen.
+function SeenBy({
+  ratings,
+  names,
+  userId,
+}: {
+  ratings: { userId: string; verdict: Verdict }[];
+  names: Map<string, string>;
+  userId: string;
+}) {
+  if (ratings.length === 0) return <p className="mt-1 text-sm text-ink-muted">Not seen yet</p>;
+  const sorted = [...ratings].sort((a, b) => Number(b.userId === userId) - Number(a.userId === userId));
+  return (
+    <ul className="mt-1.5 flex flex-wrap gap-1.5">
+      {sorted.map((r) => {
+        const isMe = r.userId === userId;
+        const who = isMe ? "You" : (names.get(r.userId) ?? "Someone");
+        const liked = r.verdict === "up";
+        const Icon = liked ? ThumbsUp : ThumbsDown;
+        return (
+          <li
+            key={r.userId}
+            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
+              liked ? "bg-mint text-on-mint" : "bg-peach text-on-peach"
+            }`}
+          >
+            <Icon aria-hidden="true" className="size-3.5 shrink-0" />
+            {liked ? `${who} liked it` : `${who} ${isMe ? "weren’t" : "wasn’t"} into it`}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+// ["a"] -> "a", ["a", "b"] -> "a and b", ["a", "b", "c"] -> "a, b and c"
+function joinWords(words: string[]): string {
+  if (words.length <= 1) return words[0] ?? "";
+  return `${words.slice(0, -1).join(", ")} and ${words.at(-1)}`;
 }

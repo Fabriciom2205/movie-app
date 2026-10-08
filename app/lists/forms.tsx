@@ -1,33 +1,37 @@
 "use client";
 
-import { useActionState, useTransition, type ReactNode } from "react";
+import { useActionState, useId, useTransition, type ReactNode } from "react";
+import { CircleCheck, Plus } from "lucide-react";
+import { field, fieldPrimaryButton, fieldSecondaryButton, sectionLabel, tag } from "@/app/ui";
 import { createList, inviteToList, renameList, type FormState } from "./actions";
 
 const initialState: FormState = { error: null, message: null, value: "" };
 
-const inputClass =
-  "min-w-0 flex-1 rounded-md border border-zinc-300 bg-transparent px-3 py-2 dark:border-zinc-700";
-const buttonClass =
-  "shrink-0 rounded-md bg-foreground px-4 py-2 font-medium text-background disabled:opacity-60";
-
 export function CreateListForm() {
   const [state, formAction, pending] = useActionState(createList, initialState);
+  const inputId = useId();
   return (
-    <form action={formAction} className="mt-6">
-      <div className="flex gap-2">
+    <form action={formAction}>
+      <label htmlFor={inputId} className={sectionLabel}>
+        Start a new list
+      </label>
+      <div className="mt-2 flex gap-2">
         <input
+          id={inputId}
           // key: React clears form fields after a submit; this puts back what
           // was typed when the server sends an error.
           key={state.value}
           name="name"
           defaultValue={state.value}
-          placeholder="New list name, e.g. Movie night"
-          aria-label="New list name"
+          placeholder="e.g. Movie night"
           maxLength={100}
+          autoComplete="off"
           required
-          className={inputClass}
+          className={field}
         />
-        <button type="submit" disabled={pending} className={buttonClass}>
+        {/* The page's one primary action. */}
+        <button type="submit" disabled={pending} className={fieldPrimaryButton}>
+          <Plus aria-hidden="true" className="size-5" />
           {pending ? "Creating…" : "Create"}
         </button>
       </div>
@@ -41,19 +45,24 @@ export function RenameListForm({ listId, name }: { listId: string; name: string 
     ...initialState,
     value: name,
   });
+  const inputId = useId();
   return (
     <form action={formAction}>
-      <div className="flex gap-2">
+      <label htmlFor={inputId} className={sectionLabel}>
+        List name
+      </label>
+      <div className="mt-2 flex gap-2">
         <input
+          id={inputId}
           key={state.value}
           name="name"
           defaultValue={state.value}
-          aria-label="List name"
           maxLength={100}
+          autoComplete="off"
           required
-          className={inputClass}
+          className={field}
         />
-        <button type="submit" disabled={pending} className={buttonClass}>
+        <button type="submit" disabled={pending} className={fieldSecondaryButton}>
           {pending ? "Saving…" : "Rename"}
         </button>
       </div>
@@ -64,21 +73,26 @@ export function RenameListForm({ listId, name }: { listId: string; name: string 
 
 export function InviteForm({ listId }: { listId: string }) {
   const [state, formAction, pending] = useActionState(inviteToList.bind(null, listId), initialState);
+  const inputId = useId();
   return (
     <form action={formAction}>
-      <div className="flex gap-2">
+      <label htmlFor={inputId} className={sectionLabel}>
+        Add someone by the email they sign in with
+      </label>
+      <div className="mt-2 flex gap-2">
         <input
+          id={inputId}
           key={state.value}
           name="email"
           type="email"
           defaultValue={state.value}
-          placeholder="Their email"
-          aria-label="Email of the person to add"
+          placeholder="name@example.com"
           autoComplete="off"
+          spellCheck={false}
           required
-          className={inputClass}
+          className={field}
         />
-        <button type="submit" disabled={pending} className={buttonClass}>
+        <button type="submit" disabled={pending} className={fieldSecondaryButton}>
           {pending ? "Adding…" : "Add"}
         </button>
       </div>
@@ -115,13 +129,21 @@ export function ConfirmButton({
   );
 }
 
+// Under each form: the error in red, or what worked as a mint tag. Always in
+// the page so screen readers hear the message when it appears.
 function Status({ state }: { state: FormState }) {
   return (
-    <p
-      aria-live="polite"
-      className={`mt-2 min-h-5 text-sm ${state.error ? "text-danger dark:text-red-400" : "text-ink-muted"}`}
-    >
-      {state.error ?? state.message}
-    </p>
+    <div aria-live="polite">
+      {state.error ? (
+        <p className="mt-2 text-sm text-danger">{state.error}</p>
+      ) : (
+        state.message && (
+          <p className={`mt-2 ${tag} bg-mint text-on-mint`}>
+            <CircleCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+            {state.message}
+          </p>
+        )
+      )}
+    </div>
   );
 }

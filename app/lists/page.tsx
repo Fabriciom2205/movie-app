@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ArrowLeft, ChevronRight, ListVideo } from "lucide-react";
+import { quietButton } from "@/app/ui";
 import { getDisplayNames } from "@/lib/profiles";
 import { createClient } from "@/lib/supabase/server";
 import { CreateListForm } from "./forms";
@@ -32,19 +34,25 @@ export default async function ListsPage() {
   const names = await getDisplayNames(otherIds);
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-4 py-10">
-      <Link href="/" className="text-sm text-ink-muted hover:underline">
-        ← Search
+    <main className="mx-auto w-full max-w-2xl px-4 py-8 sm:py-10">
+      <Link href="/" className={`${quietButton} -ml-3`}>
+        <ArrowLeft aria-hidden="true" className="size-4" />
+        Home
       </Link>
 
-      <h1 className="mt-6 text-3xl font-semibold tracking-tight">Your lists</h1>
+      <h1 className="mt-4 text-3xl font-semibold tracking-tight">Your lists</h1>
+      <p className="mt-1 text-ink-muted">
+        Movies to watch together. Add one from any movie&rsquo;s page.
+      </p>
 
-      <CreateListForm />
+      <div className="mt-6">
+        <CreateListForm />
+      </div>
 
       {data.length === 0 ? (
-        <p className="mt-8 text-ink-muted">No lists yet. Make one above.</p>
+        <p className="mt-6 text-ink-muted">No lists yet. Make one above.</p>
       ) : (
-        <ul className="mt-8 flex flex-col gap-2">
+        <ul className="mt-6 flex flex-col gap-3">
           {data.map((list) => {
             const count = list.list_items[0]?.count ?? 0;
             const others = list.list_members
@@ -54,14 +62,20 @@ export default async function ListsPage() {
               <li key={list.id}>
                 <Link
                   href={`/lists/${list.id}`}
-                  className="block rounded-lg border border-zinc-200 p-4 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-900"
+                  className="flex items-center gap-3 rounded-card border-2 border-line bg-card p-3 pr-4 transition-colors duration-150 ease-out hover:border-primary"
                 >
-                  <p className="font-medium">{list.name}</p>
-                  <p className="mt-1 text-sm text-ink-muted">
-                    {count === 1 ? "1 movie" : `${count} movies`}
-                    {" · "}
-                    {others.length ? `with ${others.join(", ")}` : "just you"}
-                  </p>
+                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-soft text-on-soft">
+                    <ListVideo aria-hidden="true" className="size-5" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-heading text-lg font-medium">{list.name}</span>
+                    <span className="block text-sm text-ink-muted">
+                      {count === 1 ? "1 movie" : `${count} movies`}
+                      {" · "}
+                      {others.length ? `with ${others.join(", ")}` : "just you"}
+                    </span>
+                  </span>
+                  <ChevronRight aria-hidden="true" className="size-5 shrink-0 text-ink-muted" />
                 </Link>
               </li>
             );

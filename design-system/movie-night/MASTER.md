@@ -87,7 +87,8 @@ text; titles tight (`tracking-tight`). Sentence case everywhere.
 ## 2. Components
 
 These are written once as class strings in `app/ui.ts` (`primaryButton`,
-`secondaryButton`, `quietButton`, `toggleChip`, `toggleButton`,
+`secondaryButton`, `quietButton`, `dangerButton`, `field`,
+`fieldPrimaryButton`, `fieldSecondaryButton`, `toggleChip`, `toggleButton`,
 `toggleButtonBase`, `card`, `posterGrid`, `sectionLabel`, `tag`, `providerTag`,
 `banner`). Pages import them instead of re-typing classes; changing a
 component = changing it there. `app/movie-card-skeleton.tsx` is the shared
@@ -155,6 +156,16 @@ watch in the US" with Stream / Free / Rent / Buy rows of `providerTag`s
 (logo + name: on a phone you can't hover a bare logo to learn its name). The
 back link says "Home" because you can arrive from search, /pick or a list.
 
+**Lists:** `/lists` shows each list as a link card (soft circle with
+`ListVideo`, name in Fredoka, "3 movies · with Alex", a `ChevronRight`). A
+list's page: movie rows as cards with a quiet "Remove" inside; the outline turns
+`primary` only when the movie link is hovered (`has-[a:hover]:border-primary`),
+not when Remove is. "Seen by" is small tags, you first: "You liked it" in mint,
+"Alex wasn't into it" in peach (the /pick colors), else "Not seen yet". Members
+get their initial in a `soft` circle (decorative, `aria-hidden`). Settings
+end with Delete (`dangerButton`, `Trash2`) or Leave (`secondaryButton`,
+`LogOut`) plus one line saying what it does; both confirm first.
+
 **Empty and error states:** a card with a `soft` circle holding an icon
 (`Tv`, `SearchX`, `CloudOff`...), a heading that says what happened, a sentence
 with the way forward, then one primary button and any alternatives as secondary.
@@ -170,6 +181,11 @@ instead of 404. Fine for this sign-in-only app; see Next's loading.md
 
 **Inputs and selects:** `bg-card`, 2px `line` outline, `radius-field`, 44px tall,
 focus = 2px `primary` ring. Labels above in `text-sm text-ink-muted font-semibold`.
+Use a visible `<label htmlFor>` (an id from `useId()`), not only `aria-label`.
+A button in the same row as a field is 44px too (`fieldPrimaryButton` /
+`fieldSecondaryButton`), so they line up. Under a form: the error in
+`text-danger`, or what worked ("Renamed.") as a mint `tag` with `CircleCheck`,
+inside an always-present `aria-live` region.
 
 **Posters:** `radius-poster` (small ones `radius-thumb`), placeholders `bg-soft`
 with a `Film` icon in `on-soft`. Always `next/image`.
