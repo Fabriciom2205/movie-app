@@ -135,7 +135,7 @@ ticket-style buttons, fields, chips and cards. The page-by-page PRs (home,
 /pick, movie page, lists, /rate, settings, login and the error pages) then
 rebuild each page's own layout into tickets (bands, perforations, stamps) and
 rewrite that page's section below. Until a page's PR lands, its section here
-may still describe the round look.
+may still describe the round look. Done so far: step 1, the home page.
 
 **Page:** the room art fills the screen behind everything (`app/layout.tsx`);
 each page's `<main>` is a `pagePanel` (opaque `bg-page`,
@@ -167,6 +167,13 @@ also gets `shadow-soft`. A ticket can have:
 Small side tickets (the taste nudge) use `bg-ticket-pink` with 18px notches
 in the middle of each side.
 
+The shared parts are in `app/ticket.tsx`: `<Perforation />` (put it straight
+inside the ticket with no side padding around it, so the notches land on the
+edges; the ticket must sit on `bg-page`) and `<SideNotches />` (inside a
+`relative` small ticket). `app/ticket-date.tsx` has `<TicketDate />`, today's
+date ("Sat, Oct 10") in the viewer's own time zone: the server runs in UTC,
+so it renders nothing and the browser fills it in.
+
 **Focus:** `globals.css` gives every focusable element a 2px `primary` outline
 (offset 2px) on `:focus-visible`, so pages don't repeat it. The exception is
 a control whose real input is visually hidden (toggle chips): its label uses
@@ -174,9 +181,26 @@ a control whose real input is visually hidden (toggle chips): its label uses
 
 **Header (home):** the logo is just the name, "Movie Night" in League
 Gothic (`text-4xl`; no icon: the user dropped the moon mark on 2026-10-10),
-then Lists / Settings / Sign out. Below `sm` they show only their icon (the
-labels don't fit beside the title at 375px); the label stays as `sr-only`
-text so screen readers still say it.
+then Lists / Settings / Sign out as plain text links in DM Mono capitals,
+underlined on hover. They're 11px on phones (`sm:text-xs`) so all three fit
+beside the title at 375px (measured: 20px to spare); no icons.
+
+**Home page:** one ticket (`id="content"`, `shadow-soft`): "Tonight's
+showing" + `TicketDate`, the question as an `h2` (`text-4xl`, `sm:text-6xl`),
+who's watching as **seats** (only when you share a list with someone: a grid
+of boxes, "Seat A" in small capitals over the name in League Gothic; ticked =
+filled with `ink`, `ticket`-colored text and a check icon; "Seat A" is
+`aria-hidden`, so the checkbox's name is just the person), the genres as
+**tick boxes** (a 16px `ink` square that fills `primary` with a white X; 12px
+capitals on phones so the 18 genres fit in 6 rows), then the `Perforation`
+and the stub: "Recommend a movie" full width, with "Admit N" (how many are
+ticked) and "On your services" as fine print under it. Below the ticket: the
+pink side ticket nudging you to rate movies (under 10 ratings), else a quiet
+"Rate more movies you've seen" link; then the search ("Or look up a movie" as
+a visible label, a `field` and an ink "Find" block) and its results.
+Height budget at 375x812: the main button must stay on the first screen. It
+ends at 685px with one person and 793px with two (seats shown); the old round
+design had it at about 687px. Re-measure if anything is added above it.
 
 **Buttons** (all square, at least 44px tall, visible focus ring in `primary`):
 - *Primary* (one per screen: "Recommend a movie", "Pick another", "Save", "Create"):
@@ -198,9 +222,10 @@ selected = filled with `ink`, text in `ticket` (8.4:1), plus the check icon,
 so the state isn't told by the fill color alone. Real checkboxes /
 `aria-pressed` buttons underneath, never divs. For checkboxes, style from the
 input itself (`has-checked:` on the label, `peer-checked:` on the icon) so
-it works before JavaScript loads. The home page's genres can instead be
-drawn as a ticket's tick boxes (a 16px `ink`-outlined square that fills
-`primary` with a white X), as in the mockup.
+it works before JavaScript loads. The home page draws its two groups as
+ticket parts instead (seats and tick boxes, see "Home page" above); the
+check/X lives inside the box, so it shows with `group-has-checked:` on a
+`group` label rather than `peer-checked:`.
 Exception: the rating buttons ("Liked it" / "Not for me") mean something
 beyond "chosen", so selected uses the meaning colors, as on /pick: liked =
 `sage` with an `on-sage` outline, not for me = `peach` with an `on-peach`
@@ -294,7 +319,13 @@ inside an always-present `aria-live` region.
 **Posters:** `radius-poster` (small ones `radius-thumb`), placeholders `bg-soft`
 with a `Film` icon in `on-soft`. Always `next/image`.
 
-**Search results / movie rows:** each row is a link drawn as a small card:
+**Search results (home):** each result is a link drawn as a small ticket:
+`bg-ticket`, the poster (62x93, square), a dashed `ink`/45% tear line, then
+the title in League Gothic `text-2xl` with "(year)" in DM Mono and two lines
+of overview; hover = a 2px `ink` outline (it's there, transparent, the rest
+of the time, so nothing shifts).
+
+**Movie rows (lists):** each row is a link drawn as a small card:
 `bg-card`, 2px `line` outline, `radius-card`, hover outline `primary`.
 
 **Messages:** success = sage chip style; inline errors = `text-danger`,
@@ -303,9 +334,10 @@ states are an invitation with one clear action. Banners use `radius-field`.
 An info banner (e.g. "you haven't picked services, so...") is `bg-soft
 text-on-soft` with the `Info` icon. The "Saved: you liked X." confirmation is
 a sage `tag` with `CircleCheck`, inside an always-present `aria-live` region.
-A taste nudge ("Rate a few movies you've seen") is a pink banner with the
-`Sparkles` icon: pink + sparkles = your taste, as on /pick. On the home page
-it sits under the main button, so that button stays on a phone's first screen.
+The taste nudge ("Rate a few movies you've seen") is a small pink side
+ticket (`bg-ticket-pink`, `SideNotches`, 13px text, the link underlined in
+`ink`), no icon. On the home page it sits under the picker ticket, so the
+main button stays on a phone's first screen.
 
 **Icons:** lucide-react only, `aria-hidden` when decorative, 16-20px inline.
 **No emojis anywhere in the UI.**
