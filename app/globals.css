@@ -6,19 +6,22 @@
    border-page...; --radius-card -> rounded-card; --shadow-soft -> shadow-soft. */
 @theme {
   /* Surfaces and text. The room art (app/moonlit-room.webp) is the backdrop;
-     page is the panel each page's content sits on, cards sit on that. */
+     page is the panel each page's content sits on; tickets sit on that. */
   --color-night: #241F42;
   --color-on-night: #EDE6FA;
   --color-page: #F5EDF5;
+  --color-ticket: #D2B9E8;
+  --color-ticket-pink: #F3C6D8;
   --color-card: #FFF8F6;
   --color-line: #E5D5EA;
   --color-ink: #2E2433;
-  --color-ink-muted: #6A5C72;
+  --color-ink-muted: #4F3D60;
 
-  /* Lavender: the one main action per screen, focus rings, selected pills */
-  --color-primary: #7A58A8;
-  --color-primary-hover: #6A4896;
+  /* Purple: the one main action per screen, ticket bands, focus rings */
+  --color-primary: #6A4896;
+  --color-primary-hover: #5B3D8A;
   --color-on-primary: #FFFFFF;
+  --color-stamp: #4A2F72;
   --color-soft: #EBDDF3;
   --color-on-soft: #573A80;
 
@@ -31,24 +34,27 @@
   --color-on-peach: #9A3412;
 
   /* Errors and deleting */
-  --color-danger: #B91C1C;
+  --color-danger: #991B1B;
   --color-danger-soft: #FEE2E2;
   --color-on-danger-soft: #991B1B;
 
-  --radius-card: 24px;
-  --radius-poster: 18px;
-  --radius-field: 16px;
-  --radius-thumb: 12px;
+  /* Square on purpose: tickets have no rounded corners. Each page's PR
+     removes its rounded-card / rounded-field... classes; then these go. */
+  --radius-card: 0px;
+  --radius-poster: 0px;
+  --radius-field: 0px;
+  --radius-thumb: 0px;
 
-  --shadow-soft: 0 6px 20px rgb(122 88 168 / 0.14);
+  /* Paper on paper: a thin edge plus a soft drop, tinted with ink. */
+  --shadow-soft: 0 1px 0 rgb(46 36 51 / 0.15), 0 10px 24px rgb(46 36 51 / 0.12);
 }
 
 /* app/layout.tsx loads the fonts with next/font, which defines
-   --font-fredoka and --font-nunito. "inline" makes font-heading / font-body
-   use those variables directly. */
+   --font-league-gothic and --font-dm-mono. "inline" makes font-heading /
+   font-body use those variables directly. */
 @theme inline {
-  --font-heading: var(--font-fredoka);
-  --font-body: var(--font-nunito);
+  --font-heading: var(--font-league-gothic);
+  --font-body: var(--font-dm-mono);
 }
 
 @layer base {
@@ -60,13 +66,22 @@
     background-color: var(--color-night);
     color: var(--color-ink);
     font-family: var(--font-body);
+    font-size: 0.9375rem;
     line-height: 1.6;
+    /* League Gothic has one weight and DM Mono stops at 500: show the real
+       letters instead of the browser smearing them into a fake bold. */
+    font-synthesis: none;
   }
 
+  /* Headings look like ticket print: tall, narrow, all caps. */
   h1,
   h2,
   h3 {
     font-family: var(--font-heading);
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
     text-wrap: balance;
   }
 

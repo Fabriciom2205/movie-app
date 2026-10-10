@@ -1,22 +1,25 @@
 import type { Metadata, Viewport } from "next";
-import { Fredoka, Nunito } from "next/font/google";
+import { DM_Mono, League_Gothic } from "next/font/google";
 import Image from "next/image";
 import { secondaryButton } from "@/app/ui";
 import moonlitRoom from "./moonlit-room.webp";
 import "./globals.css";
 
-// The design system's two fonts: Fredoka for headings, Nunito for the rest.
-// next/font downloads them at build time and serves them from this site, so
-// visitors' browsers never call Google. Both are variable fonts, so one file
-// each covers every weight. globals.css maps them to font-heading / font-body.
-const fredoka = Fredoka({
-  variable: "--font-fredoka",
+// The design system's two fonts: League Gothic (tall cinema-ticket capitals)
+// for headings and buttons, DM Mono (typewriter-like ticket print) for the
+// rest. next/font downloads them at build time and serves them from this
+// site, so visitors' browsers never call Google. League Gothic is a variable
+// font (one file); DM Mono isn't, so it needs its weights listed: 400 for
+// text, 500 for emphasis. globals.css maps them to font-heading / font-body.
+const leagueGothic = League_Gothic({
+  variable: "--font-league-gothic",
   subsets: ["latin"],
 });
 
-const nunito = Nunito({
-  variable: "--font-nunito",
+const dmMono = DM_Mono({
+  variable: "--font-dm-mono",
   subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -35,7 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${fredoka.variable} ${nunito.variable} h-full antialiased`}
+      className={`${leagueGothic.variable} ${dmMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {/* Skip link: the first thing Tab reaches. It waits above the screen
@@ -43,7 +46,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             content starts with id="content" (the home page: after its nav). */}
         <a
           href="#content"
-          className={`${secondaryButton} fixed top-3 left-3 z-50 shadow-soft -translate-y-20 focus:translate-y-0`}
+          className={`${secondaryButton} fixed top-3 left-3 z-50 bg-page shadow-soft -translate-y-20 focus:translate-y-0`}
         >
           Skip to content
         </a>

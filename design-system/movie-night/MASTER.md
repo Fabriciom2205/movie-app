@@ -3,24 +3,32 @@
 The look of the app, decided 2026-10-08. Every page follows this file; if a
 design decision changes, change it here first (with the reason), then in code.
 
-**Direction: a cozy moonlit room, with cute and bubbly light panels.** Behind
+**Direction: lavender cinema tickets, in front of a moonlit room.** Behind
 every page is an original illustration of a purple bedroom at night (moon in
 the window, sleeping cat, fairy lights, plushies; see "Background art"
 below). Each page's content sits on a light lavender panel in front of it,
-with cream cards, extra-round shapes and pastel chips. Lavender is the main
-color. The panels are always light: no dark mode for the UI itself (see the
+and the things on it are printed tickets: lavender ticket stock, square
+corners, tall League Gothic capitals, typewriter-like DM Mono for the rest,
+dashed perforations with round notches, a purple band and a rubber stamp.
+The panels are always light: no dark mode for the UI itself (see the
 appendix for the dark palette we designed, ready if that changes).
 
-Changed 2026-10-08 from the first look (a sky-blue page with blue buttons):
-the user picked lavender and a "white but not too white" cream from a
-study-planner mockup they liked, then asked for a lofi night-room picture
-behind the site.
+History:
+- 2026-10-08: the first look (a sky-blue page with blue buttons) became
+  lavender and cream (from a study-planner mockup the user liked), then got
+  the night-room picture behind the site. That look was "cute and bubbly":
+  UI UX Pro Max's **Claymorphism** (soft, chunky, rounded, pastel), Fredoka +
+  Nunito, pills everywhere.
+- 2026-10-10: the user found the round, soft look "too generic, like every AI
+  app" (every control a pill, every group a soft-bordered card, a rounded
+  font, a sparkles icon). Shown five directions as phone mockups (Scrapbook,
+  Cozy game, Ticket booth, Video store, Film journal), they picked **Ticket
+  booth**, in the lavender colors, with the logo as just the name, and the
+  moonlit room kept behind it for now (they may drop it later). The mockups:
+  https://claude.ai/artifact/2aEB3Y5jX4PNovxv9rWWpW ("3b").
 
-Where this came from: UI UX Pro Max (vendored in `.claude/skills/ui-ux-pro-max`)
-suggested the **Claymorphism** style (soft, chunky, rounded, pastel) and the
-**Playful Creative** font pairing; the first palette was made blue-forward by
-hand (now lavender, see below) and every text color was checked for contrast
-(WCAG 2.1: 4.5:1 for text, 3:1 for focus rings and other UI parts).
+Every text color is checked for contrast (WCAG 2.1: 4.5:1 for text, 3:1 for
+text 24px and up, focus rings and other UI parts).
 
 ---
 
@@ -35,65 +43,79 @@ name. **Pages never use raw hex values or Tailwind's built-in palette**
 | Token (`--color-*`) | Value | Use | Contrast |
 |---|---|---|---|
 | `night` | `#241F42` | Behind the room art: the body, the browser bar on phones, below the art band on phones | |
-| `on-night` | `#EDE6FA` | The only text outside a panel: the footer credits, on a `night/85` pill | 12.8:1 on night |
-| `page` | `#F5EDF5` | The panel each page's content sits on (lavender mist) | |
-| `card` | `#FFF8F6` | Cards, inputs ("white but not too white" cream) | |
-| `line` | `#E5D5EA` | Outlines, dividers, card borders | decorative |
-| `ink` | `#2E2433` | Main text (plum-black) | 12.9:1 on page, 14.1:1 on card |
-| `ink-muted` | `#6A5C72` | Secondary text, labels, metadata | 5.4:1 on page, 5.9:1 on card |
-| `primary` | `#7A58A8` | The ONE main action per screen; focus rings | white text 5.5:1; ring 4.8:1 on page, 5.3:1 on card |
-| `primary-hover` | `#6A4896` | Main action on hover (darker, never lighter) | white text 7.1:1 |
+| `on-night` | `#EDE6FA` | The only text outside a panel: the footer credits, on a `night/85` box | 12.8:1 on night |
+| `page` | `#F5EDF5` | The panel each page's content sits on (lavender mist); also the round notches cut into tickets | |
+| `ticket` | `#D2B9E8` | Ticket stock: cards, the main panel of each page's content | 1.55:1 against page (decorative edge, plus `shadow-soft`) |
+| `ticket-pink` | `#F3C6D8` | A second ticket color, for small side tickets (the taste nudge) | |
+| `card` | `#FFF8F6` | Inputs and selects ("white but not too white" cream) | |
+| `line` | `#E5D5EA` | Faint dividers only; anything that should read as an edge is `ink` | decorative |
+| `ink` | `#2E2433` | Main text (plum-black), outlines of buttons, fields and chips | 12.9:1 on page, 8.4:1 on ticket, 9.8:1 on ticket-pink, 14.1:1 on card |
+| `ink-muted` | `#4F3D60` | Secondary text, labels, metadata | 8.4:1 on page, 5.5:1 on ticket, 6.4:1 on ticket-pink, 9.2:1 on card |
+| `primary` | `#6A4896` | The ONE main action per screen; the band across the top of a ticket; focus rings | white text 7.1:1; ring 6.2:1 on page, 4.0:1 on ticket, 6.7:1 on card |
+| `primary-hover` | `#5B3D8A` | Main action on hover (darker, never lighter) | white text 8.5:1 |
 | `on-primary` | `#FFFFFF` | Text/icons on `primary` | |
-| `soft` | `#EBDDF3` | Selected pills (list toggles, chosen moods), poster placeholders | |
-| `on-soft` | `#573A80` | Text on `soft`; links on cream | 7.0:1 on soft, 8.6:1 on card |
+| `stamp` | `#4A2F72` | The rubber stamp on a ticket ("Because you liked..."): text and double border | 6.1:1 on ticket, 9.4:1 on page |
+| `soft` | `#EBDDF3` | Poster placeholders, info banners | |
+| `on-soft` | `#573A80` | Text on `soft`; links | 7.0:1 on soft, 5.1:1 on ticket, 8.6:1 on card |
 | `sage` / `on-sage` | `#E2EEDF` / `#35573A` | Chip: a friend liked it; success ("Saved") | 6.8:1 |
-| `pink` / `on-pink` | `#FCE4EC` / `#8A2F55` | Chip: "Because you liked..."; the taste nudge | 6.7:1 |
+| `pink` / `on-pink` | `#FCE4EC` / `#8A2F55` | Chip: "Because you liked..." | 6.7:1 |
 | `peach` / `on-peach` | `#FFE4D6` / `#9A3412` | Chip: TMDB rating; "not for me" | 6.0:1 |
-| `danger` | `#B91C1C` | Delete buttons (text + outline), error text | 5.6:1 on page, 6.2:1 on card; white on it 6.5:1 |
+| `danger` | `#991B1B` | Delete buttons (text + outline), error text | 7.3:1 on page, 4.7:1 on ticket, 7.9:1 on card; white on it 8.3:1 |
 | `danger-soft` / `on-danger-soft` | `#FEE2E2` / `#991B1B` | Error banners | 6.8:1 |
 
-The mockup's own purple (`#BDA0CD`) is too pale for white text (2.3:1), so
-buttons use the deeper `primary`; the pale purples live on in the art.
-(Tailwind's usual `red-600` `#DC2626` is *not* used: it fails for text on the
-light page colors.)
+Selected toggles are `ink` filled with `ticket`-colored text (8.4:1), like a
+booked seat on a ticket.
+
+Changed 2026-10-10 for the tickets: `primary` moved one step darker (it was
+`#7A58A8`, which is now too close to the ticket stock), `ink-muted` darkened
+from `#6A5C72` (4.4:1 on the ticket stock: fails) and `danger` from `#B91C1C`
+(3.7:1 on the ticket stock: fails). `ticket`, `ticket-pink` and `stamp` are
+new. (Tailwind's usual `red-600` `#DC2626` is *not* used: it fails for text
+on the light page colors.)
 
 Rules:
 - Text on a colored fill always uses that fill's `on-*` partner, never `ink`.
-- Never put `ink-muted` on a colored fill.
+  (The ticket colors are the exception: `ink` and `ink-muted` are made for them.)
+- Never put `ink-muted` on a pastel chip fill.
 - New colors need a contrast check (`node .claude/skills/frontend-design/scripts/contrast.mjs FG BG`) and a row in this table.
 
 ### Typography
 
 | Token | Font | Use |
 |---|---|---|
-| `--font-heading` | **Fredoka** (variable, weights 500-600) | Page titles, movie titles, button labels of main actions |
-| `--font-body` | **Nunito** (variable, 400 / 600 / 700) | Everything else |
+| `--font-heading` | **League Gothic** (one weight, 400) | Page and movie titles, ticket bands, button labels: tall, narrow capitals like cinema-ticket print |
+| `--font-body` | **DM Mono** (400 / 500) | Everything else: the typewriter print of a ticket |
 
 Loaded with `next/font/google` in `app/layout.tsx` (self-hosted at build time: no
-request to Google from visitors' browsers). `globals.css` gives `h1`-`h3` Fredoka
-and the body Nunito, so headings need no font class; anything else that should
-look like a heading (a main button's label) uses `font-heading`. Headings also get
-`text-wrap: balance` there (no lone word on a heading's last line). Sizes (Tailwind): page title
-`text-3xl`, movie title `text-3xl` on /pick and the movie page, section heading
-`text-xl`, body `text-base`, metadata `text-sm`. Line height 1.6 for body
-text; titles tight (`tracking-tight`). Sentence case everywhere.
+request to Google from visitors' browsers). `globals.css` gives `h1`-`h3` League
+Gothic in capitals (`uppercase`, weight 400, `line-height: 0.95`, a little
+letter spacing, `text-wrap: balance`) and the body DM Mono at 15px, so headings
+need no font class; anything else that should look like a heading (a button's
+label) uses `font-heading uppercase`. The body has `font-synthesis: none`:
+League Gothic has one weight and DM Mono stops at 500, so `font-semibold` /
+`font-bold` show DM Mono's 500 instead of a smeared fake bold. Write text in
+sentence case in the code; capitals come from CSS (`uppercase`), so screen
+readers don't spell words out.
+
+Sizes: League Gothic is narrow, so it runs big. Page title `text-5xl`, movie
+title `text-6xl` on a ticket (`text-5xl` on phones if it's long), section
+heading `text-3xl`, button labels `text-xl` to `text-3xl`. Labels above data
+or controls are DM Mono `text-[11px]` capitals with wide tracking
+(`sectionLabel`); body text 13-15px.
 
 ### Shape, depth, motion
 
 | Token | Value | Use |
 |---|---|---|
-| `--radius-card` | `24px` | Cards, panels, the home picker card |
-| `--radius-poster` | `18px` | Posters and their placeholders |
-| `--radius-field` | `16px` | Text inputs, selects, message banners |
-| `--radius-thumb` | `12px` | Small posters (search results, list rows), where 18px would round off a third of a 62px-wide poster |
-| pills | `9999px` (`rounded-full`) | Buttons, chips, toggles |
-| outline | `2px solid line` (cards: `3px`) | Instead of hard dark borders |
-| `--shadow-soft` | `0 6px 20px rgb(122 88 168 / 0.14)` | Page panels, and cards that float (home picker, pick card). Sparingly. |
+| corners | square | Everything: tickets, buttons, fields, chips, posters. Only things that are round in real life stay round (avatars, provider logos, the notches). |
+| `--radius-*` | `0px` | Leftovers from the round look, kept at 0 so old `rounded-card` / `rounded-field` classes are square; each page's PR in the ticket pass deletes its uses, then these tokens go |
+| outline | `2px solid ink` | Buttons, fields, chips, posters |
+| `--shadow-soft` | `0 1px 0 rgb(46 36 51 / 0.15), 0 10px 24px rgb(46 36 51 / 0.12)` | Paper on paper: page panels, and the one ticket a page is about. Sparingly. |
 
-- Press feedback: `active:translate-y-px` plus a slightly darker fill; 150-200ms
+- Press feedback: `active:translate-y-px` plus a darker fill; 150-200ms
   `ease-out` transitions on color, background and transform.
 - Respect `prefers-reduced-motion`: no movement, only color changes.
-- No glows, no gradients on text, no neumorphism (low contrast).
+- No glows, no gradients, no rounded "bubbly" shapes, no neumorphism.
 
 ---
 
@@ -107,8 +129,16 @@ These are written once as class strings in `app/ui.ts` (`primaryButton`,
 component = changing it there. `app/movie-card-skeleton.tsx` is the shared
 loading placeholder for a `posterGrid` card.
 
+**Status of the ticket pass (2026-10-10):** step 1 changed the tokens, the
+fonts and every class string in `app/ui.ts`, so all pages already have square
+ticket-style buttons, fields, chips and cards. The page-by-page PRs (home,
+/pick, movie page, lists, /rate, settings, login and the error pages) then
+rebuild each page's own layout into tickets (bands, perforations, stamps) and
+rewrite that page's section below. Until a page's PR lands, its section here
+may still describe the round look.
+
 **Page:** the room art fills the screen behind everything (`app/layout.tsx`);
-each page's `<main>` is a `pagePanel` (opaque `bg-page`, `radius-card`,
+each page's `<main>` is a `pagePanel` (opaque `bg-page`,
 `shadow-soft`, `px-4 py-8`, `sm:px-8 sm:py-10`) plus its width (`max-w-2xl`,
 `max-w-3xl`, `max-w-4xl`), centered. Text never sits directly on the art.
 Pages whose content is one card (login, not found, the error pages) skip the
@@ -118,34 +148,59 @@ edge to edge (text keeps its width, so "Recommend a movie" stays as high as
 it can); from `sm` up, the panel floats 24px from the sides and 40px down.
 Mobile-first: everything must work at 375px with no sideways scroll.
 
-**Card:** `bg-card` (cream), 3px `line` outline, `radius-card`, padding 20-24px.
-The home picker and the pick result also get `shadow-soft`.
+**Ticket (the `card` class):** `bg-ticket`, square, no outline, padding
+20-24px. The one ticket a page is about (the home picker, the pick result)
+also gets `shadow-soft`. A ticket can have:
+- a **band**: a strip across the top in `bg-primary` with `text-on-primary`,
+  League Gothic on the left ("Admit two"), small DM Mono capitals on the right
+  ("Tonight · Fri 10 Oct");
+- a **perforation**: a 2px dashed `ink`/45% line across the full width, with
+  a 26px circle in `bg-page` centered on each side edge, so it looks like the
+  ticket is notched where it tears. The part below is the stub, where the
+  actions go;
+- a **stamp**: League Gothic capitals in `text-stamp` inside a 4px double
+  `stamp` border, rotated about -4deg ("Because you liked Project Hail Mary").
+  Only one per ticket; it is text, not decoration (no `aria-hidden`);
+- **fields**: a 2-column grid of label (`sectionLabel`) over value (League
+  Gothic `text-2xl`), split by 1px `ink`/35% lines, like the seat and screen
+  boxes on a printed ticket.
+Small side tickets (the taste nudge) use `bg-ticket-pink` with 18px notches
+in the middle of each side.
 
 **Focus:** `globals.css` gives every focusable element a 2px `primary` outline
 (offset 2px) on `:focus-visible`, so pages don't repeat it. The exception is
-a control whose real input is visually hidden (toggle pills): its label uses
+a control whose real input is visually hidden (toggle chips): its label uses
 `has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-primary`.
 
-**Header (home):** the moon logo (lucide `MoonStar`) in a `primary` circle + "Movie Night", then
-quiet pills for Lists / Settings / Sign out. Below `sm` they show only their
-icon (the labels don't fit beside the title at 375px); the label stays as
-`sr-only` text so screen readers still say it.
+**Header (home):** the logo is just the name, "Movie Night" in League
+Gothic (`text-4xl`; no icon: the user dropped the moon mark on 2026-10-10),
+then Lists / Settings / Sign out. Below `sm` they show only their icon (the
+labels don't fit beside the title at 375px); the label stays as `sr-only`
+text so screen readers still say it.
 
-**Buttons** (all pills, at least 40px tall, visible focus ring in `primary`):
+**Buttons** (all square, at least 44px tall, visible focus ring in `primary`):
 - *Primary* (one per screen: "Recommend a movie", "Pick another", "Save", "Create"):
-  `bg-primary text-on-primary` Fredoka, hover `primary-hover`.
-- *Secondary*: `bg-card` with 2px `line` outline, `text-ink`, hover `bg-soft`.
-- *Quiet* (Remove, Sign out): no fill, `text-ink-muted`, hover `text-ink` + `bg-soft`.
-- *Destructive* (Delete list): `text-danger` with a `danger`-tinted outline; never
+  `bg-primary text-on-primary`, League Gothic capitals `text-3xl`, 56px
+  tall, hover `primary-hover`.
+- *Secondary*: no fill, 2px `ink` outline, League Gothic capitals `text-xl`;
+  on hover it fills with `ink` and the text turns `page`. Give it a fill
+  (`bg-page`) if it ever floats over the art.
+- *Ink block* (`fieldSecondaryButton`, "Find" beside a search field): solid
+  `ink` with `ticket`-colored League Gothic, hover `primary`.
+- *Quiet* (Remove, Sign out, Back): no fill, DM Mono capitals `text-xs`,
+  `text-ink`, underlined on hover.
+- *Destructive* (Delete list): `text-danger` with a 2px `danger` outline; never
   the primary style. Always asks to confirm (see app/lists/forms.tsx).
 
-**Toggle pills** (rating buttons, list pills, mood chips, who's watching):
-unselected = secondary button; selected = `bg-soft text-on-soft` with a check
-icon and a 2px `primary` outline (4.2:1 against the soft fill, 5.2:1 against
-the card), so the state isn't told by the fill color alone. Real checkboxes /
+**Toggles** (rating buttons, list toggles, mood chips, who's watching):
+square chips with a 2px `ink` outline and DM Mono capitals (13px);
+selected = filled with `ink`, text in `ticket` (8.4:1), plus the check icon,
+so the state isn't told by the fill color alone. Real checkboxes /
 `aria-pressed` buttons underneath, never divs. For checkboxes, style from the
 input itself (`has-checked:` on the label, `peer-checked:` on the icon) so
-it works before JavaScript loads.
+it works before JavaScript loads. The home page's genres can instead be
+drawn as a ticket's tick boxes (a 16px `ink`-outlined square that fills
+`primary` with a white X), as in the mockup.
 Exception: the rating buttons ("Liked it" / "Not for me") mean something
 beyond "chosen", so selected uses the meaning colors, as on /pick: liked =
 `sage` with an `on-sage` outline, not for me = `peach` with an `on-peach`
@@ -228,10 +283,10 @@ streams, so a `notFound()` there answers HTTP 200 (with a `noindex` tag)
 instead of 404. Fine for this sign-in-only app; see Next's loading.md
 "Status Codes".
 
-**Inputs and selects:** `bg-card`, 2px `line` outline, `radius-field`, 44px tall,
-focus = 2px `primary` ring. Labels above in `text-sm text-ink-muted font-semibold`.
+**Inputs and selects:** `bg-card` (cream), 2px `ink` outline, square, 48px tall,
+focus = 2px `primary` ring. Labels above as `sectionLabel` (DM Mono capitals).
 Use a visible `<label htmlFor>` (an id from `useId()`), not only `aria-label`.
-A button in the same row as a field is 44px too (`fieldPrimaryButton` /
+A button in the same row as a field is 48px too (`fieldPrimaryButton` /
 `fieldSecondaryButton`), so they line up. Under a form: the error in
 `text-danger`, or what worked ("Renamed.") as a sage `tag` with `CircleCheck`,
 inside an always-present `aria-live` region.
