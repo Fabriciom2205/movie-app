@@ -5,9 +5,10 @@ description: How to build or change any page, component or style in this movie a
 
 # Frontend design for Movie Night
 
-The look is decided in `design-system/movie-night/MASTER.md`: cute and bubbly
-light panels in front of a moonlit-room illustration, lavender as the main
-color, cream cards, Fredoka + Nunito.
+The look is decided in `design-system/movie-night/MASTER.md`: lavender
+cinema tickets (square corners, perforations, a purple band, a rubber stamp)
+on light panels in front of a moonlit-room illustration, League Gothic +
+DM Mono. Never the round "bubbly" look it replaced (pills, soft cards).
 **Read that file before changing UI.** It wins over any other suggestion,
 including the UI UX Pro Max skill's.
 
@@ -40,7 +41,7 @@ including the UI UX Pro Max skill's.
    provided by JustWatch" wherever provider data shows.
 9. **Text never sits on the room art.** A page's content goes in a
    `pagePanel` `<main>` (or, for a single-card page, in that card). The only
-   exception is the footer credit, on its own `night` pill.
+   exception is the footer credit, on its own `night` box.
 
 ## Workflow for a UI change
 

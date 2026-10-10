@@ -1,7 +1,7 @@
 import Form from "next/form";
 import Image from "next/image";
 import Link from "next/link";
-import { Film, ListVideo, LogOut, MoonStar, Search, Settings, Sparkles } from "lucide-react";
+import { Film, ListVideo, LogOut, Search, Settings, Sparkles } from "lucide-react";
 import { signOut } from "@/app/login/actions";
 import { fieldSecondaryButton, pagePanel } from "@/app/ui";
 import { createClient } from "@/lib/supabase/server";
@@ -42,12 +42,7 @@ export default async function Home(props: PageProps<"/">) {
   return (
     <main className={`${pagePanel} max-w-2xl`}>
       <header className="mb-6 flex items-center justify-between gap-3">
-        <h1 className="flex shrink-0 items-center gap-2.5 text-3xl font-semibold tracking-tight">
-          <span className="grid size-10 place-items-center rounded-full bg-primary text-on-primary">
-            <MoonStar aria-hidden="true" className="size-5" />
-          </span>
-          Movie Night
-        </h1>
+        <h1 className="shrink-0 text-4xl">Movie Night</h1>
         <nav aria-label="Main" className="flex min-w-0 items-center gap-1 text-sm font-semibold">
           {/* Who's signed in: your display name (Settings), or the email until
               there is one. Only where there's room. */}
