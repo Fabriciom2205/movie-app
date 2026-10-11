@@ -310,15 +310,20 @@ Anything focusable that could end up behind it gets `scroll-mb-28` on the
 element that actually receives focus (the checkbox, not its card), so the
 browser scrolls it clear of the bar.
 
-**Rating grid** (/rate): each movie is a card (poster, title, then buttons
-pinned to the bottom with `mt-auto`, so they line up across a row). Liked /
-not for me are round icon buttons side by side, the one place the app uses
-icon-only buttons: on a phone a card is ~145px wide, too narrow for two
-labeled pills, and three stacked 40px pills would make each card very tall.
-They carry the label as `aria-label` and `title`, the page's intro explains
-the thumbs, and they take the meaning colors on hover and while pressed
-(sage / peach with the `on-*` outline). "Haven't seen" stays a labeled quiet
-button. The rated count is a pink `tag` with sparkles.
+**Rating grid** (/rate): each movie is a small ticket (poster with a 2px
+`ink` outline, the title in League Gothic `text-xl` with "(2014)" in DM Mono),
+then, pinned to the bottom with `mt-auto` so they line up across a row, a
+`<Perforation small />` (16px notches; the grid's `gap-3` leaves room for
+them) and the stub with the buttons. Liked / not for me are square icon
+buttons side by side (44px tall, 2px `ink` outline, filled with `ink` on
+hover and while pressed), the one place the app uses icon-only buttons: on a
+phone a card is ~158px wide, too narrow for two labeled buttons, and three
+stacked ones would make each card very tall. They carry the label as
+`aria-label` and `title`, and the page's intro explains the thumbs.
+"Haven't seen" stays a labeled quiet button (it only hides the card; nothing
+is saved). The rated count is a small pink side ticket ("Rated so far" +
+the number in League Gothic). "Show more movies" is secondary while there
+are movies to rate and the primary button once there are none left.
 
 **Empty and error states:** a ticket with the icon in a square 2px `ink`
 box (`Tv`, `SearchX`, `CloudOff`...; the round `soft` circle on pages not
