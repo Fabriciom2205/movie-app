@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <!-- Source of app/apple-icon.png (the iPhone home-screen icon). iOS fills
+       see-through pixels with black and rounds the corners itself, so this
+       is a full square: the night color of the room art, a few stars, and
+       the ticket from app/icon.svg, bigger and slightly tilted.
+       scripts/make-icons.mjs exports it. -->
+  <defs>
+    <clipPath id="ticket">
+      <path d="M2.5 6h27v6.5a3.5 3.5 0 0 0 0 7v6.5h-27v-6.5a3.5 3.5 0 0 0 0-7z" />
+    </clipPath>
+  </defs>
+  <rect width="180" height="180" fill="#241F42" />
+  <circle cx="32" cy="34" r="2.2" fill="#EDE6FA" />
+  <circle cx="146" cy="28" r="1.6" fill="#EDE6FA" />
+  <circle cx="150" cy="148" r="2" fill="#EDE6FA" />
+  <circle cx="26" cy="140" r="1.4" fill="#EDE6FA" />
+  <g transform="translate(90 92) rotate(-8) scale(4.6) translate(-16 -16)">
+    <path d="M2.5 6h27v6.5a3.5 3.5 0 0 0 0 7v6.5h-27v-6.5a3.5 3.5 0 0 0 0-7z" fill="#D2B9E8" />
+    <rect x="21.5" y="0" width="12" height="32" fill="#6A4896" clip-path="url(#ticket)" />
+    <path d="M21.5 8v16" stroke="#2E2433" stroke-width="1.2" stroke-dasharray="2.2 1.6" />
+    <path d="M9.5 12.5h8M9.5 19.5h5" stroke="#2E2433" stroke-width="1.8" />
+    <path
+      d="M2.5 6h27v6.5a3.5 3.5 0 0 0 0 7v6.5h-27v-6.5a3.5 3.5 0 0 0 0-7z"
+      fill="none"
+      stroke="#2E2433"
+      stroke-width="1.2"
+      stroke-linejoin="round"
+    />
+  </g>
+</svg>
