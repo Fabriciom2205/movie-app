@@ -135,7 +135,7 @@ ticket-style buttons, fields, chips and cards. The page-by-page PRs (home,
 /pick, movie page, lists, /rate, settings, login and the error pages) then
 rebuild each page's own layout into tickets (bands, perforations, stamps) and
 rewrite that page's section below. Until a page's PR lands, its section here
-may still describe the round look. Done so far: step 1, the home page.
+may still describe the round look. Done so far: step 1, the home page, /pick.
 
 **Page:** the room art fills the screen behind everything (`app/layout.tsx`);
 each page's `<main>` is a `pagePanel` (opaque `bg-page`,
@@ -231,24 +231,37 @@ beyond "chosen", so selected uses the meaning colors, as on /pick: liked =
 `sage` with an `on-sage` outline, not for me = `peach` with an `on-peach`
 outline, and the thumb icon fills in (a shape cue on top of color).
 
-**Reason chips** on /pick: small pills with an icon and text in a pastel pair:
-friend liked = sage, because-you-liked = pink, on your list = soft (lavender),
-rated N on TMDB = peach. "X wasn't into it" = peach. They're `tag`s: no
-outline (so they don't look pressable) and `radius-field`, which is a pill on
-one line and a rounded box when a long reason wraps.
+**Pick page** (/pick): one printed ticket, `shadow-soft`, under a quiet
+"Change what you're in the mood for" link:
+- the **band**: "Admit one" / "Admit two"... (how many are watching, as a
+  word up to six) and "Tonight · Sat, Oct 10" (`TicketDate`). The band has
+  `leading-none`, so it's exactly as tall as the loading screen's band;
+- a `posterGrid`: the poster with a 2px `ink` outline; beside it "Tonight's
+  pick for you and Alex" (`sectionLabel`), the title as the `h1` (League
+  Gothic `text-4xl`, `sm:text-6xl`; a long title wraps beside the poster)
+  and "(2015)";
+- the **fields** (`TicketFields` in the page): Stream it on (each service's
+  round logo + name, full width), Runtime and Rated side by side, Genre full
+  width. Empty fields are left out and a lone half-width field takes the row;
+- the **stamp**: the strongest reason (`reasons[0]`: "Because you liked
+  Project Hail Mary", "Alex liked it", "On your Weekend list", "Rated 8.1 on
+  TMDB"), `text-balance` so it breaks evenly. The next two reasons and
+  anyone who said "not for me" go under it as small print: "+ Rated 7.7 on
+  TMDB", "− Alex wasn't into it" (the + and − are `aria-hidden`);
+- the overview (13px, 4 lines at most) and, when someone watching has no
+  services, the `soft` info banner;
+- the `Perforation`, then the stub: "Pick another" (or "Start over") full
+  width, then "Seen it already?" (Liked it / Not for me, splitting the width)
+  and "Your lists" (`ListToggles`), side by side from `sm`.
+"Availability data provided by JustWatch." stays under the ticket.
 
 **Movie with its poster** (`posterGrid`, /pick and the movie page): the poster
 sits beside the title, 120px wide on phones (so the title and what follows fit
 on the first screen) and 200px from `sm` up; the details go under both on
-phones and beside the poster wider up. Movie titles are `text-2xl` on phones,
-`text-3xl` from `sm`. Put a real space (not a margin) between a title and its
+phones and beside the poster wider up. On /pick the title is League Gothic
+`text-4xl` on phones and `text-6xl` from `sm` (the movie page still uses
+`text-2xl` / `text-3xl` until its PR). Put a real space (not a margin) between a title and its
 "(year)", or the two can't wrap apart and stick out of a narrow column.
-
-**Order on a result card** (/pick): what it is and why (title, reason tags,
-overview), where to watch (provider tags), then the primary action ("Pick
-another"); below a 2px `line` divider, the secondary actions (rate it, add to
-a list). Streaming providers are `bg-page` tags with a round logo, so on the
-cream card they read as data, not buttons.
 
 **Movie page:** the `posterGrid` card (title + meta beside the poster; the
 tagline goes under it, since a tagline is too long for the narrow column on
@@ -295,15 +308,21 @@ the thumbs, and they take the meaning colors on hover and while pressed
 (sage / peach with the `on-*` outline). "Haven't seen" stays a labeled quiet
 button. The rated count is a pink `tag` with sparkles.
 
-**Empty and error states:** a card with a `soft` circle holding an icon
-(`Tv`, `SearchX`, `CloudOff`...), a heading that says what happened, a sentence
-with the way forward, then one primary button and any alternatives as secondary.
+**Empty and error states:** a ticket with the icon in a square 2px `ink`
+box (`Tv`, `SearchX`, `CloudOff`...; the round `soft` circle on pages not
+converted yet), a League Gothic `text-4xl` heading that says what happened, a
+sentence with the way forward, then one primary button and any alternatives
+as secondary. When there is only one way forward, it is the primary button
+(on /pick, "Change moods" when there's nothing left to look through).
 `app/not-found.tsx` is this for missing movies, lists and URLs (Next's own 404
 follows the device's dark mode).
 
-**Loading:** the shape of what's coming in `soft` blocks (same grid, same
-card), pulsing only with `motion-safe:animate-pulse`, plus a short `aria-live`
-line ("Finding something for tonight…"). Trade-off: a page with `loading.tsx`
+**Loading:** the shape of what's coming in square `soft` blocks on a ticket
+(`MovieCardSkeleton`: same grid), pulsing only with
+`motion-safe:animate-pulse`, plus a short `aria-live` message. On /pick the
+message is printed on the skeleton's band ("Finding a movie…", passed as the
+skeleton's `children`, which sit outside its `aria-hidden` part), in the
+same font and height as "Admit two", so nothing moves when the pick arrives. Trade-off: a page with `loading.tsx`
 streams, so a `notFound()` there answers HTTP 200 (with a `noindex` tag)
 instead of 404. Fine for this sign-in-only app; see Next's loading.md
 "Status Codes".

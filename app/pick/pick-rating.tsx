@@ -42,12 +42,12 @@ export function PickRating({ movieId, title }: { movieId: number; title: string 
       </div>
 
       <p className={sectionLabel}>Seen it already?</p>
-      <div role="group" aria-label={`Rate ${title}`} aria-busy={isPending} className="mt-2 flex flex-wrap gap-2">
-        <button type="button" onClick={() => rate("up")} disabled={isPending} className={secondaryButton}>
+      <div role="group" aria-label={`Rate ${title}`} aria-busy={isPending} className="mt-2 grid grid-cols-2 gap-2.5">
+        <button type="button" onClick={() => rate("up")} disabled={isPending} className={`${secondaryButton} w-full`}>
           <ThumbsUp aria-hidden="true" className="size-4" strokeWidth={2.25} />
           {isPending && saving === "up" ? "Saving…" : "Liked it"}
         </button>
-        <button type="button" onClick={() => rate("down")} disabled={isPending} className={secondaryButton}>
+        <button type="button" onClick={() => rate("down")} disabled={isPending} className={`${secondaryButton} w-full`}>
           <ThumbsDown aria-hidden="true" className="size-4" strokeWidth={2.25} />
           {isPending && saving === "down" ? "Saving…" : "Not for me"}
         </button>
