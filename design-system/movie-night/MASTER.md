@@ -396,6 +396,22 @@ main button stays on a phone's first screen.
 **Icons:** lucide-react only, `aria-hidden` when decorative, 16-20px inline.
 **No emojis anywhere in the UI.**
 
+**Browser-tab and home-screen icons** (made 2026-10-11; before, the tab
+showed Next's default icon): a small ticket like the site's, lavender
+`ticket` stock with a 2px `ink` outline (so it shows on light and dark tabs),
+a notch in each side, a `primary` stub behind a dashed tear line, and two
+short lines of "print" (kept away from the left edge: closer, they read as an
+"E" at 16px). Next.js picks the files up from `app/` and writes the `<link>`
+tags itself:
+- `app/icon.svg`: the source, and what modern browsers show;
+- `app/favicon.ico`: 16, 32 and 48px, for browsers without SVG icons;
+- `app/apple-icon.png`: 180px for the iPhone home screen, from
+  `design-system/movie-night/apple-icon.svg` (the same ticket, bigger and
+  tilted, on the `night` color with a few stars: iOS fills see-through
+  pixels with black and rounds the corners itself).
+After changing either SVG, run `node scripts/make-icons.mjs` to export the
+.ico and .png again.
+
 ---
 
 ## 3. Implementation notes
