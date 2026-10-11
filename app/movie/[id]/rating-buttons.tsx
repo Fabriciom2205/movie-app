@@ -2,25 +2,16 @@
 
 import { useId, useOptimistic, useState, useTransition } from "react";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
-import { sectionLabel, toggleButtonBase } from "@/app/ui";
+import { secondaryButton, sectionLabel } from "@/app/ui";
 import { setRating, type Verdict } from "./actions";
 
-// Selected colors carry the meaning, as on /pick: liked = sage, not for me =
-// peach, each with its dark partner as the outline. The thumb also fills in,
-// so the choice shows by shape too, not only by color.
+// The same pair as /pick's "Seen it already?", but here it shows your rating:
+// your choice is filled in with ink, like a booked seat, and its thumb fills
+// in too, so the choice shows by shape as well. The heading says it in words
+// ("You liked this").
 const OPTIONS = [
-  {
-    value: "up",
-    label: "Liked it",
-    Icon: ThumbsUp,
-    selected: "aria-pressed:border-on-sage aria-pressed:bg-sage aria-pressed:text-on-sage",
-  },
-  {
-    value: "down",
-    label: "Not for me",
-    Icon: ThumbsDown,
-    selected: "aria-pressed:border-on-peach aria-pressed:bg-peach aria-pressed:text-on-peach",
-  },
+  { value: "up", label: "Liked it", Icon: ThumbsUp },
+  { value: "down", label: "Not for me", Icon: ThumbsDown },
 ] as const;
 
 const HEADINGS: Record<Verdict | "none", string> = {
@@ -53,13 +44,8 @@ export function RatingButtons({ movieId, verdict }: { movieId: number; verdict: 
         {HEADINGS[optimisticVerdict ?? "none"]}
       </p>
 
-      <div
-        role="group"
-        aria-labelledby={headingId}
-        aria-busy={isPending}
-        className="mt-2 flex flex-wrap gap-2"
-      >
-        {OPTIONS.map(({ value, label, Icon, selected }) => {
+      <div role="group" aria-labelledby={headingId} aria-busy={isPending} className="mt-2 grid grid-cols-2 gap-2.5">
+        {OPTIONS.map(({ value, label, Icon }) => {
           const isSelected = optimisticVerdict === value;
           return (
             <button
@@ -67,7 +53,7 @@ export function RatingButtons({ movieId, verdict }: { movieId: number; verdict: 
               type="button"
               aria-pressed={isSelected}
               onClick={() => choose(value)}
-              className={`${toggleButtonBase} ${selected}`}
+              className={`${secondaryButton} w-full aria-pressed:bg-ink aria-pressed:text-ticket`}
             >
               <Icon
                 aria-hidden="true"
@@ -86,9 +72,7 @@ export function RatingButtons({ movieId, verdict }: { movieId: number; verdict: 
           {error}
         </p>
       ) : (
-        optimisticVerdict && (
-          <p className="mt-2 text-xs text-ink-muted">Select it again to remove your rating.</p>
-        )
+        optimisticVerdict && <p className="mt-2 text-xs text-ink-muted">Select it again to remove your rating.</p>
       )}
     </div>
   );
