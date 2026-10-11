@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, Film, LogOut, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react";
-import { card, dangerButton, pagePanel, quietButton, secondaryButton } from "@/app/ui";
+import { ArrowLeft, Film, LogOut, Trash2 } from "lucide-react";
+import { Perforation } from "@/app/ticket";
+import { card, dangerButton, pagePanel, quietButton, secondaryButton, sectionLabel } from "@/app/ui";
 import { getDisplayNames } from "@/lib/profiles";
 import { createClient } from "@/lib/supabase/server";
 import { formatRuntime, releaseYear, tmdbImageUrl } from "@/lib/tmdb";
@@ -61,34 +62,37 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
 
   return (
     <main id="content" className={`${pagePanel} max-w-2xl`}>
-      <Link href="/lists" className={`${quietButton} -ml-3`}>
+      <Link href="/lists" className={`${quietButton} -ml-2`}>
         <ArrowLeft aria-hidden="true" className="size-4" />
         Your lists
       </Link>
 
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight break-words">{name}</h1>
-      <p className="mt-1 text-ink-muted">
+      <h1 className="mt-4 text-5xl break-words">{name}</h1>
+      <p className="mt-2 text-sm text-ink-muted">
         {others.length ? `Shared with ${joinWords(others)}` : "Just you for now"}
       </p>
 
       {/* ---------------- Movies ---------------- */}
-      <section className="mt-8">
-        <h2 className="text-xl font-semibold tracking-tight">
-          Movies <span className="font-normal text-ink-muted">({items.data.length})</span>
+      <section aria-labelledby="movies" className="mt-8">
+        <h2 id="movies" className="text-3xl">
+          Movies <span className="font-body text-base tracking-normal text-ink-muted">({items.data.length})</span>
         </h2>
 
         {items.data.length === 0 ? (
           <div className={`mt-3 ${card}`}>
-            <div className="mb-3 grid size-11 place-items-center rounded-full bg-soft text-on-soft">
+            <div className="mb-3 grid size-11 place-items-center border-2 border-ink">
               <Film aria-hidden="true" className="size-5" />
             </div>
-            <p className="font-semibold">No movies yet</p>
-            <p className="mt-1 text-ink-muted">Look one up from home, then add it to this list from its page.</p>
+            <p className="font-heading text-3xl leading-none tracking-wide uppercase">No movies yet</p>
+            <p className="mt-2">Look one up from home, then add it to this list from its page.</p>
             <Link href="/" className={`mt-4 ${secondaryButton}`}>
               Find a movie
             </Link>
           </div>
         ) : (
+          // Each movie is a small ticket, as in the home page's search
+          // results. The outline shows when the movie link is hovered (not
+          // Remove).
           <ul className="mt-3 flex flex-col gap-3">
             {items.data.map((item) => {
               const movie = item.movies;
@@ -97,40 +101,34 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
                 .filter(Boolean)
                 .join(" · ");
               return (
-                // The outline turns lavender when the movie link is hovered (not Remove).
                 <li
                   key={item.movie_id}
-                  className="flex items-center gap-1 rounded-card border-2 border-line bg-card p-2 transition-colors duration-150 ease-out has-[a:hover]:border-primary"
+                  className="flex items-center gap-1 border-2 border-transparent bg-ticket p-2 transition-colors duration-150 ease-out has-[a:hover]:border-ink"
                 >
-                  <Link
-                    href={`/movie/${item.movie_id}`}
-                    className="flex min-w-0 flex-1 items-center gap-3 rounded-poster p-1"
-                  >
+                  <Link href={`/movie/${item.movie_id}`} className="flex min-w-0 flex-1 items-center gap-3 p-1">
                     {movie.poster_path ? (
                       <Image
                         src={tmdbImageUrl(movie.poster_path, "w92")}
                         alt=""
                         width={46}
                         height={69}
-                        className="h-[69px] w-[46px] shrink-0 rounded-thumb object-cover"
+                        className="h-[69px] w-[46px] shrink-0 object-cover"
                       />
                     ) : (
-                      <div className="grid h-[69px] w-[46px] shrink-0 place-items-center rounded-thumb bg-soft text-on-soft">
+                      <div className="grid h-[69px] w-[46px] shrink-0 place-items-center bg-soft text-on-soft">
                         <Film aria-hidden="true" className="size-5" />
                       </div>
                     )}
-                    <div className="min-w-0">
-                      <p className="truncate font-heading text-lg leading-snug font-medium">{movie.title}</p>
-                      {details && <p className="text-sm text-ink-muted">{details}</p>}
+                    <div className="min-w-0 border-l-2 border-dashed border-ink/45 pl-3">
+                      <p className="truncate font-heading text-2xl leading-none tracking-wide uppercase">
+                        {movie.title}
+                      </p>
+                      {details && <p className="mt-1 text-xs text-ink-muted">{details}</p>}
                       <SeenBy ratings={seenBy.get(item.movie_id) ?? []} names={names} userId={userId} />
                     </div>
                   </Link>
                   <form action={removeFromList.bind(null, id, item.movie_id)} className="shrink-0">
-                    <button
-                      type="submit"
-                      className={quietButton}
-                      aria-label={`Remove ${movie.title} from this list`}
-                    >
+                    <button type="submit" className={quietButton} aria-label={`Remove ${movie.title} from this list`}>
                       Remove
                     </button>
                   </form>
@@ -142,57 +140,68 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
       </section>
 
       {/* ---------------- Members ---------------- */}
-      <section className={`mt-8 ${card}`}>
-        <h2 className="text-xl font-semibold tracking-tight">Who&rsquo;s on this list</h2>
-        <ul className="mt-4 flex flex-col gap-3">
-          {members.data.map((m) => {
-            const isMe = m.user_id === userId;
-            const isListCreator = m.user_id === creatorId;
-            const memberName = names.get(m.user_id) ?? "Someone";
-            return (
-              <li key={m.user_id} className="flex items-center gap-3">
-                {/* Their initial in a circle, just decoration. */}
-                <span
-                  aria-hidden="true"
-                  className="grid size-10 shrink-0 place-items-center rounded-full bg-soft font-heading text-lg font-semibold text-on-soft"
-                >
-                  {memberName.charAt(0).toUpperCase()}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate font-semibold">
-                    {memberName}
-                    {isMe && <span className="font-normal text-ink-muted"> (you)</span>}
-                  </span>
-                  {isListCreator && <span className="block text-sm text-ink-muted">Created the list</span>}
-                </span>
-                {isCreator && !isMe && (
-                  <ConfirmButton
-                    action={removeMember.bind(null, id, m.user_id)}
-                    question={`Remove ${memberName} from "${name}"?`}
-                    className={quietButton}
+      {/* A ticket: everyone's seat, then (for the creator) the stub where you
+          add someone. */}
+      <section aria-labelledby="members" className="mt-8 bg-ticket">
+        <div className="px-5 pt-5 pb-5 sm:px-6 sm:pt-6">
+          <h2 id="members" className="text-3xl">
+            Who&rsquo;s on this list
+          </h2>
+          <ul className="mt-4 flex flex-col gap-3">
+            {members.data.map((m, i) => {
+              const isMe = m.user_id === userId;
+              const isListCreator = m.user_id === creatorId;
+              const memberName = names.get(m.user_id) ?? "Someone";
+              return (
+                <li key={m.user_id} className="flex items-center gap-3">
+                  {/* Their seat letter in a box, just decoration. */}
+                  <span
+                    aria-hidden="true"
+                    className="grid size-11 shrink-0 place-items-center border-2 border-ink font-heading text-2xl leading-none"
                   >
-                    Remove
-                  </ConfirmButton>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+                    {String.fromCharCode(65 + i)}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-medium">
+                      {memberName}
+                      {isMe && <span className="font-normal text-ink-muted"> (you)</span>}
+                    </span>
+                    {isListCreator && <span className={`block ${sectionLabel}`}>Created the list</span>}
+                  </span>
+                  {isCreator && !isMe && (
+                    <ConfirmButton
+                      action={removeMember.bind(null, id, m.user_id)}
+                      question={`Remove ${memberName} from "${name}"?`}
+                      className={quietButton}
+                    >
+                      Remove
+                    </ConfirmButton>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
 
         {isCreator && (
-          <div className="mt-5 border-t-2 border-line pt-5">
-            <InviteForm listId={id} />
-          </div>
+          <>
+            <Perforation />
+            <div className="px-5 pt-5 pb-5 sm:px-6 sm:pb-6">
+              <InviteForm listId={id} />
+            </div>
+          </>
         )}
       </section>
 
       {/* ---------------- Settings ---------------- */}
-      <section className={`mt-6 ${card}`}>
-        <h2 className="text-xl font-semibold tracking-tight">List settings</h2>
+      <section aria-labelledby="list-settings" className={`mt-6 ${card}`}>
+        <h2 id="list-settings" className="text-3xl">
+          List settings
+        </h2>
         <div className="mt-4">
           <RenameListForm listId={id} name={name} />
         </div>
-        <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 border-t-2 border-line pt-5">
+        <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 border-t-2 border-ink/35 pt-5">
           {isCreator ? (
             <>
               <ConfirmButton
@@ -252,8 +261,8 @@ async function getSeenBy(
   return seenBy;
 }
 
-// Who on this list has seen the movie, as small tags (you first): "You liked
-// it" in sage, "Alex wasn't into it" in peach (the /pick colors), or "Not seen
+// Who on this list has seen the movie, as the small print of a ticket (you
+// first), as on /pick: "+ You liked it", "− Alex wasn't into it", or "Not seen
 // yet". The point of a shared list: spot what a friend has already seen.
 function SeenBy({
   ratings,
@@ -264,23 +273,18 @@ function SeenBy({
   names: Map<string, string>;
   userId: string;
 }) {
-  if (ratings.length === 0) return <p className="mt-1 text-sm text-ink-muted">Not seen yet</p>;
+  const smallPrint = "text-[11px] font-medium tracking-wide uppercase";
+  if (ratings.length === 0) return <p className={`mt-1.5 text-ink-muted ${smallPrint}`}>Not seen yet</p>;
   const sorted = [...ratings].sort((a, b) => Number(b.userId === userId) - Number(a.userId === userId));
   return (
-    <ul className="mt-1.5 flex flex-wrap gap-1.5">
+    <ul className={`mt-1.5 flex flex-wrap gap-x-3 ${smallPrint}`}>
       {sorted.map((r) => {
         const isMe = r.userId === userId;
         const who = isMe ? "You" : (names.get(r.userId) ?? "Someone");
         const liked = r.verdict === "up";
-        const Icon = liked ? ThumbsUp : ThumbsDown;
         return (
-          <li
-            key={r.userId}
-            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
-              liked ? "bg-sage text-on-sage" : "bg-peach text-on-peach"
-            }`}
-          >
-            <Icon aria-hidden="true" className="size-3.5 shrink-0" />
+          <li key={r.userId}>
+            <span aria-hidden="true">{liked ? "+ " : "− "}</span>
             {liked ? `${who} liked it` : `${who} ${isMe ? "weren’t" : "wasn’t"} into it`}
           </li>
         );

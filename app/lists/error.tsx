@@ -10,11 +10,11 @@ export default function ListsError({ retry }: { error: Error & { digest?: string
   return (
     <main id="content" className="mx-auto w-full max-w-2xl px-4 py-8 sm:py-10">
       <div className={`mt-14 shadow-soft ${card}`}>
-        <div className="mb-4 grid size-12 place-items-center rounded-full bg-soft text-on-soft">
+        <div className="mb-4 grid size-12 place-items-center border-2 border-ink">
           <CloudOff aria-hidden="true" className="size-6" />
         </div>
-        <h1 className="text-2xl font-semibold tracking-tight">Something went wrong</h1>
-        <p className="mt-2 leading-relaxed">That didn&rsquo;t work. It may be a hiccup on our side, so try again.</p>
+        <h1 className="text-4xl">Something went wrong</h1>
+        <p className="mt-3 leading-relaxed">That didn&rsquo;t work. It may be a hiccup on our side, so try again.</p>
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <button type="button" onClick={() => retry()} className={primaryButton}>
             Try again
