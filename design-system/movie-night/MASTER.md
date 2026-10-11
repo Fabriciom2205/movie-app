@@ -108,7 +108,6 @@ or controls are DM Mono `text-[11px]` capitals with wide tracking
 | Token | Value | Use |
 |---|---|---|
 | corners | square | Everything: tickets, buttons, fields, chips, posters. Only things that are round in real life stay round (avatars, provider logos, the notches). |
-| `--radius-*` | `0px` | Leftovers from the round look, kept at 0 so old `rounded-card` / `rounded-field` classes are square; each page's PR in the ticket pass deletes its uses, then these tokens go |
 | outline | `2px solid ink` | Buttons, fields, chips, posters |
 | `--shadow-soft` | `0 1px 0 rgb(46 36 51 / 0.15), 0 10px 24px rgb(46 36 51 / 0.12)` | Paper on paper: page panels, and the one ticket a page is about. Sparingly. |
 
@@ -129,21 +128,24 @@ These are written once as class strings in `app/ui.ts` (`primaryButton`,
 component = changing it there. `app/movie-card-skeleton.tsx` is the shared
 loading placeholder for a `posterGrid` card.
 
-**Status of the ticket pass (2026-10-10):** step 1 changed the tokens, the
-fonts and every class string in `app/ui.ts`, so all pages already have square
-ticket-style buttons, fields, chips and cards. The page-by-page PRs (home,
-/pick, movie page, lists, /rate, settings, login and the error pages) then
-rebuild each page's own layout into tickets (bands, perforations, stamps) and
-rewrite that page's section below. Until a page's PR lands, its section here
-may still describe the round look. Done so far: step 1, the home page, /pick, the movie page, the lists pages
-(including their error screen).
+**The ticket pass (2026-10-10 to 10-11) is finished:** step 1 changed the
+tokens, the fonts and every class string in `app/ui.ts`; then one PR per
+page rebuilt its layout into tickets (home, /pick, the movie page, lists,
+/rate, settings, and last login, "not found" and the error screens). Every
+section below describes the ticket look. `app/` has no rounded-corner
+classes left except `rounded-full` on things that are round in real life
+(service logos, the notches), and the `--radius-*` tokens are gone.
 
 **Page:** the room art fills the screen behind everything (`app/layout.tsx`);
 each page's `<main>` is a `pagePanel` (opaque `bg-page`,
 `shadow-soft`, `px-4 py-8`, `sm:px-8 sm:py-10`) plus its width (`max-w-2xl`,
 `max-w-3xl`, `max-w-4xl`), centered. Text never sits directly on the art.
 Pages whose content is one card (login, not found, the error pages) skip the
-panel: the card floats on the art and is the panel. Phones: the content
+panel: the card floats on the art and is the panel. Login is a full ticket
+there: a band with "Admit one" and "Members only" (accounts are invite-only),
+"Movie Night" as the `h1`, the fields, then a tear line and "Sign in" on the
+stub. Its tear line has no notches (`<Perforation notches={false} />`): the
+notches are page-colored circles, which would show as light dots on the art. Phones: the content
 starts 96px down (`pt-24`) so the moon shows above it, and the panel runs
 edge to edge (text keeps its width, so "Recommend a movie" stays as high as
 it can); from `sm` up, the panel floats 24px from the sides and 40px down.
@@ -341,8 +343,7 @@ the number in League Gothic). "Show more movies" is secondary while there
 are movies to rate and the primary button once there are none left.
 
 **Empty and error states:** a ticket with the icon in a square 2px `ink`
-box (`Tv`, `SearchX`, `CloudOff`...; the round `soft` circle on pages not
-converted yet), a League Gothic `text-4xl` heading that says what happened, a
+box (`Tv`, `SearchX`, `CloudOff`, `Film`...), a League Gothic `text-4xl` heading that says what happened, a
 sentence with the way forward, then one primary button and any alternatives
 as secondary. When there is only one way forward, it is the primary button
 (on /pick, "Change moods" when there's nothing left to look through).
@@ -370,8 +371,8 @@ A button in the same row as a field is 48px too (`fieldPrimaryButton` /
 `text-danger`, or what worked ("Renamed.") as a sage `tag` with `CircleCheck`,
 inside an always-present `aria-live` region.
 
-**Posters:** `radius-poster` (small ones `radius-thumb`), placeholders `bg-soft`
-with a `Film` icon in `on-soft`. Always `next/image`.
+**Posters:** square; the big ones on tickets get a 2px `ink` outline.
+Placeholders are `bg-soft` with a `Film` icon in `on-soft`. Always `next/image`.
 
 **Search results (home):** each result is a link drawn as a small ticket:
 `bg-ticket`, the poster (62x93, square), a dashed `ink`/45% tear line, then
@@ -383,7 +384,7 @@ of the time, so nothing shifts).
 
 **Messages:** success = sage chip style; inline errors = `text-danger`,
 banners = `bg-danger-soft text-on-danger-soft`, both `role="alert"`; empty
-states are an invitation with one clear action. Banners use `radius-field`.
+states are an invitation with one clear action. Banners are square.
 An info banner (e.g. "you haven't picked services, so...") is `bg-soft
 text-on-soft` with the `Info` icon. The "Saved: you liked X." confirmation is
 a sage `tag` with `CircleCheck`, inside an always-present `aria-live` region.
@@ -401,7 +402,8 @@ main button stays on a phone's first screen.
 
 - Tailwind v4: tokens live in `@theme { --color-page: #F5EDF5; ... }` in
   `app/globals.css`, which makes utilities like `bg-page`, `text-ink`,
-  `border-line`, `rounded-card`, `font-heading`.
+  `border-ink`, `shadow-soft`, `font-heading`. There are no radius tokens
+  (everything is square).
 - Light panels: `color-scheme: light` in `globals.css` and in the `viewport`
   export of `app/layout.tsx`, so form controls stay light; `themeColor` =
   `night`, so phones tint their browser bar to match the room.
@@ -413,6 +415,13 @@ main button stays on a phone's first screen.
   default `dark:` follows the device setting, so one would bring dark-mode
   colors back onto this always-light design. If dark mode is ever wanted, use
   the appendix below (dark values of the same tokens).
+- Testing signed-in pages when the browser preview isn't signed in (Claude
+  can't type the password): make a TEMP copy of the page at `app/dev-<page>/`
+  with the database reads swapped for made-up data (TMDB calls can stay
+  real), add `"/dev-<page>"` to `PUBLIC_PATHS` in `lib/supabase/proxy.ts`,
+  check it at 375x812 and 1440x900 (an `<iframe>` of that size when the
+  preview pane is smaller), then delete the copy and undo the proxy change
+  before committing. Never press buttons that save (ratings, lists, Save).
 - Testing logged-out pages (login) without signing out: load the page in an
   `<iframe credentialless>` from the dev tools console; it gets no cookies,
   so it sees what a signed-out visitor sees.

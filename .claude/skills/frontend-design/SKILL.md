@@ -14,9 +14,10 @@ including the UI UX Pro Max skill's.
 
 ## Rules (all of them, every time)
 
-1. **Tokens only.** Colors, fonts, radii and shadows come from the tokens in
-   `app/globals.css` (`bg-page`, `text-ink`, `border-line`, `rounded-card`,
-   `font-heading`...). Never raw hex in a page, never Tailwind's built-in
+1. **Tokens only.** Colors, fonts and shadows come from the tokens in
+   `app/globals.css` (`bg-page`, `bg-ticket`, `text-ink`, `border-ink`,
+   `shadow-soft`, `font-heading`...). Everything is square: no rounded
+   corners except `rounded-full` on things that are round in real life. Never raw hex in a page, never Tailwind's built-in
    palette (`zinc-*`, `blue-500`, `red-600`...), never `dark:` classes (the app
    is always light). A new color is a new token: add it to MASTER.md with its
    contrast numbers, then to `globals.css`.
