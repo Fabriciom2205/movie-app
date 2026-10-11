@@ -303,19 +303,23 @@ creator, the invite form sits below a `Perforation`, like a ticket's stub.
 `Trash2`) or Leave (`secondaryButton`, `LogOut`) plus one line saying what
 it does; both confirm first.
 
-**Settings:** two cards, "About you" (name + country side by side from `sm`)
-and "Your streaming services". Each field's visible label is a `<label
-htmlFor>` and its help text is linked with `aria-describedby`. The country
-`<select>` stays native (best on phones) with `appearance-none` and a
-`ChevronDown` laid over it. Services are option cards: a visually hidden
-checkbox inside a `radius-field` card (logo, name, then a round check that
-fills `primary` with a white check when ticked; unticked it's a 2px
-`ink-muted` ring, so the box is visible at 5.9:1). Ticked = `soft` fill +
-`primary` outline, like toggle pills.
+**Settings:** two tickets, "About you" (name + country side by side from
+`sm`) and "Your streaming services", each with a League Gothic `text-3xl`
+heading. Each field's visible label is a `<label htmlFor>` (`sectionLabel`)
+and its help text (12px) is linked with `aria-describedby`; the services
+search has a visible "Search services" label too (no magnifying glass, like
+the home search). The country `<select>` stays native (best on phones) with
+`appearance-none` and an `ink` `ChevronDown` laid over it. Services are
+options: a visually hidden checkbox inside a square `bg-card` box with a 2px
+`ink` outline (logo, name, then a 20px square on the right). Ticked = filled
+with `ink` and `ticket`-colored text, like a booked seat, and the square gets
+a check (it's `border-current`, so it shows on both the cream and the ink
+fill), so the state isn't told by the fill alone.
 
 **Sticky save bar:** on a long form (settings), Save sits in a bar stuck to
-the bottom of the screen (`sticky bottom-0`, `bg-page/95`, 2px `line` top
-border; it reaches the panel's edges with `-mx-4 sm:-mx-8`) with
+the bottom of the screen (`sticky bottom-0`, `bg-page/95`, a 2px dashed
+`ink`/45% top edge like a ticket's tear line; it reaches the panel's edges
+with `-mx-4 sm:-mx-8`) with
 "Unsaved changes" / the sage "Saved." / the error beside it.
 Anything focusable that could end up behind it gets `scroll-mb-28` on the
 element that actually receives focus (the checkbox, not its card), so the

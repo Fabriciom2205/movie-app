@@ -2,7 +2,7 @@
 
 import { startTransition, useActionState, useId, useState, type FormEvent } from "react";
 import Image from "next/image";
-import { Check, ChevronDown, CircleCheck, Search } from "lucide-react";
+import { Check, ChevronDown, CircleCheck } from "lucide-react";
 import { card, field, primaryButton, sectionLabel, tag } from "@/app/ui";
 import { saveSettings, type SaveState } from "./actions";
 
@@ -64,8 +64,10 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
 
   return (
     <form action={formAction} onSubmit={handleSubmit} className="mt-6 flex flex-col gap-6">
-      <section className={card}>
-        <h2 className="text-xl font-semibold tracking-tight">About you</h2>
+      <section className={card} aria-labelledby={`${id}-about`}>
+        <h2 id={`${id}-about`} className="text-3xl">
+          About you
+        </h2>
         <div className="mt-4 grid gap-5 sm:grid-cols-2">
           <div>
             <label htmlFor={`${id}-name`} className={sectionLabel}>
@@ -82,7 +84,7 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
               autoComplete="nickname"
               className={`mt-2 ${field}`}
             />
-            <p id={`${id}-name-help`} className="mt-1.5 text-sm text-ink-muted">
+            <p id={`${id}-name-help`} className="mt-1.5 text-xs text-ink-muted">
               Shown to the people you share a list with.
             </p>
           </div>
@@ -113,10 +115,10 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
               </select>
               <ChevronDown
                 aria-hidden="true"
-                className="pointer-events-none absolute top-1/2 right-3.5 size-5 -translate-y-1/2 text-ink-muted"
+                className="pointer-events-none absolute top-1/2 right-3.5 size-5 -translate-y-1/2"
               />
             </div>
-            <p id={`${id}-region-help`} className="mt-1.5 text-sm text-ink-muted">
+            <p id={`${id}-region-help`} className="mt-1.5 text-xs text-ink-muted">
               Streaming catalogs differ by country. Saving a new one updates the services below.
             </p>
           </div>
@@ -124,27 +126,26 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
       </section>
 
       <section className={card} aria-labelledby={`${id}-services`}>
-        <h2 id={`${id}-services`} className="text-xl font-semibold tracking-tight">
+        <h2 id={`${id}-services`} className="text-3xl">
           Your streaming services
         </h2>
-        <p className="mt-1 text-sm text-ink-muted">
+        <p className="mt-2 text-sm text-ink-muted">
           {checked.size === 0 ? "None selected yet." : `${checked.size} selected.`} Search to find services that
           aren&rsquo;t listed.
         </p>
 
-        <div className="relative mt-4 sm:max-w-xs">
-          <Search
-            aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 left-3.5 size-5 -translate-y-1/2 text-ink-muted"
-          />
+        <div className="mt-4 sm:max-w-xs">
+          <label htmlFor={`${id}-search`} className={sectionLabel}>
+            Search services
+          </label>
           <input
+            id={`${id}-search`}
             type="search"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            placeholder="Search services…"
-            aria-label="Search services"
+            placeholder="e.g. Max"
             autoComplete="off"
-            className={`${field} pl-11`}
+            className={`mt-2 ${field}`}
           />
         </div>
 
@@ -153,9 +154,10 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
         <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
           {providers.map((p) => (
             <li key={p.id} hidden={!isVisible(p)}>
-              {/* An option card around a visually hidden checkbox; the round
-                  check on the right fills in when it's ticked. */}
-              <label className="group flex min-h-12 cursor-pointer items-center gap-3 rounded-field border-2 border-line bg-card p-2 pr-3 transition-colors duration-150 ease-out select-none hover:bg-soft has-checked:border-primary has-checked:bg-soft has-checked:text-on-soft has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-primary">
+              {/* An option around a visually hidden checkbox. Ticked = filled
+                  with ink like a booked seat, and the box on the right gets a
+                  check, so it isn't told by color alone. */}
+              <label className="group flex min-h-12 cursor-pointer items-center gap-3 border-2 border-ink bg-card p-2 pr-3 transition-colors duration-150 ease-out select-none hover:bg-soft has-checked:bg-ink has-checked:text-ticket has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-primary">
                 <input
                   type="checkbox"
                   name="provider"
@@ -163,17 +165,17 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
                   checked={checked.has(p.id)}
                   onChange={() => toggle(p.id)}
                   // On the checkbox itself (it's what gets focus, so it's what
-                  // the browser scrolls into view): keeps a card tabbed to near
-                  // the bottom from hiding behind the sticky Save bar.
+                  // the browser scrolls into view): keeps an option tabbed to
+                  // near the bottom from hiding behind the sticky Save bar.
                   className="sr-only scroll-mb-28"
                 />
                 <Image src={p.logoUrl} alt="" width={32} height={32} className="size-8 shrink-0 rounded-full" />
-                <span className="min-w-0 flex-1 truncate text-sm font-semibold">{p.name}</span>
+                <span className="min-w-0 flex-1 truncate text-sm font-medium">{p.name}</span>
                 <span
                   aria-hidden="true"
-                  className="grid size-6 shrink-0 place-items-center rounded-full border-2 border-ink-muted text-on-primary group-has-checked:border-primary group-has-checked:bg-primary"
+                  className="grid size-5 shrink-0 place-items-center border-2 border-current"
                 >
-                  <Check className="hidden size-4 group-has-checked:block" strokeWidth={3} />
+                  <Check className="hidden size-3.5 group-has-checked:block" strokeWidth={3.5} />
                 </span>
               </label>
             </li>
@@ -188,8 +190,9 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
       </section>
 
       {/* Stays at the bottom of the screen while the form is on it, so Save is
-          always in reach after ticking a service far down the list. */}
-      <div className="sticky bottom-0 z-10 -mx-4 flex items-center gap-4 border-t-2 border-line bg-page/95 px-4 py-3 backdrop-blur-sm sm:-mx-8 sm:px-8">
+          always in reach after ticking a service far down the list. The
+          dashed top edge makes it the page's stub. */}
+      <div className="sticky bottom-0 z-10 -mx-4 flex items-center gap-4 border-t-2 border-dashed border-ink/45 bg-page/95 px-4 py-3 backdrop-blur-sm sm:-mx-8 sm:px-8">
         <button type="submit" disabled={pending} className={primaryButton}>
           {pending ? "Saving…" : "Save"}
         </button>
