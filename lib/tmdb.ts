@@ -23,6 +23,8 @@ export type MovieDetails = MovieSearchResult & {
   runtime: number | null; // minutes; TMDB uses 0 or null when unknown
   genres: { id: number; name: string }[];
   tagline: string;
+  vote_average: number; // 0-10
+  vote_count: number; // 0 = not rated yet, so don't show vote_average
 };
 
 export type WatchProvider = {

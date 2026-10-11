@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink, Film, Tv } from "lucide-react";
+import { Perforation, TicketFields } from "@/app/ticket";
 import { card, pagePanel, posterGrid, providerTag, quietButton, sectionLabel } from "@/app/ui";
 import {
   formatRuntime,
@@ -30,82 +31,105 @@ export default async function MoviePage(props: PageProps<"/movie/[id]">) {
   if (!movie) notFound();
 
   const year = releaseYear(movie.release_date);
-  const runtime = formatRuntime(movie.runtime);
   const free = dedupe([...(providers?.free ?? []), ...(providers?.ads ?? [])]);
-  const hasAny =
-    !!providers &&
-    [providers.flatrate, free, providers.rent, providers.buy].some((list) => list?.length);
+  const rows = [
+    { label: "Stream", providers: providers?.flatrate },
+    { label: "Free", providers: free },
+    { label: "Rent", providers: providers?.rent },
+    { label: "Buy", providers: providers?.buy },
+  ].filter((row): row is { label: string; providers: WatchProvider[] } => !!row.providers?.length);
 
   return (
     <main id="content" className={`${pagePanel} max-w-3xl`}>
       {/* Home, not "back": you can get here from search, /pick or a list. */}
-      <Link href="/" className={`${quietButton} -ml-3`}>
+      <Link href="/" className={`${quietButton} -ml-2`}>
         <ArrowLeft aria-hidden="true" className="size-4" />
         Home
       </Link>
 
-      <article className={`mt-4 shadow-soft ${card} ${posterGrid}`}>
-        {movie.poster_path ? (
-          <Image
-            src={tmdbImageUrl(movie.poster_path, "w342")}
-            alt={`${movie.title} poster`}
-            width={200}
-            height={300}
-            preload // it's the biggest thing on the page, so load it first
-            className="aspect-2/3 w-full self-start rounded-poster object-cover sm:row-span-2"
-          />
-        ) : (
-          <div className="grid aspect-2/3 w-full place-items-center self-start rounded-poster bg-soft text-on-soft sm:row-span-2">
-            <Film aria-hidden="true" className="size-8" />
+      <article className="mt-4 bg-ticket shadow-soft">
+        {/* The band, as on /pick; TMDB's number for the movie is the
+            ticket's serial number. */}
+        <div className="flex items-baseline justify-between gap-4 bg-primary px-5 pt-2.5 pb-2 leading-none text-on-primary sm:px-6">
+          <span className="font-heading text-3xl leading-none tracking-wide uppercase">Feature presentation</span>
+          <span className="text-[11px] font-medium tracking-widest uppercase">No. {movie.id}</span>
+        </div>
+
+        <div className={`${posterGrid} px-5 pt-5 sm:px-6 sm:pt-6`}>
+          {movie.poster_path ? (
+            <Image
+              src={tmdbImageUrl(movie.poster_path, "w342")}
+              alt={`${movie.title} poster`}
+              width={200}
+              height={300}
+              preload // it's the biggest thing on the page, so load it first
+              className="aspect-2/3 w-full self-start object-cover outline-2 outline-ink sm:row-span-2"
+            />
+          ) : (
+            <div className="grid aspect-2/3 w-full place-items-center self-start bg-soft text-on-soft outline-2 outline-ink sm:row-span-2">
+              <Film aria-hidden="true" className="size-8" />
+            </div>
+          )}
+
+          <div className="min-w-0 self-end sm:self-start">
+            <h1 className="text-4xl break-words sm:text-6xl">{movie.title}</h1>
+            {year && <p className="mt-2 text-sm">({year})</p>}
           </div>
-        )}
 
-        <div className="min-w-0 self-center sm:self-start">
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            {movie.title}
-            {/* A real space (not a margin), so the year can wrap to the next line. */}
-            {year && <> <span className="font-normal text-ink-muted">({year})</span></>}
-          </h1>
-          <p className="mt-2 text-sm text-ink-muted">
-            {[runtime, movie.genres.map((g) => g.name).join(", ")]
-              .filter(Boolean)
-              .join(" · ")}
-          </p>
+          {/* Under the poster on phones (the column beside it is too narrow),
+              beside it wider up. */}
+          <div className="col-span-2 flex min-w-0 flex-col gap-5 sm:col-span-1 sm:col-start-2">
+            <TicketFields
+              fields={[
+                { label: "Released", value: formatDate(movie.release_date) },
+                { label: "Runtime", value: formatRuntime(movie.runtime) },
+                { label: "Rated", value: movie.vote_count > 0 ? `${movie.vote_average.toFixed(1)} / 10` : null },
+                { label: "Genre", wide: true, value: movie.genres.map((g) => g.name).join(", ") || null },
+              ]}
+            />
+            {movie.tagline && <p className="font-medium">&ldquo;{movie.tagline}&rdquo;</p>}
+            {movie.overview && <p className="text-[13px] leading-relaxed">{movie.overview}</p>}
+          </div>
         </div>
 
-        {/* The tagline sits under the poster on phones: too long for the narrow
-            column beside it. */}
-        <div className="col-span-2 flex min-w-0 flex-col gap-4 sm:col-span-1 sm:col-start-2">
-          {movie.tagline && <p className="font-semibold text-ink-muted italic">{movie.tagline}</p>}
-          {movie.overview && <p className="leading-relaxed">{movie.overview}</p>}
-        </div>
+        <Perforation className="mt-6" />
 
-        {/* Your actions, under a divider (as on /pick). */}
-        <div className="col-span-2 grid gap-5 border-t-2 border-line pt-5 sm:grid-cols-2 sm:gap-6">
+        {/* The stub: your rating and your lists. */}
+        <div className="grid gap-6 px-5 pt-5 pb-5 sm:grid-cols-2 sm:px-6 sm:pb-6">
           <RatingButtons movieId={movie.id} verdict={myVerdict} />
           <ListToggles movieId={movie.id} lists={myLists} />
         </div>
       </article>
 
-      <section className={`mt-6 ${card}`}>
-        <h2 className="text-xl font-semibold tracking-tight">Where to watch in the US</h2>
+      {/* A second ticket: where it's on, one row per way of watching. */}
+      <section aria-labelledby="where-to-watch" className={`mt-6 ${card}`}>
+        <h2 id="where-to-watch" className="text-3xl">
+          Where to watch in the US
+        </h2>
 
-        {hasAny ? (
-          <div className="mt-4 flex flex-col gap-5">
-            <ProviderRow label="Stream" providers={providers?.flatrate} />
-            <ProviderRow label="Free" providers={free} />
-            <ProviderRow label="Rent" providers={providers?.rent} />
-            <ProviderRow label="Buy" providers={providers?.buy} />
-          </div>
+        {rows.length > 0 ? (
+          <dl className="mt-4 border-t-2 border-ink">
+            {rows.map((row) => (
+              <div
+                key={row.label}
+                className="grid gap-2 border-b border-ink/35 py-3 sm:grid-cols-[5rem_minmax(0,1fr)] sm:items-center"
+              >
+                <dt className={sectionLabel}>{row.label}</dt>
+                <dd>
+                  <ProviderList providers={row.providers} />
+                </dd>
+              </div>
+            ))}
+          </dl>
         ) : (
-          <p className="mt-3 flex items-start gap-2.5 text-ink-muted">
+          <p className="mt-3 flex items-start gap-2.5">
             <Tv aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
             Not available to stream, rent, or buy in the US right now.
           </p>
         )}
 
         {/* Required attribution: TMDB's availability data comes from JustWatch. */}
-        <p className="mt-6 text-xs text-ink-muted">
+        <p className="mt-5 text-xs text-ink-muted">
           Availability data provided by JustWatch.
           {providers?.link && (
             <>
@@ -114,7 +138,7 @@ export default async function MoviePage(props: PageProps<"/movie/[id]">) {
                 href={providers.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 font-semibold text-on-soft underline underline-offset-2"
+                className="inline-flex items-center gap-1 font-medium text-on-soft underline underline-offset-2"
               >
                 See all options on TMDB
                 <ExternalLink aria-hidden="true" className="size-3" />
@@ -128,26 +152,26 @@ export default async function MoviePage(props: PageProps<"/movie/[id]">) {
   );
 }
 
-function ProviderRow({ label, providers }: { label: string; providers?: WatchProvider[] }) {
-  if (!providers?.length) return null;
+// Logo + name (on a phone you can't hover a bare logo to learn its name).
+function ProviderList({ providers }: { providers: WatchProvider[] }) {
   return (
-    <div>
-      <h3 className={`mb-2 ${sectionLabel}`}>{label}</h3>
-      <ul className="flex flex-wrap gap-2">
-        {providers.map((p) => (
-          <li key={p.provider_id} className={providerTag}>
-            <Image
-              src={tmdbImageUrl(p.logo_path, "w92")}
-              alt=""
-              width={28}
-              height={28}
-              className="size-7 rounded-full"
-            />
-            {p.provider_name}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ul className="flex flex-wrap gap-2">
+      {providers.map((p) => (
+        <li key={p.provider_id} className={providerTag}>
+          <Image src={tmdbImageUrl(p.logo_path, "w92")} alt="" width={28} height={28} className="size-7 rounded-full" />
+          {p.provider_name}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+// "2015-09-30" -> "Sep 30, 2015". A date with no time is midnight UTC, so it's
+// formatted in UTC too (in New York it would otherwise show Sep 29).
+function formatDate(date: string): string | null {
+  if (!date) return null;
+  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(
+    new Date(`${date}T00:00:00Z`),
   );
 }
 

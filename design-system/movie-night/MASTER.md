@@ -135,7 +135,7 @@ ticket-style buttons, fields, chips and cards. The page-by-page PRs (home,
 /pick, movie page, lists, /rate, settings, login and the error pages) then
 rebuild each page's own layout into tickets (bands, perforations, stamps) and
 rewrite that page's section below. Until a page's PR lands, its section here
-may still describe the round look. Done so far: step 1, the home page, /pick.
+may still describe the round look. Done so far: step 1, the home page, /pick, the movie page.
 
 **Page:** the room art fills the screen behind everything (`app/layout.tsx`);
 each page's `<main>` is a `pagePanel` (opaque `bg-page`,
@@ -226,10 +226,14 @@ it works before JavaScript loads. The home page draws its two groups as
 ticket parts instead (seats and tick boxes, see "Home page" above); the
 check/X lives inside the box, so it shows with `group-has-checked:` on a
 `group` label rather than `peer-checked:`.
-Exception: the rating buttons ("Liked it" / "Not for me") mean something
-beyond "chosen", so selected uses the meaning colors, as on /pick: liked =
-`sage` with an `on-sage` outline, not for me = `peach` with an `on-peach`
-outline, and the thumb icon fills in (a shape cue on top of color).
+The rating buttons ("Liked it" / "Not for me") are League Gothic
+`secondaryButton`s splitting the width, on /pick and the movie page alike. On
+the movie page they show your rating: yours is filled with `ink` and
+`ticket`-colored text (`aria-pressed`), its thumb fills in, and the heading
+above says it in words ("You liked this" / "Not your kind of movie" / "Seen
+it?"). Changed 2026-10-10 from sage / peach fills: pastel fills on the
+lavender ticket stock clashed with the ticket look, where "chosen" is always
+ink; the words and the filled thumb carry the meaning instead.
 
 **Pick page** (/pick): one printed ticket, `shadow-soft`, under a quiet
 "Change what you're in the mood for" link:
@@ -240,7 +244,7 @@ outline, and the thumb icon fills in (a shape cue on top of color).
   pick for you and Alex" (`sectionLabel`), the title as the `h1` (League
   Gothic `text-4xl`, `sm:text-6xl`; a long title wraps beside the poster)
   and "(2015)";
-- the **fields** (`TicketFields` in the page): Stream it on (each service's
+- the **fields** (`TicketFields`, `app/ticket.tsx`): Stream it on (each service's
   round logo + name, full width), Runtime and Rated side by side, Genre full
   width. Empty fields are left out and a lone half-width field takes the row;
 - the **stamp**: the strongest reason (`reasons[0]`: "Because you liked
@@ -258,17 +262,25 @@ outline, and the thumb icon fills in (a shape cue on top of color).
 **Movie with its poster** (`posterGrid`, /pick and the movie page): the poster
 sits beside the title, 120px wide on phones (so the title and what follows fit
 on the first screen) and 200px from `sm` up; the details go under both on
-phones and beside the poster wider up. On /pick the title is League Gothic
-`text-4xl` on phones and `text-6xl` from `sm` (the movie page still uses
-`text-2xl` / `text-3xl` until its PR). Put a real space (not a margin) between a title and its
-"(year)", or the two can't wrap apart and stick out of a narrow column.
+phones and beside the poster wider up. The poster has a 2px `ink` outline;
+the title is the `h1`, League Gothic `text-4xl` on phones and `text-6xl`
+from `sm` (`break-words`, so a long title wraps beside the poster), with
+"(2015)" on its own line under it.
 
-**Movie page:** the `posterGrid` card (title + meta beside the poster; the
-tagline goes under it, since a tagline is too long for the narrow column on
-phones), your rating and lists under a divider, then a second card "Where to
-watch in the US" with Stream / Free / Rent / Buy rows of `providerTag`s
-(logo + name: on a phone you can't hover a bare logo to learn its name). The
-back link says "Home" because you can arrive from search, /pick or a list.
+**Movie page:** a ticket like /pick's. The band says "Feature presentation"
+and, on the right, "No. 286217" (TMDB's number for the movie, as the ticket's
+serial number). Then the `posterGrid`: poster, title and year, then
+`TicketFields` (Released "Sep 30, 2015", Runtime, Rated, Genre), the tagline
+in quotes and the overview, under the poster on phones (too long for the
+narrow column beside it). Below the `Perforation`, the stub: your rating
+and your lists, side by side from `sm`. Under it a second ticket, "Where to
+watch in the US": a `dl` with one row per way of watching (Stream / Free /
+Rent / Buy; label beside the services from `sm`, above them on phones), each
+service a `providerTag` (logo + name: on a phone you can't hover a bare logo
+to learn its name), then the JustWatch credit and the TMDB link. The back link
+says "Home" because you can arrive from search, /pick or a list. The release
+date is formatted in UTC: a date with no time is midnight UTC, so formatting
+it in New York time would show the day before.
 
 **Lists:** `/lists` shows each list as a link card (soft circle with
 `ListVideo`, name in Fredoka, "3 movies · with Alex", a `ChevronRight`). A
@@ -322,7 +334,10 @@ follows the device's dark mode).
 `motion-safe:animate-pulse`, plus a short `aria-live` message. On /pick the
 message is printed on the skeleton's band ("Finding a movie…", passed as the
 skeleton's `children`, which sit outside its `aria-hidden` part), in the
-same font and height as "Admit two", so nothing moves when the pick arrives. Trade-off: a page with `loading.tsx`
+same font and height as "Admit two", so nothing moves when the pick arrives;
+the movie page does the same with "Loading the movie…". A band's text needs
+`leading-none` on the big span itself: `text-3xl` sets its own line height,
+so `leading-none` on the band alone isn't enough. Trade-off: a page with `loading.tsx`
 streams, so a `notFound()` there answers HTTP 200 (with a `noindex` tag)
 instead of 404. Fine for this sign-in-only app; see Next's loading.md
 "Status Codes".
