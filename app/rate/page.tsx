@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, Sparkles } from "lucide-react";
-import { pagePanel, quietButton, tag } from "@/app/ui";
+import { ArrowLeft } from "lucide-react";
+import { SideNotches } from "@/app/ticket";
+import { pagePanel, quietButton, sectionLabel } from "@/app/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getWellKnownMovies, releaseYear, tmdbImageUrl } from "@/lib/tmdb";
 import { RateGrid, type RateMovie } from "./rate-grid";
@@ -46,23 +47,23 @@ export default async function RatePage(props: PageProps<"/rate">) {
 
   return (
     <main id="content" className={`${pagePanel} max-w-4xl`}>
-      <Link href="/" className={`${quietButton} -ml-3`}>
+      <Link href="/" className={`${quietButton} -ml-2`}>
         <ArrowLeft aria-hidden="true" className="size-4" />
         Done
       </Link>
 
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight">Rate movies you&rsquo;ve seen</h1>
-      <p className="mt-2 max-w-2xl leading-relaxed">
+      <h1 className="mt-4 text-5xl">Rate movies you&rsquo;ve seen</h1>
+      <p className="mt-3 max-w-2xl text-sm leading-relaxed">
         Thumbs up if you liked it, thumbs down if it wasn&rsquo;t for you, or skip anything you haven&rsquo;t
         seen. Every rating teaches the recommender your taste, and movies you&rsquo;ve rated won&rsquo;t be
         recommended to you.
       </p>
-      {/* Lilac + sparkles = your taste, as on the home page. */}
-      <p className={`mt-4 ${tag} bg-pink text-on-pink`}>
-        <Sparkles aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-        {ratedCount === 0
-          ? "No ratings yet"
-          : `You’ve rated ${ratedCount} ${ratedCount === 1 ? "movie" : "movies"} so far`}
+      {/* A small pink side ticket, like the home page's nudge to come here:
+          pink = your taste. */}
+      <p className="relative mt-5 inline-flex items-baseline gap-3 bg-ticket-pink px-6 py-2.5">
+        <SideNotches />
+        <span className={sectionLabel}>Rated so far</span>
+        <span className="font-heading text-3xl leading-none">{ratedCount}</span>
       </p>
 
       <RateGrid movies={movies} moreUrl={moreUrl} />
