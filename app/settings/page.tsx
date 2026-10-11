@@ -61,12 +61,12 @@ export default async function SettingsPage() {
 
   return (
     <main id="content" className={`${pagePanel} max-w-3xl`}>
-      <Link href="/" className={`${quietButton} -ml-3`}>
+      <Link href="/" className={`${quietButton} -ml-2`}>
         <ArrowLeft aria-hidden="true" className="size-4" />
         Home
       </Link>
 
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight">Settings</h1>
+      <h1 className="mt-4 text-5xl">Settings</h1>
 
       <SettingsForm
         displayName={profile.data?.display_name ?? ""}
