@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, ChevronRight, ListVideo } from "lucide-react";
+import { ArrowLeft, ChevronRight } from "lucide-react";
 import { pagePanel, quietButton } from "@/app/ui";
 import { getDisplayNames } from "@/lib/profiles";
 import { createClient } from "@/lib/supabase/server";
@@ -35,15 +35,13 @@ export default async function ListsPage() {
 
   return (
     <main id="content" className={`${pagePanel} max-w-2xl`}>
-      <Link href="/" className={`${quietButton} -ml-3`}>
+      <Link href="/" className={`${quietButton} -ml-2`}>
         <ArrowLeft aria-hidden="true" className="size-4" />
         Home
       </Link>
 
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight">Your lists</h1>
-      <p className="mt-1 text-ink-muted">
-        Movies to watch together. Add one from any movie&rsquo;s page.
-      </p>
+      <h1 className="mt-4 text-5xl">Your lists</h1>
+      <p className="mt-2 text-sm text-ink-muted">Movies to watch together. Add one from any movie&rsquo;s page.</p>
 
       <div className="mt-6">
         <CreateListForm />
@@ -52,7 +50,10 @@ export default async function ListsPage() {
       {data.length === 0 ? (
         <p className="mt-6 text-ink-muted">No lists yet. Make one above.</p>
       ) : (
-        <ul className="mt-6 flex flex-col gap-3">
+        // Each list is a ticket stub: the count on the small part, torn off
+        // along a dashed line, then the name. gap-4 leaves room for the
+        // notches, which stick out 13px above and below each ticket.
+        <ul className="mt-8 flex flex-col gap-4">
           {data.map((list) => {
             const count = list.list_items[0]?.count ?? 0;
             const others = list.list_members
@@ -62,20 +63,27 @@ export default async function ListsPage() {
               <li key={list.id}>
                 <Link
                   href={`/lists/${list.id}`}
-                  className="flex items-center gap-3 rounded-card border-2 border-line bg-card p-3 pr-4 transition-colors duration-150 ease-out hover:border-primary"
+                  className="relative flex items-stretch border-2 border-transparent bg-ticket transition-colors duration-150 ease-out hover:border-ink"
                 >
-                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-soft text-on-soft">
-                    <ListVideo aria-hidden="true" className="size-5" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate font-heading text-lg font-medium">{list.name}</span>
-                    <span className="block text-sm text-ink-muted">
-                      {count === 1 ? "1 movie" : `${count} movies`}
-                      {" · "}
-                      {others.length ? `with ${others.join(", ")}` : "just you"}
+                  <span className="grid w-20 shrink-0 place-content-center border-r-2 border-dashed border-ink/45 py-3 text-center">
+                    <span className="font-heading text-4xl leading-none">{count}</span>
+                    <span className="mt-1 text-[10px] font-medium tracking-widest uppercase">
+                      {count === 1 ? "movie" : "movies"}
                     </span>
                   </span>
-                  <ChevronRight aria-hidden="true" className="size-5 shrink-0 text-ink-muted" />
+                  <span aria-hidden="true" className={`${notch} -top-3.5`} />
+                  <span aria-hidden="true" className={`${notch} -bottom-3.5`} />
+                  <span className="flex min-w-0 flex-1 items-center gap-3 py-3 pr-3 pl-4">
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-heading text-3xl leading-none tracking-wide uppercase">
+                        {list.name}
+                      </span>
+                      <span className="mt-1.5 block truncate text-xs font-medium tracking-wide text-ink-muted uppercase">
+                        {others.length ? `With ${others.join(", ")}` : "Just you"}
+                      </span>
+                    </span>
+                    <ChevronRight aria-hidden="true" className="size-5 shrink-0" />
+                  </span>
                 </Link>
               </li>
             );
@@ -85,3 +93,8 @@ export default async function ListsPage() {
     </main>
   );
 }
+
+// A notch where the stub's dashed line meets the ticket's top or bottom edge
+// (a circle in the page color), centered on the dashed line: the stub is 80px
+// wide, its 2px line ends at 80px, so the circle starts at 80 - 1 - 13 = 66px.
+const notch = "pointer-events-none absolute left-[calc(5rem-14px)] size-6.5 rounded-full bg-page";

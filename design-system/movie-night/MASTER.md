@@ -135,7 +135,8 @@ ticket-style buttons, fields, chips and cards. The page-by-page PRs (home,
 /pick, movie page, lists, /rate, settings, login and the error pages) then
 rebuild each page's own layout into tickets (bands, perforations, stamps) and
 rewrite that page's section below. Until a page's PR lands, its section here
-may still describe the round look. Done so far: step 1, the home page, /pick, the movie page.
+may still describe the round look. Done so far: step 1, the home page, /pick, the movie page, the lists pages
+(including their error screen).
 
 **Page:** the room art fills the screen behind everything (`app/layout.tsx`);
 each page's `<main>` is a `pagePanel` (opaque `bg-page`,
@@ -282,15 +283,25 @@ says "Home" because you can arrive from search, /pick or a list. The release
 date is formatted in UTC: a date with no time is midnight UTC, so formatting
 it in New York time would show the day before.
 
-**Lists:** `/lists` shows each list as a link card (soft circle with
-`ListVideo`, name in Fredoka, "3 movies · with Alex", a `ChevronRight`). A
-list's page: movie rows as cards with a quiet "Remove" inside; the outline turns
-`primary` only when the movie link is hovered (`has-[a:hover]:border-primary`),
-not when Remove is. "Seen by" is small tags, you first: "You liked it" in sage,
-"Alex wasn't into it" in peach (the /pick colors), else "Not seen yet". Members
-get their initial in a `soft` circle (decorative, `aria-hidden`). Settings
-end with Delete (`dangerButton`, `Trash2`) or Leave (`secondaryButton`,
-`LogOut`) plus one line saying what it does; both confirm first.
+**Lists:** `/lists` has the title, the create form (the page's one primary
+button), then each list as a **ticket stub** link: a stub 80px wide with the
+count ("3" in League Gothic over "movies"), a dashed `ink`/45% line with a
+round notch where it meets the top and bottom edges (circles in `bg-page`,
+centered on the line; the list uses `gap-4` so the notches have room), then
+the name (League Gothic `text-3xl`, truncated) over "With Alex" / "Just you"
+and a `ChevronRight`. Hover = a 2px `ink` outline.
+A list's page: the name as the `h1` and who it's shared with; the movies as
+small tickets (as in the home search results: poster, dashed line, title,
+year · runtime) with a quiet "Remove" inside; the outline shows only when the
+movie link is hovered (`has-[a:hover]:border-ink`), not when Remove is.
+"Seen by" is the same small print as /pick, you first: "+ You liked it",
+"− Alex wasn't into it", else "Not seen yet". "Who's on this list" is a
+ticket: each member has a seat letter (A, B...) in a square `ink` box
+(decorative, `aria-hidden`), the name and "Created the list"; for the
+creator, the invite form sits below a `Perforation`, like a ticket's stub.
+"List settings" is a third ticket: rename, then Delete (`dangerButton`,
+`Trash2`) or Leave (`secondaryButton`, `LogOut`) plus one line saying what
+it does; both confirm first.
 
 **Settings:** two cards, "About you" (name + country side by side from `sm`)
 and "Your streaming services". Each field's visible label is a `<label
@@ -359,8 +370,7 @@ the title in League Gothic `text-2xl` with "(year)" in DM Mono and two lines
 of overview; hover = a 2px `ink` outline (it's there, transparent, the rest
 of the time, so nothing shifts).
 
-**Movie rows (lists):** each row is a link drawn as a small card:
-`bg-card`, 2px `line` outline, `radius-card`, hover outline `primary`.
+**Movie rows (lists):** small tickets like the search results (see "Lists").
 
 **Messages:** success = sage chip style; inline errors = `text-danger`,
 banners = `bg-danger-soft text-on-danger-soft`, both `role="alert"`; empty
