@@ -49,7 +49,7 @@ export function ListToggles({
       {lists.length === 0 ? (
         <p className="mt-2 text-sm text-ink-muted">
           No lists yet.{" "}
-          <Link href="/lists" className="font-semibold text-on-soft underline underline-offset-2">
+          <Link href="/lists" className="font-medium text-on-soft underline underline-offset-2">
             Make one
           </Link>{" "}
           to save movies for later.
