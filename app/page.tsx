@@ -45,7 +45,7 @@ export default async function Home(props: PageProps<"/">) {
   return (
     <>
       <header className="mb-4 flex items-center justify-between gap-2 px-4 text-on-night text-shadow-md text-shadow-night sm:mb-6 sm:px-2">
-        <h1 className="flex shrink-0 items-center gap-3 text-4xl">
+        <h1 className="flex shrink-0 items-center gap-3 text-3xl sm:text-4xl">
           <TicketMark />
           Movie Night
         </h1>
@@ -57,6 +57,9 @@ export default async function Home(props: PageProps<"/">) {
           </span>
           <Link href="/lists" className={navItem}>
             Lists
+          </Link>
+          <Link href="/rate" className={navItem}>
+            Rate
           </Link>
           <Link href="/settings" className={navItem}>
             Settings
@@ -181,10 +184,11 @@ export default async function Home(props: PageProps<"/">) {
   );
 }
 
-// Header links: small typewriter capitals, underlined on hover. 11px on
-// phones, so all three fit beside the title at 375px.
+// Header links: small typewriter capitals, underlined on hover. On phones
+// they're 11px with 4px sides (and the title one size smaller), so all four
+// fit beside the title at 375px.
 const navItem =
-  "inline-flex h-11 shrink-0 items-center px-1.5 text-[11px] font-medium tracking-wide uppercase underline-offset-4 hover:underline sm:px-2 sm:text-xs";
+  "inline-flex h-11 shrink-0 items-center px-1 text-[11px] font-medium tracking-wide uppercase underline-offset-4 hover:underline sm:px-2 sm:text-xs";
 
 // The site's ticket icon (the same drawing as app/icon.svg) beside the name.
 // From `sm` up only: on a 375px phone the name and the three links fill the row.
