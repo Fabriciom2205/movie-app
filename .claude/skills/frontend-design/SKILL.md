@@ -6,19 +6,18 @@ description: How to build or change any page, component or style in this movie a
 # Frontend design for Movie Night
 
 The look is decided in `design-system/movie-night/MASTER.md`: lavender
-cinema tickets (square corners, perforations, a purple band, a rubber stamp)
-on light panels in front of a moonlit-room illustration (pages are moving
-off the panels one by one, their tickets taped straight onto the room's
-wall), League Gothic +
-DM Mono. Never the round "bubbly" look it replaced (pills, soft cards).
+cinema tickets (die-cut edges, perforations, a purple band, a rubber stamp)
+taped straight onto the wall of a moonlit-room illustration (no page
+panels), League Gothic + DM Mono. Never the round "bubbly" look it
+replaced (pills, soft cards).
 **Read that file before changing UI.** It wins over any other suggestion,
 including the UI UX Pro Max skill's.
 
 ## Rules (all of them, every time)
 
 1. **Tokens only.** Colors, fonts and shadows come from the tokens in
-   `app/globals.css` (`bg-page`, `bg-ticket`, `text-ink`, `border-ink`,
-   `shadow-soft`, `font-heading`...). Everything is square: no rounded
+   `app/globals.css` (`bg-ticket`, `text-ink`, `border-ink`, `text-on-night`,
+   `font-heading`...). Everything is square: no rounded
    corners except `rounded-full` on things that are round in real life. Never raw hex in a page, never Tailwind's built-in
    palette (`zinc-*`, `blue-500`, `red-600`...), never `dark:` classes (the app
    is always light). A new color is a new token: add it to MASTER.md with its
@@ -42,11 +41,11 @@ including the UI UX Pro Max skill's.
    secondary or quiet.
 8. **Keep data credits visible:** the TMDB footer and "Availability data
    provided by JustWatch" wherever provider data shows.
-9. **Text on the room art is short and always in the night style.** A page's
-   content goes in a `pagePanel` `<main>` (or, for a single-card page, in
-   that card), except on pages already moved onto the wall: no panel, their
-   tickets are paper taped to the wall (MASTER.md "Moving onto the wall" and
-   "Paper on the wall"). Text straight on the art (the home header, a page's
+9. **Text on the room art is short and always in the night style.** There
+   are no page panels: a page's `<main>` is a `wallColumn` plus its width,
+   and its content is paper taped to the wall (`WallTicket`, `WallCard` and
+   `TearLine` in `app/ticket.tsx`; MASTER.md "Paper on the wall"). Text
+   straight on the art (the home header, a page's
    title via `textOnArt`, labels via `sectionLabelOnArt`, the footer credits)
    is `on-night` with `text-shadow-md text-shadow-night`; anything longer
    goes on paper.
@@ -64,8 +63,9 @@ including the UI UX Pro Max skill's.
    `${CLAUDE_PLUGIN_ROOT}/.claude/skills/...`; in this repo it's the path above.
    Don't use its `--persist` / `--force` (MASTER.md is hand-maintained).
 3. Build it with tokens and the shared component classes in `app/ui.ts`
-   (`primaryButton`, `card`, `toggleChip`, `tag`...; add one there rather than
-   re-typing a component's classes in a page). Keep pages server components
+   (`primaryButton`, `paper`, `wallColumn`, `tag`...; add one there rather
+   than re-typing a component's classes in a page) and the ticket parts in
+   `app/ticket.tsx`. Keep pages server components
    where possible; client components only for state and interaction.
 4. Check it:
    - `npx eslint .`, `npm run typecheck`, `npm test`, `npm run build`

@@ -50,8 +50,8 @@ export default async function PickPage(props: PageProps<"/pick">) {
   const startOverUrl = req.skip.length > 0 ? pickUrl({ ...req, skip: [], seed: null }) : null;
   const changeUrl = pickUrl({ ...req, skip: [], seed: null }).replace("/pick", "/"); // same choices, on the home form
 
-  // No panel: the ticket is taped straight onto the room's wall, and the back
-  // link and the credit sit on the art (MASTER.md "Paper on the wall").
+  // The ticket is taped straight onto the room's wall, and the back link
+  // and the credit sit on the art (MASTER.md "Paper on the wall").
   return (
     <main id="content" className={`${wallColumn} max-w-176`}>
       <Link href={changeUrl} className={`${quietButtonOnArt} -ml-2`}>

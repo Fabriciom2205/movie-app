@@ -45,8 +45,8 @@ export default async function RatePage(props: PageProps<"/rate">) {
   const ratedCount = rated.size;
   const moreUrl = page + 2 <= MAX_PAGE ? `/rate?page=${page + 2}` : null;
 
-  // No panel: the how-to is a ticket taped to the wall, and each movie is a
-  // small ticket on the wall under it (MASTER.md "Rating grid").
+  // The how-to is a ticket taped to the wall, and each movie is a small
+  // ticket on the wall under it (MASTER.md "Rating grid").
   return (
     <main id="content" className={`${wallColumn} max-w-4xl`}>
       {/* Done, and across from it your count: a small pink side ticket like

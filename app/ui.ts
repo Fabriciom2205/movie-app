@@ -12,7 +12,7 @@ const button =
 const primaryLook =
   "bg-primary font-heading uppercase tracking-wide text-on-primary hover:bg-primary-hover disabled:hover:bg-primary";
 const secondaryLook =
-  "border-2 border-ink font-heading uppercase tracking-wide text-ink hover:bg-ink hover:text-page disabled:hover:bg-transparent disabled:hover:text-ink";
+  "border-2 border-ink font-heading uppercase tracking-wide text-ink hover:bg-ink hover:text-ticket disabled:hover:bg-transparent disabled:hover:text-ink";
 const inkLook =
   "bg-ink font-heading uppercase tracking-wide text-ticket hover:bg-primary hover:text-on-primary disabled:hover:bg-ink disabled:hover:text-ticket";
 
@@ -49,7 +49,8 @@ export const field =
   "h-12 w-full min-w-0 border-2 border-ink bg-card px-3.5 font-body placeholder:text-ink-muted";
 
 /** Buttons in a row with a `field`: the field's 48px height. The secondary
- *  one is a solid ink block ("Find"), so it reads as part of the field. */
+ *  one is a solid ink block (a list's "Add"), so it reads as part of the
+ *  field. */
 export const fieldPrimaryButton = `${button} h-12 shrink-0 px-5 text-2xl leading-none ${primaryLook}`;
 export const fieldSecondaryButton = `${button} h-12 shrink-0 px-5 text-2xl leading-none ${inkLook}`;
 
@@ -61,30 +62,11 @@ export const fieldTicketButton = `${button} h-12 shrink-0 px-5 text-2xl leading-
 const toggle =
   "inline-flex min-h-11 max-w-full items-center gap-2 border-2 border-ink px-3 font-body text-[13px] font-medium uppercase tracking-wide text-ink transition-colors duration-150 ease-out hover:bg-ink/10 motion-safe:active:translate-y-px";
 
-/** A <label> around a visually hidden checkbox; styled from the checkbox, so it
- *  works before JavaScript loads. Selected = filled with ink, like a booked
- *  seat. Put the check icon after the input with `peer-checked:block`. */
-export const toggleChip = `${toggle} cursor-pointer select-none has-checked:bg-ink has-checked:text-ticket has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-primary`;
-
-/** A <button aria-pressed>: the same look, driven by aria-pressed. */
+/** A <button aria-pressed> (a movie's list toggles): selected = filled with
+ *  ink, like a booked seat. */
 export const toggleButton = `${toggle} disabled:opacity-60 aria-pressed:bg-ink aria-pressed:text-ticket`;
 
-/** A <button aria-pressed> whose selected look you add yourself, for toggles
- *  that mean something other than "chosen" (rating: liked = sage, not for me
- *  = peach). Add `aria-pressed:` classes for fill, text and outline. */
-export const toggleButtonBase = `${toggle} disabled:opacity-60`;
-
-/** A ticket: lavender stock, square corners. Add `shadow-soft` for the one
- *  ticket a page is about. */
-export const card = "bg-ticket p-5 sm:p-6";
-
-/** The panel a page's content sits on, in front of the room art. Add the
- *  page's width: `${pagePanel} max-w-2xl`. Opaque, so text never sits on the
- *  art. Pages whose content is a single card (login, not found, errors) skip
- *  it: there the card is the panel. */
-export const pagePanel = "mx-auto w-full bg-page px-4 py-8 shadow-soft sm:px-8 sm:py-10";
-
-/** A page with no panel: its tickets sit straight on the room's wall
+/** A page's <main>: its tickets sit straight on the room's wall
  *  (MASTER.md "Paper on the wall"). Add the page's width, e.g.
  *  `${wallColumn} max-w-176`. 16px sides on phones; wider up, the layout's
  *  own 24px. */
@@ -117,8 +99,8 @@ export const posterGrid =
  *  same on an <h3> (headings get League Gothic by default). */
 export const sectionLabel = "font-body text-[11px] font-medium uppercase tracking-widest text-ink-muted";
 
-/** The same label straight on the room art (the home page has no panel):
- *  night-colored text with a dark shadow, so it reads over the wall. */
+/** The same label straight on the room art (the home search, /lists'
+ *  create form): night-colored text with a dark shadow, so it reads over the wall. */
 export const sectionLabelOnArt =
   "font-body text-xs font-medium uppercase tracking-widest text-on-night text-shadow-md text-shadow-night";
 

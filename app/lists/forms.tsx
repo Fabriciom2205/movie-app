@@ -15,7 +15,7 @@ import { createList, inviteToList, renameList, type FormState } from "./actions"
 
 const initialState: FormState = { error: null, message: null, value: "" };
 
-// Sits straight on the room art (/lists has no panel), so its label, focus
+// Sits straight on the room art, not on a ticket, so its label, focus
 // rings and error are made to read over the dark wall.
 export function CreateListForm() {
   const [state, formAction, pending] = useActionState(createList, initialState);

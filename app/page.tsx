@@ -41,8 +41,8 @@ export default async function Home(props: PageProps<"/">) {
   const asked = ([] as string[]).concat(params.watch ?? []).filter((id) => people.some((p) => p.id === id));
   const askedGenres = ([] as string[]).concat(params.genre ?? []).map(Number);
 
-  // The home page has no panel: everything sits straight on the room art,
-  // and the picker is a ticket taped to the wall (MASTER.md "Home page").
+  // Everything sits straight on the room art, and the picker is a ticket
+  // taped to the wall (MASTER.md "Home page").
   return (
     <>
       <header className="mb-4 flex items-center justify-between gap-2 px-4 text-on-night text-shadow-md text-shadow-night sm:mb-6 sm:px-2">

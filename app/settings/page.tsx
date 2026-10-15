@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { pagePanel, quietButton } from "@/app/ui";
+import { quietButtonOnArt, smallPrintOnArt, textOnArt, wallColumn } from "@/app/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getProviderList, getRegions, tmdbImageUrl, type WatchProvider } from "@/lib/tmdb";
 import { SettingsForm, type ProviderOption } from "./settings-form";
@@ -59,14 +59,16 @@ export default async function SettingsPage() {
       ? US_SHORTLIST
       : providers.slice(0, FALLBACK_SHORTLIST_SIZE).map((p) => p.provider_id);
 
+  // The title sits on the room art, and the form is two tickets on the wall
+  // plus a stub with Save (MASTER.md "Settings").
   return (
-    <main id="content" className={`${pagePanel} max-w-3xl`}>
-      <Link href="/" className={`${quietButton} -ml-2`}>
+    <main id="content" className={`${wallColumn} max-w-3xl`}>
+      <Link href="/" className={`${quietButtonOnArt} -ml-2`}>
         <ArrowLeft aria-hidden="true" className="size-4" />
         Home
       </Link>
 
-      <h1 className="mt-4 text-5xl">Settings</h1>
+      <h1 className={`mt-4 text-5xl ${textOnArt}`}>Settings</h1>
 
       <SettingsForm
         displayName={profile.data?.display_name ?? ""}
@@ -78,7 +80,7 @@ export default async function SettingsPage() {
       />
 
       {/* Required attribution: TMDB's provider data comes from JustWatch. */}
-      <p className="mt-8 text-xs text-ink-muted">Streaming service data provided by JustWatch.</p>
+      <p className={`mt-6 ${smallPrintOnArt}`}>Streaming service data provided by JustWatch.</p>
     </main>
   );
 }

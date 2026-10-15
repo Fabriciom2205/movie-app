@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Mono, League_Gothic } from "next/font/google";
 import Image from "next/image";
-import { secondaryButton } from "@/app/ui";
+import { secondaryButtonOnArt } from "@/app/ui";
 import moonlitRoom from "./moonlit-room.webp";
 import "./globals.css";
 
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   description: "Pick one movie to watch tonight.",
 };
 
-// The content panels are light, so form controls stay light. Phones tint their
+// The tickets are light paper, so form controls stay light. Phones tint their
 // browser bar to match the night room behind them (the same as --color-night).
 export const viewport: Viewport = {
   colorScheme: "light",
@@ -42,11 +42,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         {/* Skip link: the first thing Tab reaches. It waits above the screen
-            and slides into view when focused. Every page marks where its own
-            content starts with id="content" (the home page: after its nav). */}
+            and slides into view when focused, a lavender block on the art.
+            Every page marks where its own content starts with id="content"
+            (the home page: after its nav). */}
         <a
           href="#content"
-          className={`${secondaryButton} fixed top-3 left-3 z-50 bg-page shadow-soft -translate-y-20 focus:translate-y-0`}
+          className={`${secondaryButtonOnArt} fixed top-3 left-3 z-50 -translate-y-20 focus:translate-y-0`}
         >
           Skip to content
         </a>
@@ -68,7 +69,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <div className="absolute inset-x-0 bottom-0 h-24 bg-linear-to-b from-transparent to-night sm:hidden" />
         </div>
         {/* On phones the content starts 96px down, so the moon peeks out above
-            it, and runs edge to edge so text keeps its width. */}
+            it; each page brings its own 16px sides (wallColumn). */}
         <div className="flex-1 pt-24 sm:px-6 sm:pt-10">{children}</div>
         {/* Fine print straight on the art: small, light, with a dark shadow so
             it reads over the floor. */}
