@@ -2,8 +2,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, Film, LogOut, Trash2 } from "lucide-react";
-import { Perforation } from "@/app/ticket";
-import { card, dangerButton, pagePanel, quietButton, secondaryButton, sectionLabel } from "@/app/ui";
+import { TearLine, WallCard, WallTicket } from "@/app/ticket";
+import {
+  dangerButton,
+  paper,
+  quietButton,
+  quietButtonOnArt,
+  secondaryButton,
+  sectionLabel,
+  textOnArt,
+  wallColumn,
+} from "@/app/ui";
 import { getDisplayNames } from "@/lib/profiles";
 import { createClient } from "@/lib/supabase/server";
 import { formatRuntime, releaseYear, tmdbImageUrl } from "@/lib/tmdb";
@@ -60,26 +69,28 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
   ]);
   const others = memberIds.filter((m) => m !== userId).map((m) => names.get(m) ?? "someone");
 
+  // No panel: the name and the headings sit on the room art, and everything
+  // else is a ticket on the wall (MASTER.md "Lists").
   return (
-    <main id="content" className={`${pagePanel} max-w-2xl`}>
-      <Link href="/lists" className={`${quietButton} -ml-2`}>
+    <main id="content" className={`${wallColumn} max-w-2xl`}>
+      <Link href="/lists" className={`${quietButtonOnArt} -ml-2`}>
         <ArrowLeft aria-hidden="true" className="size-4" />
         Your lists
       </Link>
 
-      <h1 className="mt-4 text-5xl break-words">{name}</h1>
-      <p className="mt-2 text-sm text-ink-muted">
+      <h1 className={`mt-4 text-5xl break-words ${textOnArt}`}>{name}</h1>
+      <p className={`mt-2 text-sm ${textOnArt}`}>
         {others.length ? `Shared with ${joinWords(others)}` : "Just you for now"}
       </p>
 
       {/* ---------------- Movies ---------------- */}
       <section aria-labelledby="movies" className="mt-8">
-        <h2 id="movies" className="text-3xl">
-          Movies <span className="font-body text-base tracking-normal text-ink-muted">({items.data.length})</span>
+        <h2 id="movies" className={`text-3xl ${textOnArt}`}>
+          Movies <span className="font-body text-base tracking-normal opacity-75">({items.data.length})</span>
         </h2>
 
         {items.data.length === 0 ? (
-          <div className={`mt-3 ${card}`}>
+          <WallCard tilt="rotate-[0.6deg]" className="mt-4">
             <div className="mb-3 grid size-11 place-items-center border-2 border-ink">
               <Film aria-hidden="true" className="size-5" />
             </div>
@@ -88,12 +99,12 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
             <Link href="/" className={`mt-4 ${secondaryButton}`}>
               Find a movie
             </Link>
-          </div>
+          </WallCard>
         ) : (
-          // Each movie is a small ticket, as in the home page's search
-          // results. The outline shows when the movie link is hovered (not
-          // Remove).
-          <ul className="mt-3 flex flex-col gap-3">
+          // Each movie is a small ticket on the wall, as in the home page's
+          // search results. The stock lightens when the movie link is hovered
+          // (not Remove).
+          <ul className="mt-3 flex flex-col gap-4">
             {items.data.map((item) => {
               const movie = item.movies;
               if (!movie) return null; // can't happen: movie_id references movies
@@ -103,7 +114,7 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
               return (
                 <li
                   key={item.movie_id}
-                  className="flex items-center gap-1 border-2 border-transparent bg-ticket p-2 transition-colors duration-150 ease-out has-[a:hover]:border-ink"
+                  className="on-the-wall flex items-center gap-1 bg-ticket p-2 transition-colors duration-150 ease-out has-[a:hover]:bg-soft"
                 >
                   <Link href={`/movie/${item.movie_id}`} className="flex min-w-0 flex-1 items-center gap-3 p-1">
                     {movie.poster_path ? (
@@ -140,61 +151,67 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
       </section>
 
       {/* ---------------- Members ---------------- */}
-      {/* A ticket: everyone's seat, then (for the creator) the stub where you
-          add someone. */}
-      <section aria-labelledby="members" className="mt-8 bg-ticket">
-        <div className="px-5 pt-5 pb-5 sm:px-6 sm:pt-6">
-          <h2 id="members" className="text-3xl">
-            Who&rsquo;s on this list
-          </h2>
-          <ul className="mt-4 flex flex-col gap-3">
-            {members.data.map((m, i) => {
-              const isMe = m.user_id === userId;
-              const isListCreator = m.user_id === creatorId;
-              const memberName = names.get(m.user_id) ?? "Someone";
-              return (
-                <li key={m.user_id} className="flex items-center gap-3">
-                  {/* Their seat letter in a box, just decoration. */}
-                  <span
-                    aria-hidden="true"
-                    className="grid size-11 shrink-0 place-items-center border-2 border-ink font-heading text-2xl leading-none"
-                  >
-                    {String.fromCharCode(65 + i)}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate font-medium">
-                      {memberName}
-                      {isMe && <span className="font-normal text-ink-muted"> (you)</span>}
-                    </span>
-                    {isListCreator && <span className={`block ${sectionLabel}`}>Created the list</span>}
-                  </span>
-                  {isCreator && !isMe && (
-                    <ConfirmButton
-                      action={removeMember.bind(null, id, m.user_id)}
-                      question={`Remove ${memberName} from "${name}"?`}
-                      className={quietButton}
-                    >
-                      Remove
-                    </ConfirmButton>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-
-        {isCreator && (
-          <>
-            <Perforation />
-            <div className="px-5 pt-5 pb-5 sm:px-6 sm:pb-6">
-              <InviteForm listId={id} />
+      {/* A ticket taped to the wall: everyone's seat, then (for the creator)
+          the stub where you add someone, torn off along the dotted line. */}
+      <WallTicket tape className="mt-12">
+        <section aria-labelledby="members">
+          <div className={`${isCreator ? "ticket-cut-top pb-6" : "ticket-cut pb-4 sm:pb-5"} ${paper} pt-4 sm:pt-5`}>
+            <div className="px-5 pt-1 sm:px-6">
+              <h2 id="members" className="text-3xl">
+                Who&rsquo;s on this list
+              </h2>
+              <ul className="mt-4 flex flex-col gap-3">
+                {members.data.map((m, i) => {
+                  const isMe = m.user_id === userId;
+                  const isListCreator = m.user_id === creatorId;
+                  const memberName = names.get(m.user_id) ?? "Someone";
+                  return (
+                    <li key={m.user_id} className="flex items-center gap-3">
+                      {/* Their seat letter in a box, just decoration. */}
+                      <span
+                        aria-hidden="true"
+                        className="grid size-11 shrink-0 place-items-center border-2 border-ink font-heading text-2xl leading-none"
+                      >
+                        {String.fromCharCode(65 + i)}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-medium">
+                          {memberName}
+                          {isMe && <span className="font-normal text-ink-muted"> (you)</span>}
+                        </span>
+                        {isListCreator && <span className={`block ${sectionLabel}`}>Created the list</span>}
+                      </span>
+                      {isCreator && !isMe && (
+                        <ConfirmButton
+                          action={removeMember.bind(null, id, m.user_id)}
+                          question={`Remove ${memberName} from "${name}"?`}
+                          className={quietButton}
+                        >
+                          Remove
+                        </ConfirmButton>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
-          </>
-        )}
-      </section>
+          </div>
+
+          {/* The stub overlaps the top piece by 1px so no faint line shows. */}
+          {isCreator && (
+            <div className={`ticket-cut-stub relative -mt-px ${paper} py-4 sm:py-5`}>
+              <TearLine />
+              <div className="px-5 pt-2 pb-1 sm:px-6">
+                <InviteForm listId={id} />
+              </div>
+            </div>
+          )}
+        </section>
+      </WallTicket>
 
       {/* ---------------- Settings ---------------- */}
-      <section aria-labelledby="list-settings" className={`mt-6 ${card}`}>
+      {/* A third ticket, pinned up a little crooked the other way. */}
+      <WallCard as="section" aria-labelledby="list-settings" tilt="rotate-[0.6deg]" className="mt-8">
         <h2 id="list-settings" className="text-3xl">
           List settings
         </h2>
@@ -228,7 +245,7 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
             </>
           )}
         </div>
-      </section>
+      </WallCard>
     </main>
   );
 }

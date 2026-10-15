@@ -5,7 +5,7 @@ import { Film } from "lucide-react";
 import { signOut } from "@/app/login/actions";
 import { WallTicket } from "@/app/ticket";
 import { DateStamp } from "@/app/ticket-date";
-import { field, fieldTicketButton, sectionLabel, sectionLabelOnArt, wallColumn } from "@/app/ui";
+import { field, fieldTicketButton, focusRingOnArt, sectionLabel, sectionLabelOnArt, wallColumn } from "@/app/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getMovieGenres, releaseYear, searchMovies, tmdbImageUrl } from "@/lib/tmdb";
 import { RecommendForm, type FormPerson } from "./recommend-form";
@@ -126,9 +126,9 @@ export default async function Home(props: PageProps<"/">) {
               placeholder="Title"
               autoComplete="off"
               enterKeyHint="search"
-              className={field}
+              className={`${field} ${focusRingOnArt}`}
             />
-            <button type="submit" className={fieldTicketButton}>
+            <button type="submit" className={`${fieldTicketButton} ${focusRingOnArt}`}>
               Find
             </button>
           </div>
@@ -149,7 +149,7 @@ export default async function Home(props: PageProps<"/">) {
               <li key={movie.id} className="on-the-wall">
                 <Link
                   href={`/movie/${movie.id}`}
-                  className="flex gap-4 bg-ticket p-3.5 transition-colors duration-150 ease-out hover:bg-soft"
+                  className={`flex gap-4 bg-ticket p-3.5 transition-colors duration-150 ease-out hover:bg-soft ${focusRingOnArt}`}
                 >
                   {movie.poster_path ? (
                     <Image
@@ -185,8 +185,7 @@ export default async function Home(props: PageProps<"/">) {
 // Header links: small typewriter capitals, underlined on hover. On phones
 // they're 11px with 4px sides (and the title one size smaller), so all four
 // fit beside the title at 375px.
-const navItem =
-  "inline-flex h-11 shrink-0 items-center px-1 text-[11px] font-medium tracking-wide uppercase underline-offset-4 hover:underline sm:px-2 sm:text-xs";
+const navItem = `inline-flex h-11 shrink-0 items-center px-1 text-[11px] font-medium tracking-wide uppercase underline-offset-4 hover:underline sm:px-2 sm:text-xs ${focusRingOnArt}`;
 
 // The site's ticket icon (the same drawing as app/icon.svg) beside the name.
 // From `sm` up only: on a 375px phone the name and the three links fill the row.

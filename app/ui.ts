@@ -26,9 +26,14 @@ export const secondaryButton = `${button} h-11 px-4 text-xl leading-none ${secon
  *  underlined on hover. */
 export const quietButton = `${button} h-11 px-2 font-body text-xs font-medium uppercase tracking-wider text-ink underline-offset-4 hover:underline`;
 
+/** Add to anything focusable whose focus ring lands on the room art (a
+ *  ticket that is itself a link, a field or button on the art): the purple
+ *  ring is only 1.7:1 against the wall, a night-colored one 9.9:1. */
+export const focusRingOnArt = "focus-visible:outline-on-night";
+
 /** The same, straight on the room art (a page's back link above its
  *  ticket): night-colored text with a dark shadow. */
-export const quietButtonOnArt = `${button} h-11 px-2 font-body text-xs font-medium uppercase tracking-wider text-on-night text-shadow-md text-shadow-night underline-offset-4 hover:underline`;
+export const quietButtonOnArt = `${button} h-11 px-2 font-body text-xs font-medium uppercase tracking-wider text-on-night text-shadow-md text-shadow-night underline-offset-4 hover:underline ${focusRingOnArt}`;
 
 /** Deleting something for good: a red outline and red text, never the
  *  primary style, and always behind a confirmation (ConfirmButton). */
@@ -87,6 +92,10 @@ export const paper = "bg-ticket paper-grain";
 
 /** Small print straight on the art (the JustWatch credit under a ticket). */
 export const smallPrintOnArt = "text-xs text-on-night/75 text-shadow-md text-shadow-night";
+
+/** Short text straight on the art: a wall page's title, the line under it,
+ *  a one-line message. Add the size. Anything longer goes on paper. */
+export const textOnArt = "text-on-night text-shadow-md text-shadow-night";
 
 /** A movie with its poster: poster beside the title (120px on phones, so the
  *  title and what comes right after fit on the first screen; 200px wider up),

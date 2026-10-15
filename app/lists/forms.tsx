@@ -1,18 +1,28 @@
 "use client";
 
 import { useActionState, useId, useTransition, type ReactNode } from "react";
-import { CircleCheck, Plus } from "lucide-react";
-import { field, fieldPrimaryButton, fieldSecondaryButton, sectionLabel, tag } from "@/app/ui";
+import { CircleAlert, CircleCheck, Plus } from "lucide-react";
+import {
+  field,
+  fieldPrimaryButton,
+  fieldSecondaryButton,
+  focusRingOnArt,
+  sectionLabel,
+  sectionLabelOnArt,
+  tag,
+} from "@/app/ui";
 import { createList, inviteToList, renameList, type FormState } from "./actions";
 
 const initialState: FormState = { error: null, message: null, value: "" };
 
+// Sits straight on the room art (/lists has no panel), so its label, focus
+// rings and error are made to read over the dark wall.
 export function CreateListForm() {
   const [state, formAction, pending] = useActionState(createList, initialState);
   const inputId = useId();
   return (
     <form action={formAction}>
-      <label htmlFor={inputId} className={sectionLabel}>
+      <label htmlFor={inputId} className={sectionLabelOnArt}>
         Start a new list
       </label>
       <div className="mt-2 flex gap-2">
@@ -27,15 +37,15 @@ export function CreateListForm() {
           maxLength={100}
           autoComplete="off"
           required
-          className={field}
+          className={`${field} ${focusRingOnArt}`}
         />
         {/* The page's one primary action. */}
-        <button type="submit" disabled={pending} className={fieldPrimaryButton}>
+        <button type="submit" disabled={pending} className={`${fieldPrimaryButton} ${focusRingOnArt}`}>
           <Plus aria-hidden="true" className="size-5" />
           {pending ? "Creating…" : "Create"}
         </button>
       </div>
-      <Status state={state} />
+      <Status state={state} onArt />
     </form>
   );
 }
@@ -130,12 +140,21 @@ export function ConfirmButton({
 }
 
 // Under each form: the error in red, or what worked as a sage tag. Always in
-// the page so screen readers hear the message when it appears.
-function Status({ state }: { state: FormState }) {
+// the page so screen readers hear the message when it appears. `onArt`: the
+// form sits on the room art, where red text wouldn't show on the dark wall,
+// so the error is a light red tag instead.
+function Status({ state, onArt = false }: { state: FormState; onArt?: boolean }) {
   return (
     <div aria-live="polite">
       {state.error ? (
-        <p className="mt-2 text-sm text-danger">{state.error}</p>
+        onArt ? (
+          <p className={`mt-2 ${tag} bg-danger-soft text-on-danger-soft`}>
+            <CircleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+            {state.error}
+          </p>
+        ) : (
+          <p className="mt-2 text-sm text-danger">{state.error}</p>
+        )
       ) : (
         state.message && (
           <p className={`mt-2 ${tag} bg-sage text-on-sage`}>
