@@ -6,7 +6,8 @@ design decision changes, change it here first (with the reason), then in code.
 **Direction: lavender cinema tickets, in front of a moonlit room.** Behind
 every page is an original illustration of a purple bedroom at night (moon in
 the window, sleeping cat, fairy lights, plushies; see "Background art"
-below). Each page's content sits on a light lavender panel in front of it,
+below). Each page's content sits on a light lavender panel in front of it
+(except the home page, whose ticket is taped straight onto the room's wall),
 and the things on it are printed tickets: lavender ticket stock, square
 corners, tall League Gothic capitals, typewriter-like DM Mono for the rest,
 dashed perforations with round notches, a purple band and a rubber stamp.
@@ -26,6 +27,17 @@ History:
   booth**, in the lavender colors, with the logo as just the name, and the
   moonlit room kept behind it for now (they may drop it later). The mockups:
   https://claude.ai/artifact/2aEB3Y5jX4PNovxv9rWWpW ("3b").
+- 2026-10-14: after a design review (the cream panel hid the room's best
+  part, the ticket and the room looked like two different styles, and the
+  ticket read like a template), the user picked **ticket on the wall** for
+  the home page: no panel, the ticket taped to the room's wall in the art's
+  own outline, a little crooked. Its details come from photos of real ticket
+  stubs the user found (old railway and cinema tickets, the lavender Glasgow
+  Underground ones): sides cut like a ticket torn off a strip, a printed
+  frame, boxed fields on the stub, fine print, the printer's name on the
+  bottom rule, a rubber-stamped date. Tried and dropped: a serial number,
+  and a "Seat: next to the cat" joke field. Mockups (not in the repo): B
+  "taped to the wall", C "with real-ticket details" (built).
 
 Every text color is checked for contrast (WCAG 2.1: 4.5:1 for text, 3:1 for
 text 24px and up, focus rings and other UI parts).
@@ -43,7 +55,7 @@ name. **Pages never use raw hex values or Tailwind's built-in palette**
 | Token (`--color-*`) | Value | Use | Contrast |
 |---|---|---|---|
 | `night` | `#241F42` | Behind the room art: the body, the browser bar on phones, below the art band on phones | |
-| `on-night` | `#EDE6FA` | The only text outside a panel: the footer credits, on a `night/85` box | 12.8:1 on night |
+| `on-night` | `#EDE6FA` | Text straight on the room art, always with `text-shadow-md text-shadow-night`: the home header, `sectionLabelOnArt`, the footer credits | 12.8:1 on night; 9.9:1 on the wall's lightest color (`#372C6E`) |
 | `page` | `#F5EDF5` | The panel each page's content sits on (lavender mist); also the round notches cut into tickets | |
 | `ticket` | `#D2B9E8` | Ticket stock: cards, the main panel of each page's content | 1.55:1 against page (decorative edge, plus `shadow-soft`) |
 | `ticket-pink` | `#F3C6D8` | A second ticket color, for small side tickets (the taste nudge) | |
@@ -55,6 +67,8 @@ name. **Pages never use raw hex values or Tailwind's built-in palette**
 | `primary-hover` | `#5B3D8A` | Main action on hover (darker, never lighter) | white text 8.5:1 |
 | `on-primary` | `#FFFFFF` | Text/icons on `primary` | |
 | `stamp` | `#4A2F72` | The rubber stamp on a ticket ("Because you liked..."): text and double border | 6.1:1 on ticket, 9.4:1 on page |
+| `stamp-red` | `#8E2450` | A second ink: the round date stamp on the home ticket (from the room's popcorn stripes) | 4.7:1 on ticket |
+| `art-outline` | `#1F1933` | The dark outline the room art draws everything with: traced around paper on the wall (`on-the-wall`), the perforation dots, the header's ticket mark | decorative |
 | `soft` | `#EBDDF3` | Poster placeholders, info banners | |
 | `on-soft` | `#573A80` | Text on `soft`; links | 7.0:1 on soft, 5.1:1 on ticket, 8.6:1 on card |
 | `sage` / `on-sage` | `#E2EEDF` / `#35573A` | Chip: a friend liked it; success ("Saved") | 6.8:1 |
@@ -72,6 +86,10 @@ from `#6A5C72` (4.4:1 on the ticket stock: fails) and `danger` from `#B91C1C`
 (3.7:1 on the ticket stock: fails). `ticket`, `ticket-pink` and `stamp` are
 new. (Tailwind's usual `red-600` `#DC2626` is *not* used: it fails for text
 on the light page colors.)
+
+Added 2026-10-14 for the ticket on the wall: `stamp-red` and `art-outline`.
+The mockup's stamp ink was a brighter pink-red (`#B23A66`), but that is only
+3.2:1 on the ticket, so the stamped date wasn't readable enough.
 
 Rules:
 - Text on a colored fill always uses that fill's `on-*` partner, never `ink`.
@@ -122,9 +140,10 @@ or controls are DM Mono `text-[11px]` capitals with wide tracking
 
 These are written once as class strings in `app/ui.ts` (`primaryButton`,
 `secondaryButton`, `quietButton`, `dangerButton`, `field`,
-`fieldPrimaryButton`, `fieldSecondaryButton`, `toggleChip`, `toggleButton`,
-`toggleButtonBase`, `card`, `posterGrid`, `sectionLabel`, `tag`, `providerTag`,
-`banner`). Pages import them instead of re-typing classes; changing a
+`fieldPrimaryButton`, `fieldSecondaryButton`, `fieldTicketButton`,
+`toggleChip`, `toggleButton`, `toggleButtonBase`, `card`, `posterGrid`,
+`sectionLabel`, `sectionLabelOnArt`, `tag`, `providerTag`, `banner`). Pages
+import them instead of re-typing classes; changing a
 component = changing it there. `app/movie-card-skeleton.tsx` is the shared
 loading placeholder for a `posterGrid` card.
 
@@ -135,11 +154,18 @@ page rebuilt its layout into tickets (home, /pick, the movie page, lists,
 section below describes the ticket look. `app/` has no rounded-corner
 classes left except `rounded-full` on things that are round in real life
 (service logos, the notches), and the `--radius-*` tokens are gone.
+On 2026-10-14 the home page moved off its panel ("ticket on the wall", see
+"Home page"); the other pages still sit on a `pagePanel`.
 
 **Page:** the room art fills the screen behind everything (`app/layout.tsx`);
 each page's `<main>` is a `pagePanel` (opaque `bg-page`,
 `shadow-soft`, `px-4 py-8`, `sm:px-8 sm:py-10`) plus its width (`max-w-2xl`,
-`max-w-3xl`, `max-w-4xl`), centered. Text never sits directly on the art.
+`max-w-3xl`, `max-w-4xl`), centered. The home page has no panel: its header,
+ticket and search sit straight on the art. **Text on the art** is kept short
+and always `on-night` with `text-shadow-md text-shadow-night`, over the dark
+wall and floor: the home header, labels (`sectionLabelOnArt`), the home
+search's "no results" line, the footer credits. Anything longer goes on
+paper (a panel or a ticket).
 Pages whose content is one card (login, not found, the error pages) skip the
 panel: the card floats on the art and is the panel. Login is a full ticket
 there: a band with "Admit one" and "Members only" (accounts are invite-only),
@@ -175,35 +201,86 @@ inside the ticket with no side padding around it, so the notches land on the
 edges; the ticket must sit on `bg-page`) and `<SideNotches />` (inside a
 `relative` small ticket). `app/ticket-date.tsx` has `<TicketDate />`, today's
 date ("Sat, Oct 10") in the viewer's own time zone: the server runs in UTC,
-so it renders nothing and the browser fills it in.
+so it renders nothing and the browser fills it in. `<DateStamp />` (same
+file) is today's date as a round rubber stamp in `stamp-red`: the venue
+around the ring, the weekday and "OCT 14" in the middle, wobbly worn ink (an
+SVG filter); its accessible name is the date.
+
+**Paper on the wall** (the home page, which has no panel): small `@utility`
+classes in `app/globals.css`, usable like Tailwind ones.
+- `on-the-wall`: traces the room art's `art-outline` (2px) around whatever
+  paper is inside, cut-outs included, plus a soft shadow onto the wall. It's
+  four 2px `drop-shadow`s, because a border can only draw a rectangle.
+- `ticket-cut-top` / `ticket-cut-stub`: the die-cut shape, as a CSS mask (a
+  stencil): a solid layer minus circles for the two cut corners, half of
+  each 26px notch at the tear line, and a row of 10px bites down both sides
+  (the edge of a ticket torn off a strip). The bites are one 10x22px tile
+  repeated with `space` over the content box, so the piece's top and bottom
+  padding is where they stop: give the piece `py-*` only and pad an inner
+  element sideways. A ticket with a stub is two pieces (one per half); the
+  stub overlaps the top piece by 1px (`-mt-px`), or the tilted edges leave a
+  faint line between them. Pure CSS on purpose: a script measuring the
+  ticket would show a plain rectangle until the page's JavaScript loads.
+- `side-notches-cut`: one 18px notch in the middle of each side, cut
+  through (the pink nudge). Use it instead of `SideNotches`, whose
+  page-colored circles only work on a panel.
+- `printed-frame`: a heavy `ink` rule with a thin one just inside it.
+- `perforation-dots`: the tear line as a row of printed holes (6px tall).
+- `washi-tape`: a see-through pink strip with torn ends, like the tape on
+  the room's popcorn poster.
+- `paper-grain`: a faint card-stock grain over the paper's `bg-*` color.
 
 **Focus:** `globals.css` gives every focusable element a 2px `primary` outline
 (offset 2px) on `:focus-visible`, so pages don't repeat it. The exception is
 a control whose real input is visually hidden (toggle chips): its label uses
 `has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-primary`.
 
-**Header (home):** the logo is just the name, "Movie Night" in League
-Gothic (`text-4xl`; no icon: the user dropped the moon mark on 2026-10-10),
-then Lists / Settings / Sign out as plain text links in DM Mono capitals,
-underlined on hover. They're 11px on phones (`sm:text-xs`) so all three fit
-beside the title at 375px (measured: 20px to spare); no icons.
+**Header (home):** straight on the room, in `on-night` with
+`text-shadow-md text-shadow-night`, outside `<main>`, across the page.
+"Movie Night" in League Gothic (`text-4xl`) with the site's ticket icon
+beside it from `sm` up (`TicketMark` in `app/page.tsx`, the same drawing as
+`app/icon.svg`; the moon mark was dropped on 2026-10-10, this came with the
+wall design), then Lists / Settings / Sign out as plain text links in DM
+Mono capitals, underlined on hover. From `md` the signed-in name comes first,
+in the same capitals at 75% with a thin divider after it. The links are 11px
+on phones (`sm:text-xs`) so all three fit beside the title at 375px; no
+icons.
 
-**Home page:** one ticket (`id="content"`, `shadow-soft`): "Tonight's
-showing" + `TicketDate`, the question as an `h2` (`text-4xl`, `sm:text-6xl`),
-who's watching as **seats** (only when you share a list with someone: a grid
-of boxes, "Seat A" in small capitals over the name in League Gothic; ticked =
-filled with `ink`, `ticket`-colored text and a check icon; "Seat A" is
-`aria-hidden`, so the checkbox's name is just the person), the genres as
-**tick boxes** (a 16px `ink` square that fills `primary` with a white X; 12px
-capitals on phones so the 18 genres fit in 6 rows), then the `Perforation`
-and the stub: "Recommend a movie" full width, with "Admit N" (how many are
-ticked) and "On your services" as fine print under it. Below the ticket: the
-pink side ticket nudging you to rate movies (under 10 ratings), else a quiet
-"Rate more movies you've seen" link; then the search ("Or look up a movie" as
-a visible label, a `field` and an ink "Find" block) and its results.
-Height budget at 375x812: the main button must stay on the first screen. It
-ends at 685px with one person and 793px with two (seats shown); the old round
-design had it at about 687px. Re-measure if anything is added above it.
+**Home page ("ticket on the wall", 2026-10-14):** no panel. Under the
+header, a centered column (`max-w-152`, 608px; 16px sides on phones):
+- **The picker ticket** (`id="content"`), taped to the wall: a wrapper
+  tilted `-rotate-1` with a `washi-tape` strip over the top edge, then
+  `on-the-wall` around two pieces of `bg-ticket paper-grain` paper.
+  - The top piece (`ticket-cut-top`) has a `printed-frame` around: "The
+    Moonlit Room · Home cinema" (`sectionLabel`; "· Home cinema" from `sm`
+    up), the `DateStamp` over the frame's top-right corner, the question as
+    an `h2` (`text-4xl`, `sm:text-6xl`), who's watching as **seats** (only
+    when you share a list with someone: a grid of boxes, "Seat A" in small
+    capitals over the name in League Gothic; ticked = filled with `ink`,
+    `ticket`-colored text and a check icon; "Seat A" is `aria-hidden`, so the
+    checkbox's name is just the person), and the genres as **tick boxes** (a
+    16px `ink` square that fills `primary` with a white X; 12px capitals).
+  - The stub (`ticket-cut-stub`): `perforation-dots`, "Recommend a movie"
+    full width, then a `printed-frame` box like a fare box on an old ticket:
+    "Admit" over a big League Gothic number (how many are ticked), "Screen"
+    over "Your services", and from `sm` up the fine print "This ticket is
+    good for one movie, tonight only. Not transferable." "Moonlit Room
+    Ticket Co." is set into the box's bottom rule, like a printer's name.
+  - `RecommendForm` (`app/recommend-form.tsx`) renders both pieces (the
+    form needs the choices and the button inside it); the page passes the
+    venue line, the stamp and the question in as `children`.
+- **The pink nudge** (under 10 ratings): a small `bg-ticket-pink` ticket,
+  `side-notches-cut`, `on-the-wall`, tilted the other way (`rotate-[0.8deg]`).
+  There's no "rate more" link once you have 10 ratings; `/rate` is then not
+  linked from anywhere (a nav link could come later).
+- **The search:** "Or look up a movie" in `sectionLabelOnArt`, a `field` and
+  a lavender `fieldTicketButton` ("Find"), then the results.
+Phones: the frame sits 10px in from the paper's sides and the text 22px
+(`sm`: 20px and 40px), and the genres are 10px apart, so the 18 genres fit in
+6 rows. Height budget at 375x812: the main button must stay on the first
+screen. It ends at 673px with one person and 780px with two (seats shown);
+the panel version had 685px and 793px. Re-measure if anything is added above
+it.
 
 **Buttons** (all square, at least 44px tall, visible focus ring in `primary`):
 - *Primary* (one per screen: "Recommend a movie", "Pick another", "Save", "Create"):
@@ -212,8 +289,11 @@ design had it at about 687px. Re-measure if anything is added above it.
 - *Secondary*: no fill, 2px `ink` outline, League Gothic capitals `text-xl`;
   on hover it fills with `ink` and the text turns `page`. Give it a fill
   (`bg-page`) if it ever floats over the art.
-- *Ink block* (`fieldSecondaryButton`, "Find" beside a search field): solid
-  `ink` with `ticket`-colored League Gothic, hover `primary`.
+- *Ink block* (`fieldSecondaryButton`, "Add" beside a field on a panel):
+  solid `ink` with `ticket`-colored League Gothic, hover `primary`. A field
+  that sits straight on the art (the home search) uses the *lavender block*
+  instead (`fieldTicketButton`: `bg-ticket`, `ink` text, hover `card`), since
+  `ink` would vanish into the dark wall.
 - *Quiet* (Remove, Sign out, Back): no fill, DM Mono capitals `text-xs`,
   `text-ink`, underlined on hover.
 - *Destructive* (Delete list): `text-danger` with a 2px `danger` outline; never
@@ -374,11 +454,12 @@ inside an always-present `aria-live` region.
 **Posters:** square; the big ones on tickets get a 2px `ink` outline.
 Placeholders are `bg-soft` with a `Film` icon in `on-soft`. Always `next/image`.
 
-**Search results (home):** each result is a link drawn as a small ticket:
-`bg-ticket`, the poster (62x93, square), a dashed `ink`/45% tear line, then
-the title in League Gothic `text-2xl` with "(year)" in DM Mono and two lines
-of overview; hover = a 2px `ink` outline (it's there, transparent, the rest
-of the time, so nothing shifts).
+**Search results (home):** each result is a link drawn as a small ticket on
+the wall (`on-the-wall` on the `<li>`): `bg-ticket`, the poster (62x93,
+square), a dashed `ink`/45% tear line, then the title in League Gothic
+`text-2xl` with "(year)" in DM Mono and two lines of overview; hover = the
+stock lightens to `soft` (an `ink` outline wouldn't show against the dark
+wall). "No movies found" is `on-night` text with the night shadow.
 
 **Movie rows (lists):** small tickets like the search results (see "Lists").
 
@@ -389,9 +470,10 @@ An info banner (e.g. "you haven't picked services, so...") is `bg-soft
 text-on-soft` with the `Info` icon. The "Saved: you liked X." confirmation is
 a sage `tag` with `CircleCheck`, inside an always-present `aria-live` region.
 The taste nudge ("Rate a few movies you've seen") is a small pink side
-ticket (`bg-ticket-pink`, `SideNotches`, 13px text, the link underlined in
-`ink`), no icon. On the home page it sits under the picker ticket, so the
-main button stays on a phone's first screen.
+ticket (`bg-ticket-pink`, 13px text, the link underlined in `ink`), no icon:
+on a panel (/rate's "Rated so far") with `SideNotches`; on the home page on
+the wall (`side-notches-cut` + `on-the-wall`, see "Home page"), under the
+picker ticket, so the main button stays on a phone's first screen.
 
 **Icons:** lucide-react only, `aria-hidden` when decorative, 16-20px inline.
 **No emojis anywhere in the UI.**
@@ -474,8 +556,10 @@ serves smaller sizes per device).
 - **On the page:** a fixed, `aria-hidden` `next/image` (`fill`,
   `object-cover`, `alt=""`) behind everything. Phones: a 224px strip across
   the top (the whole room, small: fairy lights, window and moon show above
-  the panel), fading into `night`; from `sm`: the whole screen, centered from
-  `lg`.
+  the content), fading into `night`; from `sm`: the whole screen, centered
+  from `lg`. On the home page there's no panel, so more of the room shows
+  around the ticket, and the header, labels and footer sit on it (see "Text
+  on the art" under "Page").
 - **Changing it:** edit the SVG, then export it again to
   `app/moonlit-room.webp` at 2560px with any renderer that supports SVG
   filters (it was made with resvg). Keep the important things out of the

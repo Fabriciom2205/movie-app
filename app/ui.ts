@@ -39,6 +39,11 @@ export const field =
 export const fieldPrimaryButton = `${button} h-12 shrink-0 px-5 text-2xl leading-none ${primaryLook}`;
 export const fieldSecondaryButton = `${button} h-12 shrink-0 px-5 text-2xl leading-none ${inkLook}`;
 
+/** The same, for a field that sits straight on the room art (the home
+ *  page's search): a lavender block, since an ink one would vanish into the
+ *  dark wall. */
+export const fieldTicketButton = `${button} h-12 shrink-0 px-5 text-2xl leading-none bg-ticket font-heading uppercase tracking-wide text-ink hover:bg-card`;
+
 const toggle =
   "inline-flex min-h-11 max-w-full items-center gap-2 border-2 border-ink px-3 font-body text-[13px] font-medium uppercase tracking-wide text-ink transition-colors duration-150 ease-out hover:bg-ink/10 motion-safe:active:translate-y-px";
 
@@ -79,6 +84,11 @@ export const posterGrid =
  *  capitals, like the field names on a ticket. font-body so it looks the
  *  same on an <h3> (headings get League Gothic by default). */
 export const sectionLabel = "font-body text-[11px] font-medium uppercase tracking-widest text-ink-muted";
+
+/** The same label straight on the room art (the home page has no panel):
+ *  night-colored text with a dark shadow, so it reads over the wall. */
+export const sectionLabelOnArt =
+  "font-body text-xs font-medium uppercase tracking-widest text-on-night text-shadow-md text-shadow-night";
 
 /** A provider (Netflix, Prime Video...) as data, not a button: logo + name in
  *  an ink outline. Put a 28px round logo (`size-7 rounded-full`) first. */

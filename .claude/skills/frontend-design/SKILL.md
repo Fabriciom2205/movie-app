@@ -7,7 +7,8 @@ description: How to build or change any page, component or style in this movie a
 
 The look is decided in `design-system/movie-night/MASTER.md`: lavender
 cinema tickets (square corners, perforations, a purple band, a rubber stamp)
-on light panels in front of a moonlit-room illustration, League Gothic +
+on light panels in front of a moonlit-room illustration (the home page's
+ticket is taped straight onto the room's wall instead), League Gothic +
 DM Mono. Never the round "bubbly" look it replaced (pills, soft cards).
 **Read that file before changing UI.** It wins over any other suggestion,
 including the UI UX Pro Max skill's.
@@ -40,9 +41,13 @@ including the UI UX Pro Max skill's.
    secondary or quiet.
 8. **Keep data credits visible:** the TMDB footer and "Availability data
    provided by JustWatch" wherever provider data shows.
-9. **Text never sits on the room art.** A page's content goes in a
-   `pagePanel` `<main>` (or, for a single-card page, in that card). The only
-   exception is the footer credit, on its own `night` box.
+9. **Text on the room art is short and always in the night style.** A page's
+   content goes in a `pagePanel` `<main>` (or, for a single-card page, in
+   that card). The home page is the exception: no panel, its ticket is paper
+   taped to the wall (MASTER.md "Home page" and "Paper on the wall"). Text
+   straight on the art (the home header, labels via `sectionLabelOnArt`, the
+   footer credits) is `on-night` with `text-shadow-md text-shadow-night`;
+   anything longer goes on paper.
 
 ## Workflow for a UI change
 
