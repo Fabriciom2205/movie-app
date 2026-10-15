@@ -118,14 +118,16 @@
    repeated with `space`, which spreads them evenly over the content box, so
    the piece's top and bottom padding is where they stop (keep its side
    padding at 0 and pad an inner element instead). The ticket is two pieces,
-   one per half, so the stub can be cut too. */
+   one per half, so the stub can be cut too. The corners (12px) and notches
+   (13px, a 26px notch once both halves meet) are radii from variables, so
+   `ticket-cut-small` can shrink them for small tickets. */
 @utility ticket-cut-top {
   mask-image:
     linear-gradient(#000 0 0),
-    radial-gradient(circle 12px at 0 0, #000 97%, #0000),
-    radial-gradient(circle 12px at 100% 0, #000 97%, #0000),
-    radial-gradient(circle 13px at 0 100%, #000 97%, #0000),
-    radial-gradient(circle 13px at 100% 100%, #000 97%, #0000),
+    radial-gradient(circle var(--ticket-corner, 12px) at 0 0, #000 97%, #0000),
+    radial-gradient(circle var(--ticket-corner, 12px) at 100% 0, #000 97%, #0000),
+    radial-gradient(circle var(--ticket-notch, 13px) at 0 100%, #000 97%, #0000),
+    radial-gradient(circle var(--ticket-notch, 13px) at 100% 100%, #000 97%, #0000),
     radial-gradient(circle 5px at 0 50%, #000 97%, #0000),
     radial-gradient(circle 5px at 100% 50%, #000 97%, #0000);
   mask-size: auto, auto, auto, auto, auto, 10px 22px, 10px 22px;
@@ -140,10 +142,10 @@
 @utility ticket-cut-stub {
   mask-image:
     linear-gradient(#000 0 0),
-    radial-gradient(circle 13px at 0 0, #000 97%, #0000),
-    radial-gradient(circle 13px at 100% 0, #000 97%, #0000),
-    radial-gradient(circle 12px at 0 100%, #000 97%, #0000),
-    radial-gradient(circle 12px at 100% 100%, #000 97%, #0000),
+    radial-gradient(circle var(--ticket-notch, 13px) at 0 0, #000 97%, #0000),
+    radial-gradient(circle var(--ticket-notch, 13px) at 100% 0, #000 97%, #0000),
+    radial-gradient(circle var(--ticket-corner, 12px) at 0 100%, #000 97%, #0000),
+    radial-gradient(circle var(--ticket-corner, 12px) at 100% 100%, #000 97%, #0000),
     radial-gradient(circle 5px at 0 50%, #000 97%, #0000),
     radial-gradient(circle 5px at 100% 50%, #000 97%, #0000);
   mask-size: auto, auto, auto, auto, auto, 10px 22px, 10px 22px;
@@ -158,10 +160,10 @@
 @utility ticket-cut {
   mask-image:
     linear-gradient(#000 0 0),
-    radial-gradient(circle 12px at 0 0, #000 97%, #0000),
-    radial-gradient(circle 12px at 100% 0, #000 97%, #0000),
-    radial-gradient(circle 12px at 0 100%, #000 97%, #0000),
-    radial-gradient(circle 12px at 100% 100%, #000 97%, #0000),
+    radial-gradient(circle var(--ticket-corner, 12px) at 0 0, #000 97%, #0000),
+    radial-gradient(circle var(--ticket-corner, 12px) at 100% 0, #000 97%, #0000),
+    radial-gradient(circle var(--ticket-corner, 12px) at 0 100%, #000 97%, #0000),
+    radial-gradient(circle var(--ticket-corner, 12px) at 100% 100%, #000 97%, #0000),
     radial-gradient(circle 5px at 0 50%, #000 97%, #0000),
     radial-gradient(circle 5px at 100% 50%, #000 97%, #0000);
   mask-size: auto, auto, auto, auto, auto, 10px 22px, 10px 22px;
@@ -169,6 +171,13 @@
   mask-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat space, no-repeat space;
   mask-origin: border-box, border-box, border-box, border-box, border-box, content-box, content-box;
   mask-composite: subtract, add, add, add, add, add, add;
+}
+
+/* Add to a small ticket's cut pieces (the /rate cards): 8px corners and a
+   16px notch, in scale with a card ~150px wide. */
+@utility ticket-cut-small {
+  --ticket-corner: 8px;
+  --ticket-notch: 8px;
 }
 
 /* A small side ticket (the taste nudge): one round notch in the middle of

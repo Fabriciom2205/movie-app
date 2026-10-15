@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { SideNotches } from "@/app/ticket";
-import { pagePanel, quietButton, sectionLabel } from "@/app/ui";
+import { WallCard, WallTicket } from "@/app/ticket";
+import { quietButtonOnArt, sectionLabel, wallColumn } from "@/app/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getWellKnownMovies, releaseYear, tmdbImageUrl } from "@/lib/tmdb";
 import { RateGrid, type RateMovie } from "./rate-grid";
@@ -45,26 +45,37 @@ export default async function RatePage(props: PageProps<"/rate">) {
   const ratedCount = rated.size;
   const moreUrl = page + 2 <= MAX_PAGE ? `/rate?page=${page + 2}` : null;
 
+  // No panel: the how-to is a ticket taped to the wall, and each movie is a
+  // small ticket on the wall under it (MASTER.md "Rating grid").
   return (
-    <main id="content" className={`${pagePanel} max-w-4xl`}>
-      <Link href="/" className={`${quietButton} -ml-2`}>
-        <ArrowLeft aria-hidden="true" className="size-4" />
-        Done
-      </Link>
+    <main id="content" className={`${wallColumn} max-w-4xl`}>
+      {/* Done, and across from it your count: a small pink side ticket like
+          the home page's nudge to come here (pink = your taste), its notches
+          cut through to the room. Up here, not in a row of its own, so the
+          first movies' buttons fit on a phone's first screen. */}
+      <div className="flex items-center justify-between gap-4">
+        <Link href="/" className={`${quietButtonOnArt} -ml-2`}>
+          <ArrowLeft aria-hidden="true" className="size-4" />
+          Done
+        </Link>
+        <WallTicket tilt="rotate-[0.8deg]" className="shrink-0">
+          <p className="side-notches-cut flex items-baseline gap-3 bg-ticket-pink px-7.5 py-2.5">
+            <span className={sectionLabel}>Rated so far</span>
+            <span className="font-heading text-3xl leading-none">{ratedCount}</span>
+          </p>
+        </WallTicket>
+      </div>
 
-      <h1 className="mt-4 text-5xl">Rate movies you&rsquo;ve seen</h1>
-      <p className="mt-3 max-w-2xl text-sm leading-relaxed">
-        Thumbs up if you liked it, thumbs down if it wasn&rsquo;t for you, or skip anything you haven&rsquo;t
-        seen. Every rating teaches the recommender your taste, and movies you&rsquo;ve rated won&rsquo;t be
-        recommended to you.
-      </p>
-      {/* A small pink side ticket, like the home page's nudge to come here:
-          pink = your taste. */}
-      <p className="relative mt-5 inline-flex items-baseline gap-3 bg-ticket-pink px-6 py-2.5">
-        <SideNotches />
-        <span className={sectionLabel}>Rated so far</span>
-        <span className="font-heading text-3xl leading-none">{ratedCount}</span>
-      </p>
+      {/* On paper, not on the art: it's too long for the art, and it's what
+          explains the thumb buttons. */}
+      <WallCard tape className="mt-7 max-w-2xl">
+        <h1 className="text-4xl sm:text-5xl">Rate movies you&rsquo;ve seen</h1>
+        <p className="mt-3 text-sm leading-relaxed">
+          Thumbs up if you liked it, thumbs down if it wasn&rsquo;t for you, or skip anything you haven&rsquo;t
+          seen. Every rating teaches the recommender your taste, and movies you&rsquo;ve rated won&rsquo;t be
+          recommended to you.
+        </p>
+      </WallCard>
 
       <RateGrid movies={movies} moreUrl={moreUrl} />
     </main>

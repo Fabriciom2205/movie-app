@@ -5,8 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { CircleAlert, EyeOff, Film, PartyPopper, ThumbsDown, ThumbsUp } from "lucide-react";
 import { setRating, type Verdict } from "@/app/movie/[id]/actions";
-import { Perforation } from "@/app/ticket";
-import { banner, card, primaryButton, quietButton, secondaryButton } from "@/app/ui";
+import { TearLine, WallCard } from "@/app/ticket";
+import { banner, focusRingOnArt, primaryButton, quietButton, secondaryButtonOnArt } from "@/app/ui";
 
 export type RateMovie = { id: number; title: string; year: string | null; posterUrl: string | null };
 
@@ -37,14 +37,14 @@ export function RateGrid({ movies, moreUrl }: { movies: RateMovie[]; moreUrl: st
   return (
     <>
       {error && (
-        <p role="alert" className={`mt-4 ${banner} bg-danger-soft text-on-danger-soft`}>
+        <p role="alert" className={`mt-6 ${banner} bg-danger-soft text-on-danger-soft`}>
           <CircleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
           {error}
         </p>
       )}
 
       {visible.length === 0 ? (
-        <div className={`mt-6 ${card}`}>
+        <WallCard tilt="rotate-[0.6deg]" className="mt-8 max-w-2xl">
           <div className="mb-3 grid size-11 place-items-center border-2 border-ink">
             <PartyPopper aria-hidden="true" className="size-5" />
           </div>
@@ -52,40 +52,42 @@ export function RateGrid({ movies, moreUrl }: { movies: RateMovie[]; moreUrl: st
           <p className="mt-2">
             {moreUrl ? "Load the next batch, or head home for a recommendation." : "Head home for a recommendation."}
           </p>
-        </div>
+        </WallCard>
       ) : (
-        // Each movie is a small ticket: poster and title, then a tear line and
-        // the stub with the buttons. gap-3 leaves room for the notches, which
-        // stick out 8px on each side.
-        <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4">
+        // Each movie is a small ticket on the wall in two pieces, like /pick's:
+        // poster and title, then the stub with the buttons, torn off along a
+        // dotted line with a notch cut into each side.
+        <ul className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4">
           {visible.map((movie) => (
-            <li key={movie.id} className="flex flex-col bg-ticket">
-              <div className="p-2.5 pb-0">
-                {movie.posterUrl ? (
-                  <Image
-                    src={movie.posterUrl}
-                    alt=""
-                    width={185}
-                    height={278}
-                    className="aspect-2/3 h-auto w-full object-cover outline-2 outline-ink"
-                  />
-                ) : (
-                  <div className="grid aspect-2/3 w-full place-items-center bg-soft text-on-soft outline-2 outline-ink">
-                    <Film aria-hidden="true" className="size-8" />
-                  </div>
-                )}
-                <p className="mt-3 px-0.5 font-heading text-xl leading-none tracking-wide uppercase">
-                  {movie.title}
-                  {movie.year && (
-                    <span className="font-body text-xs tracking-normal text-ink-muted normal-case"> ({movie.year})</span>
+            <li key={movie.id} className="on-the-wall flex flex-col">
+              {/* flex-1: the stubs line up at the bottom of each row. */}
+              <div className="ticket-cut-top ticket-cut-small flex-1 bg-ticket pt-3 pb-4">
+                <div className="px-2.5">
+                  {movie.posterUrl ? (
+                    <Image
+                      src={movie.posterUrl}
+                      alt=""
+                      width={185}
+                      height={278}
+                      className="aspect-2/3 h-auto w-full object-cover outline-2 outline-ink"
+                    />
+                  ) : (
+                    <div className="grid aspect-2/3 w-full place-items-center bg-soft text-on-soft outline-2 outline-ink">
+                      <Film aria-hidden="true" className="size-8" />
+                    </div>
                   )}
-                </p>
+                  <p className="mt-3 px-0.5 font-heading text-xl leading-none tracking-wide uppercase">
+                    {movie.title}
+                    {movie.year && (
+                      <span className="font-body text-xs tracking-normal text-ink-muted normal-case"> ({movie.year})</span>
+                    )}
+                  </p>
+                </div>
               </div>
-              {/* mt-auto: the tear lines and buttons line up at the bottom of
-                  each row of cards. */}
-              <div className="mt-auto pt-3">
-                <Perforation small />
-                <div role="group" aria-label={`Rate ${movie.title}`} className="grid grid-cols-2 gap-2 p-2.5">
+              {/* The stub overlaps the top piece by 1px so no faint line shows. */}
+              <div className="ticket-cut-stub ticket-cut-small relative -mt-px bg-ticket py-3">
+                <TearLine small />
+                <div role="group" aria-label={`Rate ${movie.title}`} className="grid grid-cols-2 gap-2 px-2.5 pt-1.5">
                   <button
                     type="button"
                     onClick={() => rate(movie, "up")}
@@ -116,10 +118,13 @@ export function RateGrid({ movies, moreUrl }: { movies: RateMovie[]; moreUrl: st
       )}
 
       {/* The main button once nothing is left to rate: then it's the only
-          way forward. */}
+          way forward. On the art, so the secondary one is a lavender block. */}
       {moreUrl && (
         <div className="mt-8 flex justify-center">
-          <Link href={moreUrl} className={visible.length === 0 ? primaryButton : secondaryButton}>
+          <Link
+            href={moreUrl}
+            className={visible.length === 0 ? `${primaryButton} ${focusRingOnArt}` : secondaryButtonOnArt}
+          >
             Show more movies
           </Link>
         </div>
