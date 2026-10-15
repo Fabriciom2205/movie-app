@@ -3,7 +3,8 @@
 import { useState, type ReactNode } from "react";
 import Form from "next/form";
 import { Check, X } from "lucide-react";
-import { primaryButton, sectionLabel } from "@/app/ui";
+import { TearLine } from "@/app/ticket";
+import { paper, primaryButton, sectionLabel } from "@/app/ui";
 
 export type FormPerson = { id: string; name: string; isMe: boolean };
 export type FormGenre = { id: number; name: string };
@@ -49,7 +50,7 @@ export function RecommendForm({
           bites stop, so the sides are padded by the div inside instead. On
           phones the frame and the text sit closer to the edges, so the 18
           genres still fit in 6 rows (the button stays on the first screen). */}
-      <div className="ticket-cut-top relative bg-ticket paper-grain py-4 sm:py-5">
+      <div className={`ticket-cut-top relative ${paper} py-4 sm:py-5`}>
         <span
           aria-hidden="true"
           className="printed-frame pointer-events-none absolute inset-x-2.5 top-3.5 bottom-2 sm:inset-x-5 sm:top-4.5 sm:bottom-2.5"
@@ -117,8 +118,8 @@ export function RecommendForm({
           the fine print every real ticket has. It overlaps the top piece by
           1px: tilted, the two edges are smoothed separately and would leave a
           faint line where they meet. */}
-      <div className="ticket-cut-stub relative -mt-px bg-ticket paper-grain py-4 sm:py-5">
-        <span aria-hidden="true" className="perforation-dots absolute inset-x-5.5 top-0.5 h-1.5" />
+      <div className={`ticket-cut-stub relative -mt-px ${paper} py-4 sm:py-5`}>
+        <TearLine />
         <div className="flex flex-col gap-3 px-3.5 pt-1 pb-1 sm:px-5">
           <button type="submit" disabled={nobodyWatching} className={`${primaryButton} w-full`}>
             Recommend a movie

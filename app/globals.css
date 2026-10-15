@@ -153,6 +153,24 @@
   mask-composite: subtract, add, add, add, add, add, add;
 }
 
+/* A ticket in one piece (no stub): cut corners at all four, and the bites
+   down both sides. Same rule: padding top and bottom, none at the sides. */
+@utility ticket-cut {
+  mask-image:
+    linear-gradient(#000 0 0),
+    radial-gradient(circle 12px at 0 0, #000 97%, #0000),
+    radial-gradient(circle 12px at 100% 0, #000 97%, #0000),
+    radial-gradient(circle 12px at 0 100%, #000 97%, #0000),
+    radial-gradient(circle 12px at 100% 100%, #000 97%, #0000),
+    radial-gradient(circle 5px at 0 50%, #000 97%, #0000),
+    radial-gradient(circle 5px at 100% 50%, #000 97%, #0000);
+  mask-size: auto, auto, auto, auto, auto, 10px 22px, 10px 22px;
+  mask-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 100% 0;
+  mask-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat space, no-repeat space;
+  mask-origin: border-box, border-box, border-box, border-box, border-box, content-box, content-box;
+  mask-composite: subtract, add, add, add, add, add, add;
+}
+
 /* A small side ticket (the taste nudge): one round notch in the middle of
    each side, cut through to the room. */
 @utility side-notches-cut {

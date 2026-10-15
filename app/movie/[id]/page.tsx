@@ -2,8 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink, Film, Tv } from "lucide-react";
-import { Perforation, TicketFields } from "@/app/ticket";
-import { card, pagePanel, posterGrid, providerTag, quietButton, sectionLabel } from "@/app/ui";
+import { TearLine, TicketFields, WallCard, WallTicket } from "@/app/ticket";
+import { paper, posterGrid, providerTag, quietButtonOnArt, sectionLabel, wallColumn } from "@/app/ui";
 import {
   formatRuntime,
   getMovie,
@@ -39,70 +39,79 @@ export default async function MoviePage(props: PageProps<"/movie/[id]">) {
     { label: "Buy", providers: providers?.buy },
   ].filter((row): row is { label: string; providers: WatchProvider[] } => !!row.providers?.length);
 
+  // No panel: two tickets on the room's wall (MASTER.md "Paper on the wall").
   return (
-    <main id="content" className={`${pagePanel} max-w-3xl`}>
+    <main id="content" className={`${wallColumn} max-w-176`}>
       {/* Home, not "back": you can get here from search, /pick or a list. */}
-      <Link href="/" className={`${quietButton} -ml-2`}>
+      <Link href="/" className={`${quietButtonOnArt} -ml-2`}>
         <ArrowLeft aria-hidden="true" className="size-4" />
         Home
       </Link>
 
-      <article className="mt-4 bg-ticket shadow-soft">
-        {/* The band, as on /pick; TMDB's number for the movie is the
-            ticket's serial number. */}
-        <div className="flex items-baseline justify-between gap-4 bg-primary px-5 pt-2.5 pb-2 leading-none text-on-primary sm:px-6">
-          <span className="font-heading text-3xl leading-none tracking-wide uppercase">Feature presentation</span>
-          <span className="text-[11px] font-medium tracking-widest uppercase">No. {movie.id}</span>
-        </div>
-
-        <div className={`${posterGrid} px-5 pt-5 sm:px-6 sm:pt-6`}>
-          {movie.poster_path ? (
-            <Image
-              src={tmdbImageUrl(movie.poster_path, "w342")}
-              alt={`${movie.title} poster`}
-              width={200}
-              height={300}
-              preload // it's the biggest thing on the page, so load it first
-              className="aspect-2/3 w-full self-start object-cover outline-2 outline-ink sm:row-span-2"
-            />
-          ) : (
-            <div className="grid aspect-2/3 w-full place-items-center self-start bg-soft text-on-soft outline-2 outline-ink sm:row-span-2">
-              <Film aria-hidden="true" className="size-8" />
+      {/* The movie, taped up: two pieces of paper, like /pick's ticket. */}
+      <WallTicket tape tapeTop="-top-6 sm:-top-3.5" className="mt-6">
+        <article>
+          <div className={`ticket-cut-top ${paper} pt-4 pb-6 sm:pt-5`}>
+            {/* The band, as on /pick (up to the paper's top edge); TMDB's
+                number for the movie is the ticket's serial number. */}
+            <div className="-mt-4 flex items-baseline justify-between gap-4 bg-primary px-5 pt-2.5 pb-2 leading-none text-on-primary sm:-mt-5 sm:px-6">
+              <span className="font-heading text-3xl leading-none tracking-wide uppercase">Feature presentation</span>
+              <span className="text-[11px] font-medium tracking-widest uppercase">No. {movie.id}</span>
             </div>
-          )}
 
-          <div className="min-w-0 self-end sm:self-start">
-            <h1 className="text-4xl break-words sm:text-6xl">{movie.title}</h1>
-            {year && <p className="mt-2 text-sm">({year})</p>}
+            <div className={`${posterGrid} px-5 pt-5 sm:px-6 sm:pt-6`}>
+              {movie.poster_path ? (
+                <Image
+                  src={tmdbImageUrl(movie.poster_path, "w342")}
+                  alt={`${movie.title} poster`}
+                  width={200}
+                  height={300}
+                  preload // it's the biggest thing on the page, so load it first
+                  className="aspect-2/3 w-full self-start object-cover outline-2 outline-ink sm:row-span-2"
+                />
+              ) : (
+                <div className="grid aspect-2/3 w-full place-items-center self-start bg-soft text-on-soft outline-2 outline-ink sm:row-span-2">
+                  <Film aria-hidden="true" className="size-8" />
+                </div>
+              )}
+
+              <div className="min-w-0 self-end sm:self-start">
+                <h1 className="text-4xl break-words sm:text-6xl">{movie.title}</h1>
+                {year && <p className="mt-2 text-sm">({year})</p>}
+              </div>
+
+              {/* Under the poster on phones (the column beside it is too narrow),
+                  beside it wider up. */}
+              <div className="col-span-2 flex min-w-0 flex-col gap-5 sm:col-span-1 sm:col-start-2">
+                <TicketFields
+                  fields={[
+                    { label: "Released", value: formatDate(movie.release_date) },
+                    { label: "Runtime", value: formatRuntime(movie.runtime) },
+                    { label: "Rated", value: movie.vote_count > 0 ? `${movie.vote_average.toFixed(1)} / 10` : null },
+                    { label: "Genre", wide: true, value: movie.genres.map((g) => g.name).join(", ") || null },
+                  ]}
+                />
+                {movie.tagline && <p className="font-medium">&ldquo;{movie.tagline}&rdquo;</p>}
+                {movie.overview && <p className="text-[13px] leading-relaxed">{movie.overview}</p>}
+              </div>
+            </div>
           </div>
 
-          {/* Under the poster on phones (the column beside it is too narrow),
-              beside it wider up. */}
-          <div className="col-span-2 flex min-w-0 flex-col gap-5 sm:col-span-1 sm:col-start-2">
-            <TicketFields
-              fields={[
-                { label: "Released", value: formatDate(movie.release_date) },
-                { label: "Runtime", value: formatRuntime(movie.runtime) },
-                { label: "Rated", value: movie.vote_count > 0 ? `${movie.vote_average.toFixed(1)} / 10` : null },
-                { label: "Genre", wide: true, value: movie.genres.map((g) => g.name).join(", ") || null },
-              ]}
-            />
-            {movie.tagline && <p className="font-medium">&ldquo;{movie.tagline}&rdquo;</p>}
-            {movie.overview && <p className="text-[13px] leading-relaxed">{movie.overview}</p>}
+          {/* The stub: your rating and your lists. It overlaps the top piece
+              by 1px so no faint line shows. */}
+          <div className={`ticket-cut-stub relative -mt-px ${paper} py-4 sm:py-5`}>
+            <TearLine />
+            <div className="grid gap-6 px-5 pt-2 pb-1 sm:grid-cols-2 sm:px-6">
+              <RatingButtons movieId={movie.id} verdict={myVerdict} />
+              <ListToggles movieId={movie.id} lists={myLists} />
+            </div>
           </div>
-        </div>
+        </article>
+      </WallTicket>
 
-        <Perforation className="mt-6" />
-
-        {/* The stub: your rating and your lists. */}
-        <div className="grid gap-6 px-5 pt-5 pb-5 sm:grid-cols-2 sm:px-6 sm:pb-6">
-          <RatingButtons movieId={movie.id} verdict={myVerdict} />
-          <ListToggles movieId={movie.id} lists={myLists} />
-        </div>
-      </article>
-
-      {/* A second ticket: where it's on, one row per way of watching. */}
-      <section aria-labelledby="where-to-watch" className={`mt-6 ${card}`}>
+      {/* A second ticket, pinned up a little crooked the other way: where
+          it's on, one row per way of watching. */}
+      <WallCard as="section" aria-labelledby="where-to-watch" tilt="rotate-[0.6deg]" className="mt-8">
         <h2 id="where-to-watch" className="text-3xl">
           Where to watch in the US
         </h2>
@@ -147,7 +156,7 @@ export default async function MoviePage(props: PageProps<"/movie/[id]">) {
             </>
           )}
         </p>
-      </section>
+      </WallCard>
     </main>
   );
 }

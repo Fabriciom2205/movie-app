@@ -2,7 +2,75 @@
 // No hooks here, so both server and client components can use them.
 
 import type { ReactNode } from "react";
-import { sectionLabel } from "@/app/ui";
+import { paper, sectionLabel } from "@/app/ui";
+
+/** A ticket on the room's wall (pages with no panel): tilted a little,
+ *  optionally taped up (the one main ticket of a page), with the room art's
+ *  outline traced around its paper. Put the paper inside: a `WallCard`'s, or
+ *  pieces cut with `ticket-cut-top` + `ticket-cut-stub` (globals.css). Pass
+ *  `tilt` as a literal class ("-rotate-1", "rotate-[0.6deg]") so Tailwind
+ *  sees it. A ticket with a band across its top passes `tapeTop` (a literal
+ *  class too) to lift the tape on phones, where the band's print fills the
+ *  width and the tape would cover it. */
+export function WallTicket({
+  tape = false,
+  tapeTop = "-top-3.5",
+  tilt = "-rotate-1",
+  className = "",
+  children,
+}: {
+  tape?: boolean;
+  tapeTop?: string;
+  tilt?: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className={`relative ${tilt} ${className}`}>
+      {tape && (
+        <span
+          aria-hidden="true"
+          className={`washi-tape absolute ${tapeTop} left-1/2 z-10 h-7.5 w-32 -translate-x-1/2 -rotate-4`}
+        />
+      )}
+      <div className="on-the-wall">{children}</div>
+    </div>
+  );
+}
+
+/** A one-piece ticket on the wall (no stub): cut corners and side bites,
+ *  20-24px of padding inside. For cards: empty states, errors, "Where to
+ *  watch". `as` picks the element ("section" with `aria-labelledby`, say). */
+export function WallCard({
+  as: Tag = "div",
+  tape,
+  tilt,
+  className,
+  children,
+  ...props
+}: {
+  as?: "div" | "section" | "article";
+  tape?: boolean;
+  tilt?: string;
+  className?: string;
+  children: ReactNode;
+  "aria-labelledby"?: string;
+}) {
+  return (
+    <WallTicket tape={tape} tilt={tilt} className={className}>
+      <Tag className={`ticket-cut ${paper} py-4 sm:py-5`} {...props}>
+        <div className="px-5 py-1 sm:px-6">{children}</div>
+      </Tag>
+    </WallTicket>
+  );
+}
+
+/** The tear line at the top of a stub on the wall: a row of printed
+ *  perforation holes. Put it first inside the `relative` stub piece; the
+ *  notches come from the pieces' cuts. */
+export function TearLine() {
+  return <span aria-hidden="true" className="perforation-dots absolute inset-x-5.5 top-0.5 h-1.5" />;
+}
 
 /** The tear line across a ticket: a dashed line with a round notch cut into
  *  each side. Put it straight inside the ticket, with no side padding around

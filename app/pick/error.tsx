@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { CloudOff } from "lucide-react";
-import { card, primaryButton, quietButton } from "@/app/ui";
+import { WallCard } from "@/app/ticket";
+import { primaryButton, quietButton, wallColumn } from "@/app/ui";
 
-// Shown when recommending fails, e.g. TMDB or the database didn't answer.
+// Shown when recommending fails, e.g. TMDB or the database didn't answer. A
+// ticket on the wall where the pick would be (below the back link's room).
 export default function PickError({ retry }: { error: Error & { digest?: string }; retry: () => void }) {
   return (
-    <main id="content" className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-10">
-      <div className={`mt-14 shadow-soft ${card}`}>
+    <main id="content" className={`${wallColumn} max-w-176`}>
+      <WallCard tape className="mt-17">
         <div className="mb-4 grid size-12 place-items-center border-2 border-ink">
           <CloudOff aria-hidden="true" className="size-6" />
         </div>
@@ -24,7 +26,7 @@ export default function PickError({ retry }: { error: Error & { digest?: string 
             Back home
           </Link>
         </div>
-      </div>
+      </WallCard>
     </main>
   );
 }

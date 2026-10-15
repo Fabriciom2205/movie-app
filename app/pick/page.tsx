@@ -3,9 +3,19 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft, Film, Info, SearchX, Shuffle, Tv, type LucideIcon } from "lucide-react";
 import { ListToggles } from "@/app/movie/[id]/list-toggles";
-import { Perforation, TicketFields } from "@/app/ticket";
+import { TearLine, TicketFields, WallCard, WallTicket } from "@/app/ticket";
 import { TicketDate } from "@/app/ticket-date";
-import { banner, card, pagePanel, posterGrid, primaryButton, quietButton, secondaryButton, sectionLabel } from "@/app/ui";
+import {
+  banner,
+  paper,
+  posterGrid,
+  primaryButton,
+  quietButtonOnArt,
+  secondaryButton,
+  sectionLabel,
+  smallPrintOnArt,
+  wallColumn,
+} from "@/app/ui";
 import { getMyLists } from "@/lib/my-movie";
 import { recommendMovie, type Person, type RecommendRequest } from "@/lib/recommender";
 import { createClient } from "@/lib/supabase/server";
@@ -40,154 +50,166 @@ export default async function PickPage(props: PageProps<"/pick">) {
   const startOverUrl = req.skip.length > 0 ? pickUrl({ ...req, skip: [], seed: null }) : null;
   const changeUrl = pickUrl({ ...req, skip: [], seed: null }).replace("/pick", "/"); // same choices, on the home form
 
+  // No panel: the ticket is taped straight onto the room's wall, and the back
+  // link and the credit sit on the art (MASTER.md "Paper on the wall").
   return (
-    <main id="content" className={`${pagePanel} max-w-3xl`}>
-      <Link href={changeUrl} className={`${quietButton} -ml-2`}>
+    <main id="content" className={`${wallColumn} max-w-176`}>
+      <Link href={changeUrl} className={`${quietButtonOnArt} -ml-2`}>
         <ArrowLeft aria-hidden="true" className="size-4" />
         Change what you&rsquo;re in the mood for
       </Link>
 
       {pick ? (
-        <article className="mt-4 bg-ticket shadow-soft">
-          {/* The band: how many it admits, and when. */}
-          <div className="flex items-baseline justify-between gap-4 bg-primary px-5 pt-2.5 pb-2 leading-none text-on-primary sm:px-6">
-            <span className="font-heading text-3xl leading-none tracking-wide uppercase">
-              Admit {COUNT_WORDS[result.watchers.length] ?? result.watchers.length}
-            </span>
-            <span className="text-[11px] font-medium tracking-widest uppercase">
-              Tonight &middot; <TicketDate />
-            </span>
-          </div>
+        // Two pieces of paper, like the home ticket, so the stub is cut too.
+        <WallTicket tape tapeTop="-top-6 sm:-top-3.5" className="mt-6">
+          <article>
+            <div className={`ticket-cut-top ${paper} pt-4 pb-6 sm:pt-5`}>
+              {/* The band: how many it admits, and when. It runs up to the
+                  paper's top edge, over the padding where the side bites stop. */}
+              <div className="-mt-4 flex items-baseline justify-between gap-4 bg-primary px-5 pt-2.5 pb-2 leading-none text-on-primary sm:-mt-5 sm:px-6">
+                <span className="font-heading text-3xl leading-none tracking-wide uppercase">
+                  Admit {COUNT_WORDS[result.watchers.length] ?? result.watchers.length}
+                </span>
+                <span className="text-[11px] font-medium tracking-widest uppercase">
+                  Tonight &middot; <TicketDate />
+                </span>
+              </div>
 
-          <div className={`${posterGrid} px-5 pt-5 sm:px-6 sm:pt-6`}>
-            {/* Poster and title open the full movie page (rent/buy options and more). */}
-            <Link
-              href={`/movie/${pick.movie.id}`}
-              className="self-start outline-2 outline-ink sm:row-span-2"
-              tabIndex={-1}
-              aria-hidden="true"
-            >
-              {pick.movie.poster_path ? (
-                <Image
-                  src={tmdbImageUrl(pick.movie.poster_path, "w342")}
-                  alt=""
-                  width={200}
-                  height={300}
-                  preload
-                  className="aspect-2/3 w-full object-cover transition-opacity duration-150 hover:opacity-90"
-                />
-              ) : (
-                <div className="grid aspect-2/3 w-full place-items-center bg-soft text-on-soft">
-                  <Film aria-hidden="true" className="size-8" />
+              <div className={`${posterGrid} px-5 pt-5 sm:px-6 sm:pt-6`}>
+                {/* Poster and title open the full movie page (rent/buy options and more). */}
+                <Link
+                  href={`/movie/${pick.movie.id}`}
+                  className="self-start outline-2 outline-ink sm:row-span-2"
+                  tabIndex={-1}
+                  aria-hidden="true"
+                >
+                  {pick.movie.poster_path ? (
+                    <Image
+                      src={tmdbImageUrl(pick.movie.poster_path, "w342")}
+                      alt=""
+                      width={200}
+                      height={300}
+                      preload
+                      className="aspect-2/3 w-full object-cover transition-opacity duration-150 hover:opacity-90"
+                    />
+                  ) : (
+                    <div className="grid aspect-2/3 w-full place-items-center bg-soft text-on-soft">
+                      <Film aria-hidden="true" className="size-8" />
+                    </div>
+                  )}
+                </Link>
+
+                <div className="min-w-0 self-end sm:self-start">
+                  <p className={sectionLabel}>Tonight&rsquo;s pick {forWhom}</p>
+                  <h1 className="mt-1.5 text-4xl break-words sm:text-6xl">
+                    <Link href={`/movie/${pick.movie.id}`} className="decoration-2 underline-offset-4 hover:underline">
+                      {pick.movie.title}
+                    </Link>
+                  </h1>
+                  {pick.movie.release_date && (
+                    <p className="mt-2 text-sm">({releaseYear(pick.movie.release_date)})</p>
+                  )}
                 </div>
-              )}
-            </Link>
 
-            <div className="min-w-0 self-end sm:self-start">
-              <p className={sectionLabel}>Tonight&rsquo;s pick {forWhom}</p>
-              <h1 className="mt-1.5 text-4xl break-words sm:text-6xl">
-                <Link href={`/movie/${pick.movie.id}`} className="decoration-2 underline-offset-4 hover:underline">
-                  {pick.movie.title}
-                </Link>
-              </h1>
-              {pick.movie.release_date && (
-                <p className="mt-2 text-sm">({releaseYear(pick.movie.release_date)})</p>
-              )}
+                <div className="col-span-2 flex min-w-0 flex-col gap-5 sm:col-span-1 sm:col-start-2">
+                  <TicketFields
+                    fields={[
+                      {
+                        label: "Stream it on",
+                        wide: true,
+                        value: (
+                          <ul className="flex flex-wrap gap-x-4 gap-y-1.5">
+                            {pick.services.map((s) => (
+                              <li key={s.provider_id} className="flex items-center gap-2">
+                                <Image
+                                  src={tmdbImageUrl(s.logo_path, "w92")}
+                                  alt=""
+                                  width={24}
+                                  height={24}
+                                  className="size-6 rounded-full"
+                                />
+                                {s.provider_name}
+                              </li>
+                            ))}
+                          </ul>
+                        ),
+                      },
+                      { label: "Runtime", value: formatRuntime(pick.movie.runtime) },
+                      {
+                        label: "Rated",
+                        value: pick.movie.vote_count > 0 ? `${pick.movie.vote_average.toFixed(1)} / 10` : null,
+                      },
+                      { label: "Genre", wide: true, value: pick.movie.genres.map((g) => g.name).join(", ") || null },
+                    ]}
+                  />
+
+                  {/* The strongest reason is the ticket's rubber stamp; the rest
+                      (and anyone who wasn't into it) go in the small print. */}
+                  {pick.reasons.length > 0 && (
+                    <p className="max-w-xs -rotate-3 self-center border-4 text-balance border-double border-stamp px-4 pt-2 pb-1.5 text-center font-heading text-2xl leading-tight tracking-wide text-stamp uppercase">
+                      {pick.reasons[0].text}
+                    </p>
+                  )}
+                  {(pick.reasons.length > 1 || pick.dislikedBy.length > 0) && (
+                    <ul className="flex flex-col gap-1 text-xs font-medium tracking-wide uppercase">
+                      {pick.reasons.slice(1, 3).map((reason) => (
+                        <li key={reason.kind}>
+                          <span aria-hidden="true">+ </span>
+                          {reason.text}
+                        </li>
+                      ))}
+                      {pick.dislikedBy.map((name) => (
+                        <li key={name}>
+                          <span aria-hidden="true">&minus; </span>
+                          {name} wasn&rsquo;t into it
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {pick.movie.overview && (
+                    <p className="line-clamp-4 text-[13px] leading-relaxed">{pick.movie.overview}</p>
+                  )}
+
+                  {result.watchersWithoutServices.length > 0 && (
+                    <ServicesHint missing={result.watchersWithoutServices} watchers={result.watchers} />
+                  )}
+                </div>
+              </div>
             </div>
 
-            <div className="col-span-2 flex min-w-0 flex-col gap-5 sm:col-span-1 sm:col-start-2">
-              <TicketFields
-                fields={[
-                  {
-                    label: "Stream it on",
-                    wide: true,
-                    value: (
-                      <ul className="flex flex-wrap gap-x-4 gap-y-1.5">
-                        {pick.services.map((s) => (
-                          <li key={s.provider_id} className="flex items-center gap-2">
-                            <Image
-                              src={tmdbImageUrl(s.logo_path, "w92")}
-                              alt=""
-                              width={24}
-                              height={24}
-                              className="size-6 rounded-full"
-                            />
-                            {s.provider_name}
-                          </li>
-                        ))}
-                      </ul>
-                    ),
-                  },
-                  { label: "Runtime", value: formatRuntime(pick.movie.runtime) },
-                  {
-                    label: "Rated",
-                    value: pick.movie.vote_count > 0 ? `${pick.movie.vote_average.toFixed(1)} / 10` : null,
-                  },
-                  { label: "Genre", wide: true, value: pick.movie.genres.map((g) => g.name).join(", ") || null },
-                ]}
-              />
-
-              {/* The strongest reason is the ticket's rubber stamp; the rest
-                  (and anyone who wasn't into it) go in the small print. */}
-              {pick.reasons.length > 0 && (
-                <p className="max-w-xs -rotate-3 self-center border-4 text-balance border-double border-stamp px-4 pt-2 pb-1.5 text-center font-heading text-2xl leading-tight tracking-wide text-stamp uppercase">
-                  {pick.reasons[0].text}
-                </p>
-              )}
-              {(pick.reasons.length > 1 || pick.dislikedBy.length > 0) && (
-                <ul className="flex flex-col gap-1 text-xs font-medium tracking-wide uppercase">
-                  {pick.reasons.slice(1, 3).map((reason) => (
-                    <li key={reason.kind}>
-                      <span aria-hidden="true">+ </span>
-                      {reason.text}
-                    </li>
-                  ))}
-                  {pick.dislikedBy.map((name) => (
-                    <li key={name}>
-                      <span aria-hidden="true">&minus; </span>
-                      {name} wasn&rsquo;t into it
-                    </li>
-                  ))}
-                </ul>
-              )}
-
-              {pick.movie.overview && <p className="line-clamp-4 text-[13px] leading-relaxed">{pick.movie.overview}</p>}
-
-              {result.watchersWithoutServices.length > 0 && (
-                <ServicesHint missing={result.watchersWithoutServices} watchers={result.watchers} />
-              )}
+            {/* The stub: the main action, then rate it (a rating means you've
+                seen it, so the next pick leaves it out) or save it for later.
+                It overlaps the top piece by 1px so no faint line shows. */}
+            <div className={`ticket-cut-stub relative -mt-px ${paper} py-4 sm:py-5`}>
+              <TearLine />
+              <div className="flex flex-col gap-6 px-5 pt-2 pb-1 sm:px-6">
+                <div>
+                  {result.moreLeft ? (
+                    <Link href={anotherUrl} className={`${primaryButton} w-full`}>
+                      <Shuffle aria-hidden="true" className="size-6" />
+                      Pick another
+                    </Link>
+                  ) : (
+                    startOverUrl && (
+                      <Link href={startOverUrl} className={`${primaryButton} w-full`}>
+                        <Shuffle aria-hidden="true" className="size-6" />
+                        Start over
+                      </Link>
+                    )
+                  )}
+                  {!result.moreLeft && (
+                    <p className="mt-3 text-sm text-ink-muted">That&rsquo;s the last one we found for tonight.</p>
+                  )}
+                </div>
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <PickRating movieId={pick.movie.id} title={pick.movie.title} />
+                  <ListToggles movieId={pick.movie.id} lists={myLists} />
+                </div>
+              </div>
             </div>
-          </div>
-
-          <Perforation className="mt-6" />
-
-          {/* The stub: the main action, then rate it (a rating means you've
-              seen it, so the next pick leaves it out) or save it for later. */}
-          <div className="flex flex-col gap-6 px-5 pt-5 pb-5 sm:px-6 sm:pb-6">
-            <div>
-              {result.moreLeft ? (
-                <Link href={anotherUrl} className={`${primaryButton} w-full`}>
-                  <Shuffle aria-hidden="true" className="size-6" />
-                  Pick another
-                </Link>
-              ) : (
-                startOverUrl && (
-                  <Link href={startOverUrl} className={`${primaryButton} w-full`}>
-                    <Shuffle aria-hidden="true" className="size-6" />
-                    Start over
-                  </Link>
-                )
-              )}
-              {!result.moreLeft && (
-                <p className="mt-3 text-sm text-ink-muted">That&rsquo;s the last one we found for tonight.</p>
-              )}
-            </div>
-            <div className="grid gap-6 sm:grid-cols-2">
-              <PickRating movieId={pick.movie.id} title={pick.movie.title} />
-              <ListToggles movieId={pick.movie.id} lists={myLists} />
-            </div>
-          </div>
-        </article>
+          </article>
+        </WallTicket>
       ) : (
         <NothingFound
           problem={result.problem}
@@ -199,7 +221,7 @@ export default async function PickPage(props: PageProps<"/pick">) {
       )}
 
       {/* Required attribution: TMDB's availability data comes from JustWatch. */}
-      <p className="mt-10 text-xs text-ink-muted">Availability data provided by JustWatch.</p>
+      <p className={`mt-10 ${smallPrintOnArt}`}>Availability data provided by JustWatch.</p>
     </main>
   );
 }
@@ -235,8 +257,8 @@ function ServicesHint({ missing, watchers }: { missing: Person[]; watchers: Pers
   );
 }
 
-// No pick: a ticket that says why, with one clear way forward (the primary
-// button) and the other options as secondary buttons.
+// No pick: a ticket on the wall that says why, with one clear way forward
+// (the primary button) and the other options as secondary buttons.
 function NothingFound({
   problem,
   watchersWithoutServices,
@@ -252,7 +274,7 @@ function NothingFound({
 }) {
   if (problem === "noServices") {
     return (
-      <div className={`mt-4 shadow-soft ${card}`}>
+      <WallCard tape className="mt-6">
         <EmptyIcon icon={Tv} />
         <h1 className="text-4xl">Pick your streaming services first</h1>
         <p className="mt-3 leading-relaxed">
@@ -265,12 +287,12 @@ function NothingFound({
             Go to Settings
           </Link>
         </div>
-      </div>
+      </WallCard>
     );
   }
 
   return (
-    <div className={`mt-4 shadow-soft ${card}`}>
+    <WallCard tape className="mt-6">
       <EmptyIcon icon={SearchX} />
       <h1 className="text-4xl">
         {startOverUrl ? "That’s everything we found for tonight" : "Couldn’t find anything right now"}
@@ -296,7 +318,7 @@ function NothingFound({
           Change moods
         </Link>
       </div>
-    </div>
+    </WallCard>
   );
 }
 
