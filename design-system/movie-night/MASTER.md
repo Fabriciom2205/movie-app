@@ -140,7 +140,7 @@ or controls are DM Mono `text-[11px]` capitals with wide tracking
 ## 2. Components
 
 These are written once as class strings in `app/ui.ts` (`primaryButton`,
-`secondaryButton`, `quietButton`, `quietButtonOnArt`, `dangerButton`,
+`secondaryButton`, `secondaryButtonOnArt`, `quietButton`, `quietButtonOnArt`, `dangerButton`,
 `field`, `fieldPrimaryButton`, `fieldSecondaryButton`, `fieldTicketButton`,
 `toggleChip`, `toggleButton`, `toggleButtonBase`, `card`, `pagePanel`,
 `wallColumn`, `paper`, `posterGrid`, `sectionLabel`, `sectionLabelOnArt`,
@@ -160,9 +160,9 @@ classes left except `rounded-full` on things that are round in real life
 **Moving onto the wall (from 2026-10-14):** pages leave their panel one PR
 at a time and put their tickets straight on the room's wall ("Paper on the
 wall" below). Done: home, then /pick and the movie page (with their loading
-and error screens), then the lists pages (with their error screen). Still
-on a `pagePanel`: /rate, settings; login and "not found" still float a
-plain card.
+and error screens), then the lists pages (with their error screen), then
+/rate (with its loading screen). Still on a `pagePanel`: settings; login
+and "not found" still float a plain card.
 
 **Page:** the room art fills the screen behind everything (`app/layout.tsx`);
 each page's `<main>` is a `pagePanel` (opaque `bg-page`,
@@ -170,7 +170,8 @@ each page's `<main>` is a `pagePanel` (opaque `bg-page`,
 `max-w-3xl`, `max-w-4xl`), centered. Pages on the wall have no panel: their
 `<main>` is a `wallColumn` (`app/ui.ts`: centered, 16px sides on phones, no
 background) plus its width (home `max-w-152`, /pick and the movie page
-`max-w-176`, lists `max-w-2xl`), and their tickets sit straight on the art. **Text on the art**
+`max-w-176`, lists `max-w-2xl`, /rate `max-w-4xl`), and their tickets sit
+straight on the art. **Text on the art**
 is kept short and always `on-night` with `text-shadow-md text-shadow-night`,
 over the dark wall and floor: the home header, labels (`sectionLabelOnArt`),
 back links (`quietButtonOnArt`), small print (`smallPrintOnArt`, the
@@ -214,8 +215,8 @@ in the middle of each side.
 
 The shared parts are in `app/ticket.tsx`: `<Perforation />` (put it straight
 inside the ticket with no side padding around it, so the notches land on the
-edges; the ticket must sit on `bg-page`) and `<SideNotches />` (inside a
-`relative` small ticket). `app/ticket-date.tsx` has `<TicketDate />`, today's
+edges; the ticket must sit on `bg-page`; only login still uses it, without
+its notches). `app/ticket-date.tsx` has `<TicketDate />`, today's
 date ("Sat, Oct 10") in the viewer's own time zone: the server runs in UTC,
 so it renders nothing and the browser fills it in. `<DateStamp />` (same
 file) is today's date as a round rubber stamp in `stamp-red`: the venue
@@ -233,7 +234,8 @@ SVG filter); its accessible name is the date.
 - `<WallCard>`: a one-piece ticket on the wall (`ticket-cut`, padded inside),
   for cards: empty states, errors, "Where to watch". `as="section"` with
   `aria-labelledby` when it has a heading of its own.
-- `<TearLine />`: the `perforation-dots` row at the top of a stub piece.
+- `<TearLine />`: the `perforation-dots` row at the top of a stub piece
+  (`small` on a small ticket: the holes start closer to the edges).
 A ticket with a stub is two pieces of `paper` (`app/ui.ts`: `bg-ticket
 paper-grain`) inside a `WallTicket`: `ticket-cut-top`, then
 `ticket-cut-stub` with `-mt-px` and a `TearLine`. Each piece gets top and
@@ -258,9 +260,12 @@ usable like Tailwind ones.
   ticket would show a plain rectangle until the page's JavaScript loads.
 - `ticket-cut`: the same cuts for a ticket in one piece (four cut corners,
   bites down both sides). `WallCard` uses it.
+- `ticket-cut-small`: add it to a small ticket's pieces (the /rate cards):
+  8px corners and a 16px notch instead of 12px and 26px. The cuts read their
+  sizes from two CSS variables (`--ticket-corner`, `--ticket-notch`), which
+  this sets.
 - `side-notches-cut`: one 18px notch in the middle of each side, cut
-  through (the pink nudge). Use it instead of `SideNotches`, whose
-  page-colored circles only work on a panel.
+  through (the pink tickets: the home page's nudge, /rate's count).
 - `stub-notches-cut`: a 26px notch at the top and bottom edge, 80px in,
   where a list's ticket stub tears off (/lists).
 - `printed-frame`: a heavy `ink` rule with a thin one just inside it.
@@ -330,13 +335,16 @@ it.
   `bg-primary text-on-primary`, League Gothic capitals `text-3xl`, 56px
   tall, hover `primary-hover`.
 - *Secondary*: no fill, 2px `ink` outline, League Gothic capitals `text-xl`;
-  on hover it fills with `ink` and the text turns `page`. Give it a fill
-  (`bg-page`) if it ever floats over the art.
+  on hover it fills with `ink` and the text turns `page`. Not on the art,
+  where the outline would vanish: see *Secondary on the art*.
 - *Ink block* (`fieldSecondaryButton`, "Add" beside a field on a panel):
   solid `ink` with `ticket`-colored League Gothic, hover `primary`. A field
   that sits straight on the art (the home search) uses the *lavender block*
   instead (`fieldTicketButton`: `bg-ticket`, `ink` text, hover `card`), since
   `ink` would vanish into the dark wall.
+- *Secondary on the art* (`secondaryButtonOnArt`, "Show more movies" under
+  /rate's tickets): the same lavender block at the secondary size (44px,
+  `text-xl`).
 - *Quiet* (Remove, Sign out, Back): no fill, DM Mono capitals `text-xs`,
   `text-ink`, underlined on hover.
 - *Destructive* (Delete list): `text-danger` with a 2px `danger` outline; never
@@ -466,20 +474,26 @@ Anything focusable that could end up behind it gets `scroll-mb-28` on the
 element that actually receives focus (the checkbox, not its card), so the
 browser scrolls it clear of the bar.
 
-**Rating grid** (/rate): each movie is a small ticket (poster with a 2px
-`ink` outline, the title in League Gothic `text-xl` with "(2014)" in DM Mono),
-then, pinned to the bottom with `mt-auto` so they line up across a row, a
-`<Perforation small />` (16px notches; the grid's `gap-3` leaves room for
-them) and the stub with the buttons. Liked / not for me are square icon
+**Rating grid** (/rate, on the wall since 2026-10-14): "Done" on the art,
+and across from it the rated count ("Rated so far" + the number in League
+Gothic), a small pink side ticket (`side-notches-cut`). It sits in that row,
+not in one of its own, so the first row of movies (buttons included) fits
+on a phone's first screen. Then the how-to ("Thumbs up if you liked
+it...") on a taped `WallCard`: it's too long for the art, and it's what
+explains the thumbs. Each movie is a small ticket on the wall in two pieces,
+like /pick's but cut smaller (`ticket-cut-small`): the poster with a 2px
+`ink` outline and the title in League Gothic `text-xl` with "(2014)" in DM
+Mono, then a `<TearLine small />` and the stub with the buttons. The top
+piece grows (`flex-1`), so the stubs line up across a row. Liked / not for me are square icon
 buttons side by side (44px tall, 2px `ink` outline, filled with `ink` on
 hover and while pressed), the one place the app uses icon-only buttons: on a
 phone a card is ~158px wide, too narrow for two labeled buttons, and three
 stacked ones would make each card very tall. They carry the label as
 `aria-label` and `title`, and the page's intro explains the thumbs.
 "Haven't seen" stays a labeled quiet button (it only hides the card; nothing
-is saved). The rated count is a small pink side ticket ("Rated so far" +
-the number in League Gothic). "Show more movies" is secondary while there
-are movies to rate and the primary button once there are none left.
+is saved). "Show more movies" sits on the art: `secondaryButtonOnArt` while
+there are movies to rate, the primary button once there are none left
+("That's all of these" is then a `WallCard`).
 
 **Empty and error states:** a ticket with the icon in a square 2px `ink`
 box (`Tv`, `SearchX`, `CloudOff`, `Film`...), a League Gothic `text-4xl` heading that says what happened, a
@@ -496,7 +510,10 @@ movie page's tickets, its band up against the paper's top edge), pulsing only wi
 message is printed on the skeleton's band ("Finding a movie…", passed as the
 skeleton's `children`, which sit outside its `aria-hidden` part), in the
 same font and height as "Admit two", so nothing moves when the pick arrives;
-the movie page does the same with "Loading the movie…". A band's text needs
+the movie page does the same with "Loading the movie…". /rate's loading
+screen draws its tickets the same way, with one block per line of the
+how-to text (each `h-lh` in the text's own size), so nothing moves when the
+page arrives. A band's text needs
 `leading-none` on the big span itself: `text-3xl` sets its own line height,
 so `leading-none` on the band alone isn't enough. Trade-off: a page with `loading.tsx`
 streams, so a `notFound()` there answers HTTP 200 (with a `noindex` tag)
@@ -533,9 +550,9 @@ text-on-soft` with the `Info` icon. The "Saved: you liked X." confirmation is
 a sage `tag` with `CircleCheck`, inside an always-present `aria-live` region.
 The taste nudge ("Rate a few movies you've seen") is a small pink side
 ticket (`bg-ticket-pink`, 13px text, the link underlined in `ink`), no icon:
-on a panel (/rate's "Rated so far") with `SideNotches`; on the home page on
-the wall (`side-notches-cut` + `on-the-wall`, see "Home page"), under the
-picker ticket, so the main button stays on a phone's first screen.
+on the wall (`side-notches-cut` + `on-the-wall`, see "Home page"), under the
+picker ticket, so the main button stays on a phone's first screen. /rate's
+"Rated so far" count is the same small pink ticket.
 
 **Icons:** lucide-react only, `aria-hidden` when decorative, 16-20px inline.
 **No emojis anywhere in the UI.**

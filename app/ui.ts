@@ -35,6 +35,11 @@ export const focusRingOnArt = "focus-visible:outline-on-night";
  *  ticket): night-colored text with a dark shadow. */
 export const quietButtonOnArt = `${button} h-11 px-2 font-body text-xs font-medium uppercase tracking-wider text-on-night text-shadow-md text-shadow-night underline-offset-4 hover:underline ${focusRingOnArt}`;
 
+/** A secondary button straight on the room art ("Show more movies" under
+ *  /rate's tickets): an ink outline would vanish into the dark wall, so it's
+ *  a lavender block, like `fieldTicketButton`. */
+export const secondaryButtonOnArt = `${button} h-11 px-4 text-xl leading-none bg-ticket font-heading uppercase tracking-wide text-ink hover:bg-card ${focusRingOnArt}`;
+
 /** Deleting something for good: a red outline and red text, never the
  *  primary style, and always behind a confirmation (ConfirmButton). */
 export const dangerButton = `${button} h-11 px-4 border-2 border-danger font-heading text-xl uppercase leading-none tracking-wide text-danger hover:bg-danger-soft`;
