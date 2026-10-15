@@ -139,10 +139,11 @@ or controls are DM Mono `text-[11px]` capitals with wide tracking
 ## 2. Components
 
 These are written once as class strings in `app/ui.ts` (`primaryButton`,
-`secondaryButton`, `quietButton`, `dangerButton`, `field`,
-`fieldPrimaryButton`, `fieldSecondaryButton`, `fieldTicketButton`,
-`toggleChip`, `toggleButton`, `toggleButtonBase`, `card`, `posterGrid`,
-`sectionLabel`, `sectionLabelOnArt`, `tag`, `providerTag`, `banner`). Pages
+`secondaryButton`, `quietButton`, `quietButtonOnArt`, `dangerButton`,
+`field`, `fieldPrimaryButton`, `fieldSecondaryButton`, `fieldTicketButton`,
+`toggleChip`, `toggleButton`, `toggleButtonBase`, `card`, `pagePanel`,
+`wallColumn`, `paper`, `posterGrid`, `sectionLabel`, `sectionLabelOnArt`,
+`smallPrintOnArt`, `tag`, `providerTag`, `banner`). Pages
 import them instead of re-typing classes; changing a
 component = changing it there. `app/movie-card-skeleton.tsx` is the shared
 loading placeholder for a `posterGrid` card.
@@ -154,18 +155,24 @@ page rebuilt its layout into tickets (home, /pick, the movie page, lists,
 section below describes the ticket look. `app/` has no rounded-corner
 classes left except `rounded-full` on things that are round in real life
 (service logos, the notches), and the `--radius-*` tokens are gone.
-On 2026-10-14 the home page moved off its panel ("ticket on the wall", see
-"Home page"); the other pages still sit on a `pagePanel`.
+**Moving onto the wall (from 2026-10-14):** pages leave their panel one PR
+at a time and put their tickets straight on the room's wall ("Paper on the
+wall" below). Done: home, then /pick and the movie page (with their loading
+and error screens). Still on a `pagePanel`: lists, /rate, settings; login,
+"not found" and the lists error still float a plain card.
 
 **Page:** the room art fills the screen behind everything (`app/layout.tsx`);
 each page's `<main>` is a `pagePanel` (opaque `bg-page`,
 `shadow-soft`, `px-4 py-8`, `sm:px-8 sm:py-10`) plus its width (`max-w-2xl`,
-`max-w-3xl`, `max-w-4xl`), centered. The home page has no panel: its header,
-ticket and search sit straight on the art. **Text on the art** is kept short
-and always `on-night` with `text-shadow-md text-shadow-night`, over the dark
-wall and floor: the home header, labels (`sectionLabelOnArt`), the home
-search's "no results" line, the footer credits. Anything longer goes on
-paper (a panel or a ticket).
+`max-w-3xl`, `max-w-4xl`), centered. Pages on the wall have no panel: their
+`<main>` is a `wallColumn` (`app/ui.ts`: centered, 16px sides on phones, no
+background) plus its width (home `max-w-152`, /pick and the movie page
+`max-w-176`), and their tickets sit straight on the art. **Text on the art**
+is kept short and always `on-night` with `text-shadow-md text-shadow-night`,
+over the dark wall and floor: the home header, labels (`sectionLabelOnArt`),
+back links (`quietButtonOnArt`), small print (`smallPrintOnArt`, the
+JustWatch credit under /pick's ticket), the home search's "no results" line,
+the footer credits. Anything longer goes on paper (a panel or a ticket).
 Pages whose content is one card (login, not found, the error pages) skip the
 panel: the card floats on the art and is the panel. Login is a full ticket
 there: a band with "Admit one" and "Members only" (accounts are invite-only),
@@ -206,8 +213,27 @@ file) is today's date as a round rubber stamp in `stamp-red`: the venue
 around the ring, the weekday and "OCT 14" in the middle, wobbly worn ink (an
 SVG filter); its accessible name is the date.
 
-**Paper on the wall** (the home page, which has no panel): small `@utility`
-classes in `app/globals.css`, usable like Tailwind ones.
+**Paper on the wall** (pages with no panel). Three shared parts in
+`app/ticket.tsx` put it together:
+- `<WallTicket>`: the wrapper. A little tilt (`tilt`, default `-rotate-1`;
+  pass a literal class such as `rotate-[0.6deg]` so Tailwind sees it), the
+  `on-the-wall` outline, and with `tape` a strip of `washi-tape` over the top
+  edge (the one main ticket of a page). A ticket with a band passes
+  `tapeTop="-top-6 sm:-top-3.5"`: on phones the band's print fills the
+  width, so the tape sits higher, over the band's empty top edge.
+- `<WallCard>`: a one-piece ticket on the wall (`ticket-cut`, padded inside),
+  for cards: empty states, errors, "Where to watch". `as="section"` with
+  `aria-labelledby` when it has a heading of its own.
+- `<TearLine />`: the `perforation-dots` row at the top of a stub piece.
+A ticket with a stub is two pieces of `paper` (`app/ui.ts`: `bg-ticket
+paper-grain`) inside a `WallTicket`: `ticket-cut-top`, then
+`ticket-cut-stub` with `-mt-px` and a `TearLine`. Each piece gets top and
+bottom padding only (that's where the side bites stop) and an inner element
+pads it sideways. A band runs up to the paper's top edge with a negative
+top margin (`-mt-4 sm:-mt-5`) over the piece's padding.
+
+The cuts and the rest are small `@utility` classes in `app/globals.css`,
+usable like Tailwind ones.
 - `on-the-wall`: traces the room art's `art-outline` (2px) around whatever
   paper is inside, cut-outs included, plus a soft shadow onto the wall. It's
   four 2px `drop-shadow`s, because a border can only draw a rectangle.
@@ -221,6 +247,8 @@ classes in `app/globals.css`, usable like Tailwind ones.
   stub overlaps the top piece by 1px (`-mt-px`), or the tilted edges leave a
   faint line between them. Pure CSS on purpose: a script measuring the
   ticket would show a plain rectangle until the page's JavaScript loads.
+- `ticket-cut`: the same cuts for a ticket in one piece (four cut corners,
+  bites down both sides). `WallCard` uses it.
 - `side-notches-cut`: one 18px notch in the middle of each side, cut
   through (the pink nudge). Use it instead of `SideNotches`, whose
   page-colored circles only work on a panel.
@@ -321,8 +349,10 @@ it?"). Changed 2026-10-10 from sage / peach fills: pastel fills on the
 lavender ticket stock clashed with the ticket look, where "chosen" is always
 ink; the words and the filled thumb carry the meaning instead.
 
-**Pick page** (/pick): one printed ticket, `shadow-soft`, under a quiet
-"Change what you're in the mood for" link:
+**Pick page** (/pick, on the wall since 2026-10-14): one printed ticket,
+taped up (`WallTicket` with `tape` and the band's `tapeTop`, two pieces of
+`paper`), under a quiet "Change what you're in the mood for" link on the art
+(`quietButtonOnArt`):
 - the **band**: "Admit one" / "Admit two"... (how many are watching, as a
   word up to six) and "Tonight · Sat, Oct 10" (`TicketDate`). The band has
   `leading-none`, so it's exactly as tall as the loading screen's band;
@@ -340,10 +370,12 @@ ink; the words and the filled thumb carry the meaning instead.
   TMDB", "− Alex wasn't into it" (the + and − are `aria-hidden`);
 - the overview (13px, 4 lines at most) and, when someone watching has no
   services, the `soft` info banner;
-- the `Perforation`, then the stub: "Pick another" (or "Start over") full
+- the tear line, then the stub: "Pick another" (or "Start over") full
   width, then "Seen it already?" (Liked it / Not for me, splitting the width)
   and "Your lists" (`ListToggles`), side by side from `sm`.
-"Availability data provided by JustWatch." stays under the ticket.
+"Availability data provided by JustWatch." stays under the ticket, on the art
+(`smallPrintOnArt`). With no pick, the "nothing found" and "no services"
+messages are a taped `WallCard` where the ticket would be.
 
 **Movie with its poster** (`posterGrid`, /pick and the movie page): the poster
 sits beside the title, 120px wide on phones (so the title and what follows fit
@@ -353,14 +385,16 @@ the title is the `h1`, League Gothic `text-4xl` on phones and `text-6xl`
 from `sm` (`break-words`, so a long title wraps beside the poster), with
 "(2015)" on its own line under it.
 
-**Movie page:** a ticket like /pick's. The band says "Feature presentation"
+**Movie page** (on the wall since 2026-10-14): a taped ticket like /pick's,
+in two pieces. The band says "Feature presentation"
 and, on the right, "No. 286217" (TMDB's number for the movie, as the ticket's
 serial number). Then the `posterGrid`: poster, title and year, then
 `TicketFields` (Released "Sep 30, 2015", Runtime, Rated, Genre), the tagline
 in quotes and the overview, under the poster on phones (too long for the
-narrow column beside it). Below the `Perforation`, the stub: your rating
-and your lists, side by side from `sm`. Under it a second ticket, "Where to
-watch in the US": a `dl` with one row per way of watching (Stream / Free /
+narrow column beside it). Below the tear line, the stub: your rating and
+your lists, side by side from `sm`. Under it a second ticket, a `WallCard`
+tilted the other way (`rotate-[0.6deg]`, no tape), "Where to watch in the
+US": a `dl` with one row per way of watching (Stream / Free /
 Rent / Buy; label beside the services from `sm`, above them on phones), each
 service a `providerTag` (logo + name: on a phone you can't hover a bare logo
 to learn its name), then the JustWatch credit and the TMDB link. The back link
@@ -434,7 +468,8 @@ as secondary. When there is only one way forward, it is the primary button
 follows the device's dark mode).
 
 **Loading:** the shape of what's coming in square `soft` blocks on a ticket
-(`MovieCardSkeleton`: same grid), pulsing only with
+(`MovieCardSkeleton`: same grid, taped to the wall like /pick's and the
+movie page's tickets, its band up against the paper's top edge), pulsing only with
 `motion-safe:animate-pulse`, plus a short `aria-live` message. On /pick the
 message is printed on the skeleton's band ("Finding a movie…", passed as the
 skeleton's `children`, which sit outside its `aria-hidden` part), in the

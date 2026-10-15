@@ -3,8 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Film } from "lucide-react";
 import { signOut } from "@/app/login/actions";
+import { WallTicket } from "@/app/ticket";
 import { DateStamp } from "@/app/ticket-date";
-import { field, fieldTicketButton, sectionLabel, sectionLabelOnArt } from "@/app/ui";
+import { field, fieldTicketButton, sectionLabel, sectionLabelOnArt, wallColumn } from "@/app/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getMovieGenres, releaseYear, searchMovies, tmdbImageUrl } from "@/lib/tmdb";
 import { RecommendForm, type FormPerson } from "./recommend-form";
@@ -72,13 +73,10 @@ export default async function Home(props: PageProps<"/">) {
         </nav>
       </header>
 
-      <main className="mx-auto w-full max-w-152 px-4 sm:px-0">
-        {/* The picker: a ticket taped to the wall, a little crooked. The tape
-            and the tilt are this wrapper's; on-the-wall traces the room art's
-            outline around the paper's cut shape (globals.css). */}
-        <div className="relative mt-3.5 -rotate-1">
-          <span aria-hidden="true" className="washi-tape absolute -top-3.5 left-1/2 z-10 h-7.5 w-32 -translate-x-1/2 -rotate-4" />
-          <section id="content" aria-labelledby="picker-title" className="on-the-wall">
+      <main className={`${wallColumn} max-w-152`}>
+        {/* The picker: a ticket taped to the wall, a little crooked. */}
+        <WallTicket tape className="mt-3.5">
+          <section id="content" aria-labelledby="picker-title">
             <RecommendForm
               people={people}
               genres={genres.filter((g) => !HIDDEN_GENRES.has(g.id)).sort((a, b) => a.name.localeCompare(b.name))}
@@ -95,13 +93,13 @@ export default async function Home(props: PageProps<"/">) {
               </h2>
             </RecommendForm>
           </section>
-        </div>
+        </WallTicket>
 
         {/* While your taste is still unknown: a small pink ticket on the wall,
             tilted the other way, its notches cut through to the room. Below
             the picker, so "Recommend a movie" stays on a phone's first screen. */}
         {ratingCount < FEW_RATINGS && (
-          <div className="on-the-wall mt-8 rotate-[0.8deg]">
+          <WallTicket tilt="rotate-[0.8deg]" className="mt-8">
             <p className="side-notches-cut bg-ticket-pink px-7.5 py-3.5 text-[13px] leading-relaxed text-pretty">
               <Link href="/rate" className="font-medium underline underline-offset-3">
                 Rate a few movies you&rsquo;ve seen
@@ -110,7 +108,7 @@ export default async function Home(props: PageProps<"/">) {
               {/* Non-breaking spaces keep "(3 so far)" on one line. */}
               {ratingCount > 0 && ` (${ratingCount} so far)`}.
             </p>
-          </div>
+          </WallTicket>
         )}
 
         {/* action="" submits to this same page as /?q=... */}

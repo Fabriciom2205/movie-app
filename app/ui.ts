@@ -26,6 +26,10 @@ export const secondaryButton = `${button} h-11 px-4 text-xl leading-none ${secon
  *  underlined on hover. */
 export const quietButton = `${button} h-11 px-2 font-body text-xs font-medium uppercase tracking-wider text-ink underline-offset-4 hover:underline`;
 
+/** The same, straight on the room art (a page's back link above its
+ *  ticket): night-colored text with a dark shadow. */
+export const quietButtonOnArt = `${button} h-11 px-2 font-body text-xs font-medium uppercase tracking-wider text-on-night text-shadow-md text-shadow-night underline-offset-4 hover:underline`;
+
 /** Deleting something for good: a red outline and red text, never the
  *  primary style, and always behind a confirmation (ConfirmButton). */
 export const dangerButton = `${button} h-11 px-4 border-2 border-danger font-heading text-xl uppercase leading-none tracking-wide text-danger hover:bg-danger-soft`;
@@ -69,6 +73,20 @@ export const card = "bg-ticket p-5 sm:p-6";
  *  art. Pages whose content is a single card (login, not found, errors) skip
  *  it: there the card is the panel. */
 export const pagePanel = "mx-auto w-full bg-page px-4 py-8 shadow-soft sm:px-8 sm:py-10";
+
+/** A page with no panel: its tickets sit straight on the room's wall
+ *  (MASTER.md "Paper on the wall"). Add the page's width, e.g.
+ *  `${wallColumn} max-w-176`. 16px sides on phones; wider up, the layout's
+ *  own 24px. */
+export const wallColumn = "mx-auto w-full px-4 pb-8 sm:px-0";
+
+/** Ticket paper on the wall: lavender stock with a faint grain. Add a cut
+ *  from globals.css (`ticket-cut`, or `ticket-cut-top` + `ticket-cut-stub`)
+ *  with top and bottom padding only, and pad an inner element sideways. */
+export const paper = "bg-ticket paper-grain";
+
+/** Small print straight on the art (the JustWatch credit under a ticket). */
+export const smallPrintOnArt = "text-xs text-on-night/75 text-shadow-md text-shadow-night";
 
 /** A movie with its poster: poster beside the title (120px on phones, so the
  *  title and what comes right after fit on the first screen; 200px wider up),
