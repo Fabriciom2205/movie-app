@@ -2,14 +2,16 @@
 
 import Link from "next/link";
 import { CloudOff } from "lucide-react";
-import { card, primaryButton, quietButton } from "@/app/ui";
+import { WallCard } from "@/app/ticket";
+import { primaryButton, quietButton, wallColumn } from "@/app/ui";
 
 // Shown when something under /lists throws: a failed database read, or one of
-// the button actions (remove, delete, leave) failing.
+// the button actions (remove, delete, leave) failing. A ticket on the wall,
+// below the back link's room, like /pick's error.
 export default function ListsError({ retry }: { error: Error & { digest?: string }; retry: () => void }) {
   return (
-    <main id="content" className="mx-auto w-full max-w-2xl px-4 py-8 sm:py-10">
-      <div className={`mt-14 shadow-soft ${card}`}>
+    <main id="content" className={`${wallColumn} max-w-2xl`}>
+      <WallCard tape className="mt-17">
         <div className="mb-4 grid size-12 place-items-center border-2 border-ink">
           <CloudOff aria-hidden="true" className="size-6" />
         </div>
@@ -23,7 +25,7 @@ export default function ListsError({ retry }: { error: Error & { digest?: string
             Back to your lists
           </Link>
         </div>
-      </div>
+      </WallCard>
     </main>
   );
 }

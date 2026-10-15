@@ -7,7 +7,8 @@ design decision changes, change it here first (with the reason), then in code.
 every page is an original illustration of a purple bedroom at night (moon in
 the window, sleeping cat, fairy lights, plushies; see "Background art"
 below). Each page's content sits on a light lavender panel in front of it
-(except the home page, whose ticket is taped straight onto the room's wall),
+(except the pages already moved onto the room's wall, whose tickets are
+taped straight onto it: see "Moving onto the wall" under Components),
 and the things on it are printed tickets: lavender ticket stock, square
 corners, tall League Gothic capitals, typewriter-like DM Mono for the rest,
 dashed perforations with round notches, a purple band and a rubber stamp.
@@ -55,7 +56,7 @@ name. **Pages never use raw hex values or Tailwind's built-in palette**
 | Token (`--color-*`) | Value | Use | Contrast |
 |---|---|---|---|
 | `night` | `#241F42` | Behind the room art: the body, the browser bar on phones, below the art band on phones | |
-| `on-night` | `#EDE6FA` | Text straight on the room art, always with `text-shadow-md text-shadow-night`: the home header, `sectionLabelOnArt`, the footer credits | 12.8:1 on night; 9.9:1 on the wall's lightest color (`#372C6E`) |
+| `on-night` | `#EDE6FA` | Text straight on the room art, always with `text-shadow-md text-shadow-night`: the home header, `sectionLabelOnArt`, `textOnArt`, the footer credits; also the focus ring on the art (`focusRingOnArt`) | 12.8:1 on night; 9.9:1 on the wall's lightest color (`#372C6E`) |
 | `page` | `#F5EDF5` | The panel each page's content sits on (lavender mist); also the round notches cut into tickets | |
 | `ticket` | `#D2B9E8` | Ticket stock: cards, the main panel of each page's content | 1.55:1 against page (decorative edge, plus `shadow-soft`) |
 | `ticket-pink` | `#F3C6D8` | A second ticket color, for small side tickets (the taste nudge) | |
@@ -63,7 +64,7 @@ name. **Pages never use raw hex values or Tailwind's built-in palette**
 | `line` | `#E5D5EA` | Faint dividers only; anything that should read as an edge is `ink` | decorative |
 | `ink` | `#2E2433` | Main text (plum-black), outlines of buttons, fields and chips | 12.9:1 on page, 8.4:1 on ticket, 9.8:1 on ticket-pink, 14.1:1 on card |
 | `ink-muted` | `#4F3D60` | Secondary text, labels, metadata | 8.4:1 on page, 5.5:1 on ticket, 6.4:1 on ticket-pink, 9.2:1 on card |
-| `primary` | `#6A4896` | The ONE main action per screen; the band across the top of a ticket; focus rings | white text 7.1:1; ring 6.2:1 on page, 4.0:1 on ticket, 6.7:1 on card |
+| `primary` | `#6A4896` | The ONE main action per screen; the band across the top of a ticket; focus rings | white text 7.1:1; ring 6.2:1 on page, 4.0:1 on ticket, 6.7:1 on card, but only 1.7:1 on the wall (there the ring is `on-night`) |
 | `primary-hover` | `#5B3D8A` | Main action on hover (darker, never lighter) | white text 8.5:1 |
 | `on-primary` | `#FFFFFF` | Text/icons on `primary` | |
 | `stamp` | `#4A2F72` | The rubber stamp on a ticket ("Because you liked..."): text and double border | 6.1:1 on ticket, 9.4:1 on page |
@@ -143,7 +144,8 @@ These are written once as class strings in `app/ui.ts` (`primaryButton`,
 `field`, `fieldPrimaryButton`, `fieldSecondaryButton`, `fieldTicketButton`,
 `toggleChip`, `toggleButton`, `toggleButtonBase`, `card`, `pagePanel`,
 `wallColumn`, `paper`, `posterGrid`, `sectionLabel`, `sectionLabelOnArt`,
-`smallPrintOnArt`, `tag`, `providerTag`, `banner`). Pages
+`smallPrintOnArt`, `textOnArt`, `focusRingOnArt`, `tag`, `providerTag`,
+`banner`). Pages
 import them instead of re-typing classes; changing a
 component = changing it there. `app/movie-card-skeleton.tsx` is the shared
 loading placeholder for a `posterGrid` card.
@@ -158,8 +160,9 @@ classes left except `rounded-full` on things that are round in real life
 **Moving onto the wall (from 2026-10-14):** pages leave their panel one PR
 at a time and put their tickets straight on the room's wall ("Paper on the
 wall" below). Done: home, then /pick and the movie page (with their loading
-and error screens). Still on a `pagePanel`: lists, /rate, settings; login,
-"not found" and the lists error still float a plain card.
+and error screens), then the lists pages (with their error screen). Still
+on a `pagePanel`: /rate, settings; login and "not found" still float a
+plain card.
 
 **Page:** the room art fills the screen behind everything (`app/layout.tsx`);
 each page's `<main>` is a `pagePanel` (opaque `bg-page`,
@@ -167,12 +170,18 @@ each page's `<main>` is a `pagePanel` (opaque `bg-page`,
 `max-w-3xl`, `max-w-4xl`), centered. Pages on the wall have no panel: their
 `<main>` is a `wallColumn` (`app/ui.ts`: centered, 16px sides on phones, no
 background) plus its width (home `max-w-152`, /pick and the movie page
-`max-w-176`), and their tickets sit straight on the art. **Text on the art**
+`max-w-176`, lists `max-w-2xl`), and their tickets sit straight on the art. **Text on the art**
 is kept short and always `on-night` with `text-shadow-md text-shadow-night`,
 over the dark wall and floor: the home header, labels (`sectionLabelOnArt`),
 back links (`quietButtonOnArt`), small print (`smallPrintOnArt`, the
-JustWatch credit under /pick's ticket), the home search's "no results" line,
-the footer credits. Anything longer goes on paper (a panel or a ticket).
+JustWatch credit under /pick's ticket), a page's title and the line under
+it (`textOnArt`, the lists pages), the home search's "no results" line, the
+footer credits. Anything longer goes on paper (a panel or a ticket).
+**Focus rings on the art:** the `primary` ring is only 1.7:1 against the
+wall, so anything focusable whose ring lands on the art (a back link, the
+home header links, a field or button on the art, a ticket that is itself a
+link) adds `focusRingOnArt`, an `on-night` ring (9.9:1). `quietButtonOnArt`
+has it built in. Controls on paper keep the `primary` ring.
 Pages whose content is one card (login, not found, the error pages) skip the
 panel: the card floats on the art and is the panel. Login is a full ticket
 there: a band with "Admit one" and "Members only" (accounts are invite-only),
@@ -252,6 +261,8 @@ usable like Tailwind ones.
 - `side-notches-cut`: one 18px notch in the middle of each side, cut
   through (the pink nudge). Use it instead of `SideNotches`, whose
   page-colored circles only work on a panel.
+- `stub-notches-cut`: a 26px notch at the top and bottom edge, 80px in,
+  where a list's ticket stub tears off (/lists).
 - `printed-frame`: a heavy `ink` rule with a thin one just inside it.
 - `perforation-dots`: the tear line as a row of printed holes (6px tall).
 - `washi-tape`: a see-through pink strip with torn ends, like the tape on
@@ -313,7 +324,8 @@ screen. It ends at 673px with one person and 780px with two (seats shown);
 the panel version had 685px and 793px. Re-measure if anything is added above
 it.
 
-**Buttons** (all square, at least 44px tall, visible focus ring in `primary`):
+**Buttons** (all square, at least 44px tall, visible focus ring in `primary`;
+`on-night` when the ring lands on the art):
 - *Primary* (one per screen: "Recommend a movie", "Pick another", "Save", "Create"):
   `bg-primary text-on-primary`, League Gothic capitals `text-3xl`, 56px
   tall, hover `primary-hover`.
@@ -402,25 +414,35 @@ says "Home" because you can arrive from search, /pick or a list. The release
 date is formatted in UTC: a date with no time is midnight UTC, so formatting
 it in New York time would show the day before.
 
-**Lists:** `/lists` has the title, the create form (the page's one primary
-button), then each list as a **ticket stub** link: a stub 80px wide with the
-count ("3" in League Gothic over "movies"), a dashed `ink`/45% line with a
-round notch where it meets the top and bottom edges (circles in `bg-page`,
-centered on the line; the list uses `gap-4` so the notches have room), then
-the name (League Gothic `text-3xl`, truncated) over "With Alex" / "Just you"
-and a `ChevronRight`. Hover = a 2px `ink` outline.
-A list's page: the name as the `h1` and who it's shared with; the movies as
-small tickets (as in the home search results: poster, dashed line, title,
-year · runtime) with a quiet "Remove" inside; the outline shows only when the
-movie link is hovered (`has-[a:hover]:border-ink`), not when Remove is.
-"Seen by" is the same small print as /pick, you first: "+ You liked it",
-"− Alex wasn't into it", else "Not seen yet". "Who's on this list" is a
-ticket: each member has a seat letter (A, B...) in a square `ink` box
-(decorative, `aria-hidden`), the name and "Created the list"; for the
-creator, the invite form sits below a `Perforation`, like a ticket's stub.
-"List settings" is a third ticket: rename, then Delete (`dangerButton`,
-`Trash2`) or Leave (`secondaryButton`, `LogOut`) plus one line saying what
-it does; both confirm first.
+**Lists** (on the wall since 2026-10-14): `/lists` has "Home"
+(`quietButtonOnArt`), then on the art the title, one line under it
+(`textOnArt`) and the create form (label `sectionLabelOnArt`; "Create" stays
+the page's one primary button, `fieldPrimaryButton`). Then each list as a
+**ticket stub** link on the wall (`on-the-wall` on the `<li>`): a stub 80px
+wide with the count ("3" in League Gothic over "movies"), a dashed `ink`/45%
+line, a round 26px notch cut through to the room where the line meets the
+top and bottom edges (`stub-notches-cut`), then the name (League Gothic
+`text-3xl`, truncated) over "With Alex" / "Just you" and a `ChevronRight`.
+The paper is a layer behind the print, and the cut is on that layer, not on
+the link, so the link's focus ring isn't cut too. Hover lightens the stock to
+`soft`, as on the home search results. The tickets are 24px apart (`gap-6`):
+closer, two notches run into one dark blob. "No lists yet" is a line on the
+art.
+A list's page: "Your lists", the name as the `h1`, who it's shared with and
+the "Movies (3)" heading, all on the art; the movies as small tickets on the
+wall (as in the home search results: poster, dashed line, title, year ·
+runtime) with a quiet "Remove" inside; the stock lightens to `soft` only
+when the movie link is hovered (`has-[a:hover]:bg-soft`), not Remove. With no
+movies, a `WallCard` says so. "Seen by" is the same small print as /pick,
+you first: "+ You liked it", "− Alex wasn't into it", else "Not seen yet".
+"Who's on this list" is the taped ticket: each member has a seat letter (A,
+B...) in a square `ink` box (decorative, `aria-hidden`), the name and
+"Created the list". For the creator it's two pieces, with the invite form on
+the stub below a `TearLine`; for everyone else one piece (`ticket-cut`).
+"List settings" is a `WallCard` tilted the other way: rename, then Delete
+(`dangerButton`, `Trash2`) or Leave (`secondaryButton`, `LogOut`) plus one
+line saying what it does; both confirm first. The lists error screen is a
+taped `WallCard` where the content would start, like /pick's.
 
 **Settings:** two tickets, "About you" (name + country side by side from
 `sm`) and "Your streaming services", each with a League Gothic `text-3xl`
@@ -486,8 +508,10 @@ focus = 2px `primary` ring. Labels above as `sectionLabel` (DM Mono capitals).
 Use a visible `<label htmlFor>` (an id from `useId()`), not only `aria-label`.
 A button in the same row as a field is 48px too (`fieldPrimaryButton` /
 `fieldSecondaryButton`), so they line up. Under a form: the error in
-`text-danger`, or what worked ("Renamed.") as a sage `tag` with `CircleCheck`,
-inside an always-present `aria-live` region.
+`text-danger` (on the art: a `bg-danger-soft text-on-danger-soft` tag with
+`CircleAlert`, since red text vanishes into the wall), or what worked
+("Renamed.") as a sage `tag` with `CircleCheck`, inside an always-present
+`aria-live` region.
 
 **Posters:** square; the big ones on tickets get a 2px `ink` outline.
 Placeholders are `bg-soft` with a `Film` icon in `on-soft`. Always `next/image`.

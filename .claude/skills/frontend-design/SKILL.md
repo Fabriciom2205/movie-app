@@ -7,8 +7,9 @@ description: How to build or change any page, component or style in this movie a
 
 The look is decided in `design-system/movie-night/MASTER.md`: lavender
 cinema tickets (square corners, perforations, a purple band, a rubber stamp)
-on light panels in front of a moonlit-room illustration (the home page's
-ticket is taped straight onto the room's wall instead), League Gothic +
+on light panels in front of a moonlit-room illustration (pages are moving
+off the panels one by one, their tickets taped straight onto the room's
+wall), League Gothic +
 DM Mono. Never the round "bubbly" look it replaced (pills, soft cards).
 **Read that file before changing UI.** It wins over any other suggestion,
 including the UI UX Pro Max skill's.
@@ -29,7 +30,7 @@ including the UI UX Pro Max skill's.
    `node .claude/skills/frontend-design/scripts/contrast.mjs "#FG" "#BG"`.
 4. **Accessible by construction:** real `<button>`, `<a>`/`<Link>`, `<label>`,
    checkboxes and `aria-pressed`; visible focus (`focus-visible` ring in
-   `primary`); `role="alert"` / `aria-live` for messages; destructive actions
+   `primary`, or `focusRingOnArt` when the ring lands on the room art); `role="alert"` / `aria-live` for messages; destructive actions
    confirm first and must not work before JavaScript loads (see
    `ConfirmButton` in `app/lists/forms.tsx`).
 5. **Mobile first:** must work at 375px wide with no sideways scroll; tap
@@ -43,11 +44,12 @@ including the UI UX Pro Max skill's.
    provided by JustWatch" wherever provider data shows.
 9. **Text on the room art is short and always in the night style.** A page's
    content goes in a `pagePanel` `<main>` (or, for a single-card page, in
-   that card). The home page is the exception: no panel, its ticket is paper
-   taped to the wall (MASTER.md "Home page" and "Paper on the wall"). Text
-   straight on the art (the home header, labels via `sectionLabelOnArt`, the
-   footer credits) is `on-night` with `text-shadow-md text-shadow-night`;
-   anything longer goes on paper.
+   that card), except on pages already moved onto the wall: no panel, their
+   tickets are paper taped to the wall (MASTER.md "Moving onto the wall" and
+   "Paper on the wall"). Text straight on the art (the home header, a page's
+   title via `textOnArt`, labels via `sectionLabelOnArt`, the footer credits)
+   is `on-night` with `text-shadow-md text-shadow-night`; anything longer
+   goes on paper.
 
 ## Workflow for a UI change
 
