@@ -39,7 +39,7 @@ export default async function MoviePage(props: PageProps<"/movie/[id]">) {
     { label: "Buy", providers: providers?.buy },
   ].filter((row): row is { label: string; providers: WatchProvider[] } => !!row.providers?.length);
 
-  // No panel: two tickets on the room's wall (MASTER.md "Paper on the wall").
+  // Two tickets on the room's wall (MASTER.md "Paper on the wall").
   return (
     <main id="content" className={`${wallColumn} max-w-176`}>
       {/* Home, not "back": you can get here from search, /pick or a list. */}

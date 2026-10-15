@@ -69,8 +69,8 @@ export default async function ListPage(props: PageProps<"/lists/[id]">) {
   ]);
   const others = memberIds.filter((m) => m !== userId).map((m) => names.get(m) ?? "someone");
 
-  // No panel: the name and the headings sit on the room art, and everything
-  // else is a ticket on the wall (MASTER.md "Lists").
+  // The name and the headings sit on the room art, and everything else is
+  // a ticket on the wall (MASTER.md "Lists").
   return (
     <main id="content" className={`${wallColumn} max-w-2xl`}>
       <Link href="/lists" className={`${quietButtonOnArt} -ml-2`}>

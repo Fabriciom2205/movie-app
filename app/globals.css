@@ -2,20 +2,18 @@
 
 /* The Movie Night design tokens. design-system/movie-night/MASTER.md has the
    reasons and contrast numbers; change a value there first, then here.
-   Tailwind turns each one into utilities: --color-page -> bg-page, text-page,
-   border-page...; --shadow-soft -> shadow-soft. There are no radius tokens:
-   tickets are square, and only things that are round in real life (logos,
-   notches) use rounded-full. */
+   Tailwind turns each one into utilities: --color-ticket -> bg-ticket,
+   text-ticket, border-ticket... There are no radius tokens: tickets are
+   square, and only things that are round in real life (service logos) use
+   rounded-full. */
 @theme {
   /* Surfaces and text. The room art (app/moonlit-room.webp) is the backdrop;
-     page is the panel each page's content sits on; tickets sit on that. */
+     every page's tickets are taped straight onto its wall. */
   --color-night: #241F42;
   --color-on-night: #EDE6FA;
-  --color-page: #F5EDF5;
   --color-ticket: #D2B9E8;
   --color-ticket-pink: #F3C6D8;
   --color-card: #FFF8F6;
-  --color-line: #E5D5EA;
   --color-ink: #2E2433;
   --color-ink-muted: #4F3D60;
 
@@ -40,12 +38,9 @@
   --color-danger-soft: #FEE2E2;
   --color-on-danger-soft: #991B1B;
 
-  /* Paper on paper: a thin edge plus a soft drop, tinted with ink. */
-  --shadow-soft: 0 1px 0 rgb(46 36 51 / 0.15), 0 10px 24px rgb(46 36 51 / 0.12);
-
-  /* Paper on the wall (the home page, which has no panel): the dark outline
-     the room art draws everything with, and the date stamp's ink, a second
-     ink taken from the popcorn stripes in the room. */
+  /* Paper on the wall: the dark outline the room art draws everything
+     with, and the date stamp's ink, a second ink taken from the popcorn
+     stripes in the room. */
   --color-art-outline: #1F1933;
   --color-stamp-red: #8E2450;
 }
@@ -94,9 +89,9 @@
   }
 }
 
-/* ---- Paper on the wall: the home page's ticket, taped to the room ----
-   (MASTER.md "Home page"). Each @utility is a class of our own that works
-   like a Tailwind one: className="on-the-wall". */
+/* ---- Paper on the wall: every page's tickets, taped to the room ----
+   (MASTER.md "Paper on the wall"). Each @utility is a class of our own
+   that works like a Tailwind one: className="on-the-wall". */
 
 /* Draws the room art's dark outline around whatever paper is inside, cut-outs
    included, then a soft shadow onto the wall. A drop-shadow follows the

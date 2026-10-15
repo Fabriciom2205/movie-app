@@ -3,7 +3,8 @@
 import { startTransition, useActionState, useId, useState, type FormEvent } from "react";
 import Image from "next/image";
 import { Check, ChevronDown, CircleCheck } from "lucide-react";
-import { card, field, primaryButton, sectionLabel, tag } from "@/app/ui";
+import { TearLine, WallCard } from "@/app/ticket";
+import { field, paper, primaryButton, sectionLabel, tag } from "@/app/ui";
 import { saveSettings, type SaveState } from "./actions";
 
 export type ProviderOption = {
@@ -63,8 +64,9 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
   }
 
   return (
-    <form action={formAction} onSubmit={handleSubmit} className="mt-6 flex flex-col gap-6">
-      <section className={card} aria-labelledby={`${id}-about`}>
+    <form action={formAction} onSubmit={handleSubmit} className="mt-7 flex flex-col gap-8">
+      {/* Taped up first, like /rate's how-to: it's what the page opens with. */}
+      <WallCard as="section" aria-labelledby={`${id}-about`} tape>
         <h2 id={`${id}-about`} className="text-3xl">
           About you
         </h2>
@@ -123,9 +125,11 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
             </p>
           </div>
         </div>
-      </section>
+      </WallCard>
 
-      <section className={card} aria-labelledby={`${id}-services`}>
+      {/* Pinned up a little crooked the other way. Barely: it's the tallest
+          ticket in the app, and a full degree would slant its grid. */}
+      <WallCard as="section" aria-labelledby={`${id}-services`} tilt="rotate-[0.4deg]">
         <h2 id={`${id}-services`} className="text-3xl">
           Your streaming services
         </h2>
@@ -166,8 +170,10 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
                   onChange={() => toggle(p.id)}
                   // On the checkbox itself (it's what gets focus, so it's what
                   // the browser scrolls into view): keeps an option tabbed to
-                  // near the bottom from hiding behind the sticky Save bar.
-                  className="sr-only scroll-mb-28"
+                  // near the bottom from hiding behind the sticky Save stub
+                  // (~110px with its gap; the checkbox sits mid-option, and an
+                  // error beside Save can make the stub taller).
+                  className="sr-only scroll-mb-40"
                 />
                 <Image src={p.logoUrl} alt="" width={32} height={32} className="size-8 shrink-0 rounded-full" />
                 <span className="min-w-0 flex-1 truncate text-sm font-medium">{p.name}</span>
@@ -187,28 +193,37 @@ export function SettingsForm({ displayName, region, regions, providers, shortlis
             No services match &ldquo;{filter}&rdquo;. Try part of the name, like &ldquo;max&rdquo;.
           </p>
         )}
-      </section>
+      </WallCard>
 
-      {/* Stays at the bottom of the screen while the form is on it, so Save is
-          always in reach after ticking a service far down the list. The
-          dashed top edge makes it the page's stub. */}
-      <div className="sticky bottom-0 z-10 -mx-4 flex items-center gap-4 border-t-2 border-dashed border-ink/45 bg-page/95 px-4 py-3 backdrop-blur-sm sm:-mx-8 sm:px-8">
-        <button type="submit" disabled={pending} className={primaryButton}>
-          {pending ? "Saving…" : "Save"}
-        </button>
-        <div aria-live="polite" className="min-w-0 text-sm">
-          {pending ? null : dirty ? (
-            <p className="text-ink-muted">Unsaved changes</p>
-          ) : state.status === "error" ? (
-            <p className="text-danger">{state.message}</p>
-          ) : (
-            state.message && (
-              <p className={`${tag} bg-sage text-on-sage`}>
-                <CircleCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-                {state.message}
-              </p>
-            )
-          )}
+      {/* The page's stub, torn off along the dotted line: a piece of paper of
+          its own that stays at the bottom of the screen while the form is on
+          it, so Save is always in reach after ticking a service far down the
+          list, and comes to rest under the last ticket. The room's outline
+          and shadow keep it apart from the tickets it slides over. */}
+      <div className="sticky bottom-3 z-10 -rotate-[0.5deg]">
+        <div className="on-the-wall">
+          <div className={`ticket-cut-stub relative ${paper} py-4`}>
+            <TearLine />
+            <div className="flex items-center gap-4 px-5 pt-2 sm:px-6">
+              <button type="submit" disabled={pending} className={primaryButton}>
+                {pending ? "Saving…" : "Save"}
+              </button>
+              <div aria-live="polite" className="min-w-0 text-sm">
+                {pending ? null : dirty ? (
+                  <p className="text-ink-muted">Unsaved changes</p>
+                ) : state.status === "error" ? (
+                  <p className="text-danger">{state.message}</p>
+                ) : (
+                  state.message && (
+                    <p className={`${tag} bg-sage text-on-sage`}>
+                      <CircleCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+                      {state.message}
+                    </p>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </form>

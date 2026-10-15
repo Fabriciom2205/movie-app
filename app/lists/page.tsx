@@ -33,8 +33,8 @@ export default async function ListsPage() {
   ];
   const names = await getDisplayNames(otherIds);
 
-  // No panel: the title and the create form sit on the room art, and each
-  // list is a ticket stub on the wall (MASTER.md "Lists").
+  // The title and the create form sit on the room art, and each list is a
+  // ticket stub on the wall (MASTER.md "Lists").
   return (
     <main id="content" className={`${wallColumn} max-w-2xl`}>
       <Link href="/" className={`${quietButtonOnArt} -ml-2`}>

@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import { paper, sectionLabel } from "@/app/ui";
 
-/** A ticket on the room's wall (pages with no panel): tilted a little,
+/** A ticket on the room's wall: tilted a little,
  *  optionally taped up (the one main ticket of a page), with the room art's
  *  outline traced around its paper. Put the paper inside: a `WallCard`'s, or
  *  pieces cut with `ticket-cut-top` + `ticket-cut-stub` (globals.css). Pass
@@ -73,26 +73,6 @@ export function WallCard({
 export function TearLine({ small = false }: { small?: boolean }) {
   const inset = small ? "inset-x-3" : "inset-x-5.5";
   return <span aria-hidden="true" className={`perforation-dots absolute top-0.5 h-1.5 ${inset}`} />;
-}
-
-/** The tear line across a ticket: a dashed line with a round notch cut into
- *  each side. Put it straight inside the ticket, with no side padding around
- *  it, so the notches sit on the ticket's edges. The notches are circles in
- *  the page color, so the ticket must sit on `bg-page`. `notches={false}`:
- *  just the dashed line, for a ticket that floats on the room art (login),
- *  where page-colored circles would show as light dots. */
-export function Perforation({ className = "", notches = true }: { className?: string; notches?: boolean }) {
-  // Each circle is centered on the 2px line and on the ticket's edge.
-  return (
-    <div aria-hidden="true" className={`relative h-0 border-t-2 border-dashed border-ink/45 ${className}`}>
-      {notches && (
-        <>
-          <span className="absolute -top-3.5 -left-3.25 size-6.5 rounded-full bg-page" />
-          <span className="absolute -top-3.5 -right-3.25 size-6.5 rounded-full bg-page" />
-        </>
-      )}
-    </div>
-  );
 }
 
 export type TicketField = { label: string; value: ReactNode; wide?: boolean };
