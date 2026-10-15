@@ -240,11 +240,14 @@ a control whose real input is visually hidden (toggle chips): its label uses
 "Movie Night" in League Gothic (`text-4xl`) with the site's ticket icon
 beside it from `sm` up (`TicketMark` in `app/page.tsx`, the same drawing as
 `app/icon.svg`; the moon mark was dropped on 2026-10-10, this came with the
-wall design), then Lists / Settings / Sign out as plain text links in DM
-Mono capitals, underlined on hover. From `md` the signed-in name comes first,
-in the same capitals at 75% with a thin divider after it. The links are 11px
-on phones (`sm:text-xs`) so all three fit beside the title at 375px; no
-icons.
+wall design), then Lists / Rate / Settings / Sign out as plain text links in
+DM Mono capitals, underlined on hover. From `md` the signed-in name comes
+first, in the same capitals at 75% with a thin divider after it. On phones
+the title is `text-3xl` and the links 11px with 4px sides (`sm:text-xs`,
+`sm:px-2`), so all four fit beside it at 375px (measured: "Sign out" ends
+exactly at the header's padding, 19px to spare by the title); no icons.
+"Rate" (added 2026-10-14) is the way back to `/rate` once the pink nudge is
+gone.
 
 **Home page ("ticket on the wall", 2026-10-14):** no panel. Under the
 header, a centered column (`max-w-152`, 608px; 16px sides on phones):
@@ -271,8 +274,8 @@ header, a centered column (`max-w-152`, 608px; 16px sides on phones):
     venue line, the stamp and the question in as `children`.
 - **The pink nudge** (under 10 ratings): a small `bg-ticket-pink` ticket,
   `side-notches-cut`, `on-the-wall`, tilted the other way (`rotate-[0.8deg]`).
-  There's no "rate more" link once you have 10 ratings; `/rate` is then not
-  linked from anywhere (a nav link could come later).
+  Once you have 10 ratings it's gone, and "Rate" in the header leads to
+  `/rate` instead.
 - **The search:** "Or look up a movie" in `sectionLabelOnArt`, a `field` and
   a lavender `fieldTicketButton` ("Find"), then the results.
 Phones: the frame sits 10px in from the paper's sides and the text 22px
