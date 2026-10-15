@@ -70,8 +70,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* On phones the content starts 96px down, so the moon peeks out above
             it, and runs edge to edge so text keeps its width. */}
         <div className="flex-1 pt-24 sm:px-6 sm:pt-10">{children}</div>
-        <footer className="px-4 py-6 text-center text-xs">
-          <p className="inline-block bg-night/85 px-3 py-1.5 text-on-night">
+        {/* Fine print straight on the art: small, light, with a dark shadow so
+            it reads over the floor. */}
+        <footer className="px-4 py-6 text-center text-[11px] leading-relaxed">
+          <p className="text-on-night/75 text-shadow-md text-shadow-night">
             This product uses the TMDB API but is not endorsed or certified by TMDB.
             <br />
             Room illustration inspired by Lofi Night by redtreacle.
